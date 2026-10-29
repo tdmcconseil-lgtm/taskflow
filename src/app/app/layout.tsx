@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
+import { FramedAvatar } from "@/components/FramedAvatar";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -10,9 +11,31 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     where: { members: { some: { userId: user.id } }, archivedAt: null },
     orderBy: { createdAt: "asc" },
     include: {
-      projects: { orderBy: { createdAt: "asc" }, select: { id: true, name: true } },
+      // Les « projets » sont les tâches de 1er niveau (sans parent).
+      tasks: {
+        where: { parentId: null },
+        orderBy: { createdAt: "asc" },
+        select: { id: true, title: true },
+      },
     },
   });
+
+  // Nombre de discussions non lues (parmi les tâches encore suivies).
+  const follows = await prisma.taskFollow.findMany({
+    where: { userId: user.id, following: true },
+    select: {
+      lastReadAt: true,
+      task: {
+        select: {
+          comments: { orderBy: { createdAt: "desc" }, take: 1, select: { createdAt: true } },
+        },
+      },
+    },
+  });
+  const unreadCount = follows.filter((f) => {
+    const last = f.task.comments[0]?.createdAt;
+    return !!last && (!f.lastReadAt || last > f.lastReadAt);
+  }).length;
 
   return (
     <div className="flex min-h-full flex-1">
@@ -23,12 +46,25 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         </Link>
 
         <nav className="flex-1 space-y-6 overflow-y-auto">
-          <Link
-            href="/app"
-            className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          >
-            🏠 Accueil
-          </Link>
+          <div className="space-y-0.5">
+            <Link
+              href="/app"
+              className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              🏠 Accueil
+            </Link>
+            <Link
+              href="/app/discussions"
+              className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <span>💬 Discussions</span>
+              {unreadCount > 0 && (
+                <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
+                  {unreadCount}
+                </span>
+              )}
+            </Link>
+          </div>
 
           <div>
             <div className="mb-2 flex items-center justify-between px-2">
@@ -54,17 +90,17 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
                     {ws.name}
                   </Link>
                   <ul className="mt-1 space-y-0.5 border-l border-zinc-200 pl-3 dark:border-zinc-800">
-                    {ws.projects.map((p) => (
-                      <li key={p.id}>
+                    {ws.tasks.map((t) => (
+                      <li key={t.id}>
                         <Link
-                          href={`/app/projects/${p.id}`}
+                          href={`/app/tasks/${t.id}`}
                           className="block truncate rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
                         >
-                          {p.name}
+                          {t.title}
                         </Link>
                       </li>
                     ))}
-                    {ws.projects.length === 0 && (
+                    {ws.tasks.length === 0 && (
                       <li className="px-2 py-1 text-xs italic text-zinc-400">
                         Aucun projet
                       </li>
@@ -84,7 +120,20 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             Taskflow
           </Link>
           <div className="ml-auto flex items-center gap-4">
-            <span className="text-sm text-zinc-500">{user.name}</span>
+            <Link
+              href="/app/profile"
+              className="flex items-center gap-2 text-sm font-medium text-zinc-700 hover:underline dark:text-zinc-300"
+            >
+              <FramedAvatar
+                src={`/api/avatar/${user.id}?v=${user.photoUpdatedAt?.getTime() ?? 0}`}
+                fx={user.photoX}
+                fy={user.photoY}
+                zoom={user.photoZoom}
+                fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
+                className="h-7 w-7 shrink-0 rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+              />
+              <span>{user.name}</span>
+            </Link>
             <form action={logout}>
               <button
                 type="submit"
