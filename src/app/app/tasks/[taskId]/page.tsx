@@ -2,23 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
-import { StatusBadge, PriorityBadge } from "@/components/badges";
+import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
 import { DeleteTaskButton } from "@/components/DeleteTaskButton";
 import { TaskTabs } from "@/components/TaskTabs";
 import { TaskFollowers } from "@/components/TaskFollowers";
+import { DescriptionReveal } from "@/components/DescriptionReveal";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskCollection } from "@/components/TaskCollection";
 import { UserAvatar } from "@/components/UserAvatar";
 import { CommentBox } from "@/components/CommentBox";
-import { CommentBody } from "@/components/CommentBody";
+import { EditableComment } from "@/components/EditableComment";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { TaskDocuments } from "@/components/TaskDocuments";
 import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { getTaskView, getTaskTab } from "@/lib/view";
-import { formatDate, formatDateTime, isOverdue, PRIORITY_LABELS } from "@/lib/labels";
+import { formatDate, isOverdue } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
 export default async function TaskDetailPage({
@@ -46,11 +47,13 @@ export default async function TaskDetailPage({
       workspaceId: true,
       assignee: { select: ASSIGNEE_SELECT },
       comments: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: "desc" },
         select: {
           id: true,
           body: true,
           createdAt: true,
+          editedAt: true,
+          authorId: true,
           author: { select: { name: true } },
         },
       },
@@ -82,7 +85,7 @@ export default async function TaskDetailPage({
     }),
     prisma.task.findMany({
       where: { workspaceId: task.workspaceId },
-      orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+      orderBy: [{ position: "asc" }, { createdAt: "asc" }],
       select: {
         id: true,
         title: true,
@@ -92,6 +95,7 @@ export default async function TaskDetailPage({
         dueDate: true,
         parentId: true,
         assignee: { select: ASSIGNEE_SELECT },
+        _count: { select: { documentLinks: true } },
       },
     }),
     prisma.taskFollow.findMany({
@@ -129,7 +133,11 @@ export default async function TaskDetailPage({
 
   const linkedDocs = docLinks.map((l) => l.document);
 
-  const { byId } = buildTaskIndex(allTasks as RawTask[]);
+  const rawTasks: RawTask[] = allTasks.map((t) => ({
+    ...t,
+    attachmentCount: t._count.documentLinks,
+  }));
+  const { byId } = buildTaskIndex(rawTasks);
   const children = byId.get(task.id)?.children ?? [];
 
   // Fil d'Ariane : espace › ancêtres › tâche courante.
@@ -226,8 +234,9 @@ export default async function TaskDetailPage({
     <div className="mx-auto max-w-4xl space-y-6">
       {breadcrumb}
 
-      {/* En-tête permanent : titre, badges, actions, bandeau de données */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      {/* Encadré d'en-tête : titre, suivi, statut, Modifier et données */}
+      <div className="space-y-5 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1
             className={`text-2xl font-semibold tracking-tight ${
@@ -236,10 +245,6 @@ export default async function TaskDetailPage({
           >
             {task.title}
           </h1>
-          <div className="mt-2 flex items-center gap-2">
-            <StatusBadge status={task.status} />
-            <PriorityBadge priority={task.priority} />
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <form action={toggleFollow}>
@@ -268,59 +273,58 @@ export default async function TaskDetailPage({
         </div>
       </div>
 
-      <dl className="grid grid-cols-1 gap-4 rounded-xl border border-zinc-200 bg-white p-5 sm:grid-cols-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Assigné à</dt>
-          <dd className="mt-1 text-sm">
-            {task.assignee ? (
-              <span className="inline-flex items-center gap-2">
-                <UserAvatar user={toAssigneeInfo(task.assignee)!} className="h-6 w-6" />
-                {task.assignee.name}
-              </span>
+        <DescriptionReveal
+          banner={
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">Assigné à</dt>
+                <dd className="mt-1 text-sm">
+                  {task.assignee ? (
+                    <span className="inline-flex items-center gap-2">
+                      <UserAvatar user={toAssigneeInfo(task.assignee)!} className="h-6 w-6" />
+                      {task.assignee.name}
+                    </span>
+                  ) : (
+                    "Non assignée"
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">Échéance</dt>
+                <dd
+                  className={`mt-1 text-sm ${
+                    overdue ? "font-medium text-red-600 dark:text-red-400" : ""
+                  }`}
+                >
+                  {task.dueDate ? formatDate(task.dueDate) : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">Priorité</dt>
+                <dd className="mt-1">
+                  <PriorityBadge priority={task.priority} />
+                </dd>
+              </div>
+            </dl>
+          }
+          description={
+            task.description ? (
+              <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
+                {task.description}
+              </p>
             ) : (
-              "Non assignée"
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Échéance</dt>
-          <dd
-            className={`mt-1 text-sm ${
-              overdue ? "font-medium text-red-600 dark:text-red-400" : ""
-            }`}
-          >
-            {task.dueDate ? formatDate(task.dueDate) : "—"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Priorité</dt>
-          <dd className="mt-1 text-sm">{PRIORITY_LABELS[task.priority]}</dd>
-        </div>
-      </dl>
+              <p className="text-sm italic text-zinc-400">Aucune description.</p>
+            )
+          }
+        />
+      </div>
 
-      {/* Onglets : Description (+ activité), Sous-tâches, Documents, Chat */}
+      {/* Onglets : Sous-tâches, Documents, Conversation, Suivi, Activité */}
       <TaskTabs
         taskId={task.id}
         initialTab={initialTab}
         chatUnread={chatUnread}
-        followerCount={followerCount}
-        description={
-          <div className="space-y-6">
-            <div>
-              {task.description ? (
-                <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
-                  {task.description}
-                </p>
-              ) : (
-                <p className="text-sm italic text-zinc-400">Aucune description.</p>
-              )}
-            </div>
-            <div className="space-y-4 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-              <h2 className="text-lg font-semibold">Activité</h2>
-              <ActivityFeed activities={activities} />
-            </div>
-          </div>
-        }
+        activity={<ActivityFeed activities={activities} />}
         subtasks={
           <TaskCollection
             roots={children}
@@ -328,6 +332,7 @@ export default async function TaskDetailPage({
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel="Nouvelle sous-tâche"
+            reorderParentId={task.id}
             emptyLabel={
               isTopLevel
                 ? "Aucune tâche dans ce projet. Créez la première."
@@ -345,35 +350,40 @@ export default async function TaskDetailPage({
         }
         chat={
           <div className="space-y-4">
-            {task.comments.length === 0 ? (
-              <p className="text-sm italic text-zinc-400">
-                Aucun message. Lancez la discussion.
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {task.comments.map((c) => (
-                  <li
-                    key={c.id}
-                    className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-                  >
-                    <div className="mb-1 flex items-center gap-2 text-xs text-zinc-500">
-                      <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                        {c.author.name}
-                      </span>
-                      <span>·</span>
-                      <span>{formatDateTime(c.createdAt)}</span>
-                    </div>
-                    <CommentBody body={c.body} names={nameById} docs={docNameById} />
-                  </li>
-                ))}
-              </ul>
-            )}
             <CommentBox
               taskId={task.id}
               members={members}
               taskDocuments={linkedDocs}
               projectDocuments={projectDocs}
             />
+            {task.comments.length === 0 ? (
+              <p className="text-sm italic text-zinc-400">
+                Aucun message. Lancez la conversation.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {task.comments.map((c) => (
+                  <EditableComment
+                    key={c.id}
+                    comment={{
+                      id: c.id,
+                      body: c.body,
+                      createdAt: c.createdAt,
+                      editedAt: c.editedAt,
+                      authorId: c.authorId,
+                      authorName: c.author.name,
+                    }}
+                    currentUserId={user.id}
+                    names={nameById}
+                    docs={docNameById}
+                    taskId={task.id}
+                    members={members}
+                    taskDocuments={linkedDocs}
+                    projectDocuments={projectDocs}
+                  />
+                ))}
+              </ul>
+            )}
           </div>
         }
         followers={

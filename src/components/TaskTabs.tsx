@@ -4,14 +4,14 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { markRead } from "@/lib/actions/discussion";
 
-type TabKey = "description" | "sous" | "docs" | "chat" | "followers";
+type TabKey = "sous" | "docs" | "chat" | "followers" | "activite";
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: "description", label: "Description" },
   { key: "sous", label: "Sous-tâches" },
-  { key: "docs", label: "Documents liés" },
-  { key: "chat", label: "Chat" },
-  { key: "followers", label: "Suivie par" },
+  { key: "docs", label: "Documents" },
+  { key: "chat", label: "Conversation" },
+  { key: "followers", label: "Suivi" },
+  { key: "activite", label: "Activité" },
 ];
 
 // Mémorise l'onglet choisi (cookie) pour le conserver d'une tâche à l'autre.
@@ -27,24 +27,22 @@ function rememberTab(tab: TabKey) {
 // que l'onglet n'est pas ouvert ; à son ouverture, la discussion est marquée lue.
 export function TaskTabs({
   taskId,
-  initialTab = "description",
+  initialTab = "sous",
   chatUnread,
-  followerCount,
-  description,
   subtasks,
   documents,
   chat,
   followers,
+  activity,
 }: {
   taskId: string;
   initialTab?: TabKey;
   chatUnread: number;
-  followerCount: number;
-  description: ReactNode;
   subtasks: ReactNode;
   documents: ReactNode;
   chat: ReactNode;
   followers: ReactNode;
+  activity: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey>(initialTab);
   const [unread, setUnread] = useState(chatUnread);
@@ -87,15 +85,11 @@ export function TaskTabs({
                 : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
+            {t.key === "followers" && <span aria-hidden>👁</span>}
             {t.label}
             {t.key === "chat" && unread > 0 && (
               <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                 {unread}
-              </span>
-            )}
-            {t.key === "followers" && followerCount > 0 && (
-              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-                {followerCount}
               </span>
             )}
           </button>
@@ -103,11 +97,11 @@ export function TaskTabs({
       </div>
 
       <div className="pt-6">
-        <div hidden={active !== "description"}>{description}</div>
         <div hidden={active !== "sous"}>{subtasks}</div>
         <div hidden={active !== "docs"}>{documents}</div>
         <div hidden={active !== "chat"}>{chat}</div>
         <div hidden={active !== "followers"}>{followers}</div>
+        <div hidden={active !== "activite"}>{activity}</div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { UserAvatar } from "@/components/UserAvatar";
-import { addFollower, removeFollower } from "@/lib/actions/discussion";
+import { addFollower } from "@/lib/actions/discussion";
 import { inputClass } from "@/components/ui";
 import type { AssigneeInfo } from "@/lib/task-tree";
 
@@ -31,28 +31,15 @@ export function TaskFollowers({
           {followers.map((f) => (
             <li
               key={f.id}
-              className="flex items-center justify-between gap-3 bg-white p-3 dark:bg-zinc-900"
+              className="flex min-w-0 items-center gap-2 bg-white p-3 dark:bg-zinc-900"
             >
-              <div className="flex min-w-0 items-center gap-2">
-                <UserAvatar user={f} className="h-7 w-7" />
-                <span className="truncate text-sm font-medium">{f.name}</span>
-                {f.id === currentUserId && (
-                  <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-300">
-                    vous
-                  </span>
-                )}
-              </div>
-              <form action={removeFollower}>
-                <input type="hidden" name="taskId" value={taskId} />
-                <input type="hidden" name="userId" value={f.id} />
-                <button
-                  type="submit"
-                  title="Retirer du suivi"
-                  className="shrink-0 rounded-md px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-100 hover:text-red-600 dark:hover:bg-zinc-800"
-                >
-                  Retirer
-                </button>
-              </form>
+              <UserAvatar user={f} className="h-7 w-7" />
+              <span className="truncate text-sm font-medium">{f.name}</span>
+              {f.id === currentUserId && (
+                <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-300">
+                  vous
+                </span>
+              )}
             </li>
           ))}
         </ul>

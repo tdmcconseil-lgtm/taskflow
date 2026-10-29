@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { addComment } from "@/lib/actions/discussion";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { addComment, editComment } from "@/lib/actions/discussion";
 
 type Opt = { id: string; name: string };
 type TriggerType = "user" | "docTask" | "docProject";
@@ -9,24 +9,68 @@ type TriggerType = "user" | "docTask" | "docProject";
 const MENTION_CLASS = "rounded px-0.5 font-semibold text-indigo-600 dark:text-indigo-400";
 const DOC_CLASS = "rounded px-0.5 font-medium text-indigo-600 underline dark:text-indigo-400";
 
+const esc = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Convertit un corps stocké (@[id] / $[id] + texte) en HTML de l'éditeur.
+function bodyToHtml(body: string, names: Record<string, string>, docs: Record<string, string>) {
+  let html = "";
+  let last = 0;
+  const re = /([@$])\[([^\]]+)\]/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(body))) {
+    html += esc(body.slice(last, m.index));
+    if (m[1] === "$") {
+      html += `<span contenteditable="false" data-doc="${m[2]}" class="${DOC_CLASS}">📄 ${esc(docs[m[2]] ?? "document")}</span>`;
+    } else {
+      html += `<span contenteditable="false" data-mention="${m[2]}" class="${MENTION_CLASS}">@${esc(names[m[2]] ?? "inconnu")}</span>`;
+    }
+    last = re.lastIndex;
+  }
+  html += esc(body.slice(last));
+  return html.replace(/\n/g, "<br>");
+}
+
 export function CommentBox({
   taskId,
   members,
   taskDocuments,
   projectDocuments,
+  commentId,
+  initialBody,
+  onDone,
 }: {
   taskId: string;
   members: Opt[];
   taskDocuments: Opt[];
   projectDocuments: Opt[];
+  commentId?: string;
+  initialBody?: string;
+  onDone?: () => void;
 }) {
+  const editing = !!commentId;
   const editorRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const [empty, setEmpty] = useState(true);
+  const [empty, setEmpty] = useState(!initialBody);
   const [trigger, setTrigger] = useState<{ type: TriggerType; query: string } | null>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const [active, setActive] = useState(0);
   const [pending, startTransition] = useTransition();
+
+  const nameById = Object.fromEntries(members.map((m) => [m.id, m.name]));
+  const docNameById = Object.fromEntries(
+    [...projectDocuments, ...taskDocuments].map((d) => [d.id, d.name]),
+  );
+
+  // Pré-remplit l'éditeur en mode édition.
+  useEffect(() => {
+    if (editing && initialBody && editorRef.current) {
+      editorRef.current.innerHTML = bodyToHtml(initialBody, nameById, docNameById);
+      setEmpty(false);
+      editorRef.current.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const source =
     trigger?.type === "docTask"
@@ -43,7 +87,6 @@ export function CommentBox({
     : [];
   const open = trigger !== null && matches.length > 0;
 
-  // Lit le contexte « @requête » ou « $requête » juste avant le curseur.
   function readTrigger():
     | { type: TriggerType; query: string; node: Text; atStart: number; caret: number }
     | null {
@@ -69,14 +112,11 @@ export function CommentBox({
 
   function onInput() {
     const ctx = readTrigger();
-    // Ne réinitialiser la sélection que si le contexte change réellement :
-    // sinon la navigation clavier (flèches) la ramènerait en haut à chaque relâche.
     const sameContext =
       !!ctx && !!trigger && ctx.type === trigger.type && ctx.query === trigger.query;
     setTrigger(ctx ? { type: ctx.type, query: ctx.query } : null);
     if (!sameContext) setActive(0);
 
-    // Position du menu : juste sous le caractère déclencheur (@ ou $).
     if (ctx && formRef.current) {
       const range = document.createRange();
       range.setStart(ctx.node, ctx.atStart);
@@ -128,22 +168,36 @@ export function CommentBox({
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (!open) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActive((a) => (a + 1) % matches.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActive((a) => (a - 1 + matches.length) % matches.length);
-    } else if (e.key === "Enter" || e.key === "Tab") {
-      e.preventDefault();
-      pick(matches[active]);
-    } else if (e.key === "Escape") {
-      setTrigger(null);
+    if (open) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActive((a) => (a + 1) % matches.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActive((a) => (a - 1 + matches.length) % matches.length);
+      } else if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        pick(matches[active]);
+      } else if (e.key === "Escape") {
+        setTrigger(null);
+      }
+      return;
+    }
+    // Menu fermé : Entrée envoie, Alt/Maj+Entrée insère un saut de ligne.
+    if (e.key === "Enter") {
+      if (e.altKey || e.shiftKey) {
+        e.preventDefault();
+        document.execCommand("insertLineBreak");
+        setEmpty(false);
+      } else {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    } else if (e.key === "Escape" && editing) {
+      onDone?.();
     }
   }
 
-  // Sérialise : texte + jetons @[id] (personnes) et $[id] (documents).
   function serialize(): string {
     const root = editorRef.current;
     if (!root) return "";
@@ -169,37 +223,63 @@ export function CommentBox({
     e.preventDefault();
     const body = serialize().trim();
     if (!body || pending) return;
-    const fd = new FormData();
-    fd.set("taskId", taskId);
-    fd.set("body", body);
     startTransition(async () => {
-      await addComment(fd);
-      if (editorRef.current) editorRef.current.innerHTML = "";
-      setEmpty(true);
+      if (editing) {
+        await editComment(commentId!, body);
+        onDone?.();
+      } else {
+        const fd = new FormData();
+        fd.set("taskId", taskId);
+        fd.set("body", body);
+        await addComment(fd);
+        if (editorRef.current) editorRef.current.innerHTML = "";
+        setEmpty(true);
+      }
       setTrigger(null);
     });
   }
 
   return (
     <form ref={formRef} onSubmit={submit} className="relative space-y-2">
-      <div className="relative">
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
-          role="textbox"
-          aria-multiline="true"
-          onInput={onInput}
-          onKeyUp={onInput}
-          onClick={onInput}
-          onKeyDown={onKeyDown}
-          className="min-h-[5rem] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
-        />
-        {empty && (
-          <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400">
-            Écrire un message… @ pour mentionner, $ pour un document de la tâche, $$ pour un document du projet.
-          </span>
-        )}
+      <div className="flex items-start gap-2">
+        <div className="relative flex-1">
+          <div
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            role="textbox"
+            aria-multiline="true"
+            onInput={onInput}
+            onKeyUp={onInput}
+            onClick={onInput}
+            onKeyDown={onKeyDown}
+            className="min-h-[2.75rem] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+          {empty && (
+            <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400">
+              Écrire un message… @ mention, $ document.
+            </span>
+          )}
+        </div>
+
+        <div className="flex shrink-0 flex-col gap-1">
+          <button
+            type="submit"
+            disabled={empty || pending}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {pending ? "…" : editing ? "Enregistrer" : "Commenter"}
+          </button>
+          {editing && onDone && (
+            <button
+              type="button"
+              onClick={onDone}
+              className="rounded-lg border border-zinc-300 px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            >
+              Annuler
+            </button>
+          )}
+        </div>
       </div>
 
       {open && (
@@ -227,14 +307,6 @@ export function CommentBox({
           ))}
         </ul>
       )}
-
-      <button
-        type="submit"
-        disabled={empty || pending}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {pending ? "Envoi…" : "Commenter"}
-      </button>
     </form>
   );
 }

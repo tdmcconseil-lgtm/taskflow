@@ -10,13 +10,23 @@ export async function getTaskView(): Promise<TaskView> {
   return v === "liste" ? "liste" : "tableau";
 }
 
-export type TaskTab = "description" | "sous" | "docs" | "chat";
+export type TaskTab = "sous" | "docs" | "chat" | "followers" | "activite";
 
-const TABS: TaskTab[] = ["description", "sous", "docs", "chat"];
+const TABS: TaskTab[] = ["sous", "docs", "chat", "followers", "activite"];
 
 // Onglet actif de la fiche de tâche, conservé d'une tâche à l'autre (cookie).
-// Par défaut : description.
+// Par défaut : sous-tâches.
 export async function getTaskTab(): Promise<TaskTab> {
   const v = (await cookies()).get("tf_tab")?.value;
-  return TABS.includes(v as TaskTab) ? (v as TaskTab) : "description";
+  return TABS.includes(v as TaskTab) ? (v as TaskTab) : "sous";
+}
+
+export type WorkspaceTab = "projets" | "membres" | "suivies" | "evenements" | "discussions";
+
+const WS_TABS: WorkspaceTab[] = ["projets", "membres", "suivies", "evenements", "discussions"];
+
+// Onglet actif d'un espace, conservé d'un espace à l'autre (cookie).
+export async function getWorkspaceTab(): Promise<WorkspaceTab> {
+  const v = (await cookies()).get("tf_ws_tab")?.value;
+  return WS_TABS.includes(v as WorkspaceTab) ? (v as WorkspaceTab) : "projets";
 }
