@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { ensureFollow, followMentioned } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
+import { rootTaskId } from "@/lib/actions/documents";
 
 const commentSchema = z.object({
   taskId: z.string().min(1),
@@ -74,6 +75,28 @@ export async function addComment(formData: FormData): Promise<void> {
   // Secours : mentions tapées à la main (@prénom) non sélectionnées.
   await followMentioned(parsed.data.body, task.workspaceId, task.id);
 
+  // Documents référencés avec $ : jetons $[identifiant]. Un document du projet
+  // ainsi cité est rattaché à la tâche (comme une mention fait suivre).
+  const docIds = new Set(
+    [...parsed.data.body.matchAll(/\$\[([^\]]+)\]/g)].map((m) => m[1]),
+  );
+  if (docIds.size > 0) {
+    const projectTaskId = await rootTaskId(task.id);
+    for (const did of docIds) {
+      const doc = await prisma.document.findUnique({
+        where: { id: did },
+        select: { projectTaskId: true },
+      });
+      if (doc && doc.projectTaskId === projectTaskId) {
+        await prisma.documentLink.upsert({
+          where: { documentId_taskId: { documentId: did, taskId: task.id } },
+          update: {},
+          create: { documentId: did, taskId: task.id },
+        });
+      }
+    }
+  }
+
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath("/app", "layout");
 }
@@ -107,6 +130,48 @@ export async function toggleFollow(formData: FormData): Promise<void> {
     });
   }
 
+  revalidatePath(`/app/tasks/${task.id}`);
+  revalidatePath("/app", "layout");
+}
+
+// Ajoute une personne (membre de l'espace) comme suiveur de la tâche.
+export async function addFollower(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const taskId = String(formData.get("taskId") ?? "");
+  const userId = String(formData.get("userId") ?? "");
+  if (!taskId || !userId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, workspaceId: true },
+  });
+  if (!task) return;
+  if (!(await getMembership(user.id, task.workspaceId))) return;
+  if (!(await getMembership(userId, task.workspaceId))) return;
+
+  await ensureFollow(userId, task.id);
+  revalidatePath(`/app/tasks/${task.id}`);
+  revalidatePath("/app", "layout");
+}
+
+// Retire une personne du suivi (following=false ; la discussion reste listée).
+export async function removeFollower(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const taskId = String(formData.get("taskId") ?? "");
+  const userId = String(formData.get("userId") ?? "");
+  if (!taskId || !userId) return;
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, workspaceId: true },
+  });
+  if (!task) return;
+  if (!(await getMembership(user.id, task.workspaceId))) return;
+
+  await prisma.taskFollow.updateMany({
+    where: { userId, taskId: task.id },
+    data: { following: false },
+  });
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath("/app", "layout");
 }

@@ -6,6 +6,7 @@ import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
 import { DeleteTaskButton } from "@/components/DeleteTaskButton";
 import { TaskTabs } from "@/components/TaskTabs";
+import { TaskFollowers } from "@/components/TaskFollowers";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskCollection } from "@/components/TaskCollection";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -67,7 +68,7 @@ export default async function TaskDetailPage({
     ? task.comments.filter((c) => !lastReadAt || c.createdAt > lastReadAt).length
     : 0;
 
-  const [workspace, allTasks, followerCount, activities, docLinks, poolDocs] = await Promise.all([
+  const [workspace, allTasks, followerRows, activities, docLinks, poolDocs] = await Promise.all([
     prisma.workspace.findUnique({
       where: { id: task.workspaceId },
       select: {
@@ -93,7 +94,11 @@ export default async function TaskDetailPage({
         assignee: { select: ASSIGNEE_SELECT },
       },
     }),
-    prisma.taskFollow.count({ where: { taskId: task.id, following: true } }),
+    prisma.taskFollow.findMany({
+      where: { taskId: task.id, following: true },
+      orderBy: { createdAt: "asc" },
+      select: { user: { select: ASSIGNEE_SELECT } },
+    }),
     prisma.taskActivity.findMany({
       where: { taskId: task.id },
       orderBy: { createdAt: "desc" },
@@ -141,6 +146,24 @@ export default async function TaskDetailPage({
   const detailHref = `/app/tasks/${task.id}`;
   const members = workspace.members.map((m) => m.user);
   const nameById = Object.fromEntries(members.map((m) => [m.id, m.name]));
+
+  // Documents du projet (tâche racine) — proposés dans le chat via « $ » et
+  // utilisés pour afficher les références de document dans les messages.
+  const rootId = ancestors[0]?.id ?? task.id;
+  const projectDocs = await prisma.document.findMany({
+    where: { projectTaskId: rootId },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, name: true },
+  });
+  const docNameById = Object.fromEntries(
+    [...projectDocs, ...linkedDocs].map((d) => [d.id, d.name]),
+  );
+
+  // Suiveurs de la tâche (onglet « Suivie par ») + membres pouvant être ajoutés.
+  const followerList = followerRows.map((f) => toAssigneeInfo(f.user)!);
+  const followerCount = followerList.length;
+  const followerIds = new Set(followerList.map((f) => f.id));
+  const followerCandidates = members.filter((m) => !followerIds.has(m.id));
 
   const breadcrumb = (
     <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500">
@@ -224,14 +247,15 @@ export default async function TaskDetailPage({
             <button
               type="submit"
               title={isFollowing ? "Ne plus suivre" : "Suivre cette tâche"}
-              className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 isFollowing
-                  ? "border-yellow-300 bg-yellow-50 text-yellow-600 dark:border-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400"
+                  ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
                   : "border-zinc-300 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
               }`}
             >
-              <span>{isFollowing ? "★" : "☆"}</span>
-              <span>{followerCount}</span>
+              <span aria-hidden>👁</span>
+              <span>{isFollowing ? "Vous suivez" : "Suivre"}</span>
+              <span className="text-xs opacity-70">{followerCount}</span>
             </button>
           </form>
           <StatusSelect taskId={task.id} status={task.status} />
@@ -279,6 +303,7 @@ export default async function TaskDetailPage({
         taskId={task.id}
         initialTab={initialTab}
         chatUnread={chatUnread}
+        followerCount={followerCount}
         description={
           <div className="space-y-6">
             <div>
@@ -338,13 +363,26 @@ export default async function TaskDetailPage({
                       <span>·</span>
                       <span>{formatDateTime(c.createdAt)}</span>
                     </div>
-                    <CommentBody body={c.body} names={nameById} />
+                    <CommentBody body={c.body} names={nameById} docs={docNameById} />
                   </li>
                 ))}
               </ul>
             )}
-            <CommentBox taskId={task.id} members={members} />
+            <CommentBox
+              taskId={task.id}
+              members={members}
+              taskDocuments={linkedDocs}
+              projectDocuments={projectDocs}
+            />
           </div>
+        }
+        followers={
+          <TaskFollowers
+            taskId={task.id}
+            followers={followerList}
+            candidates={followerCandidates}
+            currentUserId={user.id}
+          />
         }
       />
     </div>

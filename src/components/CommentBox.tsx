@@ -3,28 +3,50 @@
 import { useRef, useState, useTransition } from "react";
 import { addComment } from "@/lib/actions/discussion";
 
-type Member = { id: string; name: string };
+type Opt = { id: string; name: string };
+type TriggerType = "user" | "docTask" | "docProject";
 
 const MENTION_CLASS = "rounded px-0.5 font-semibold text-indigo-600 dark:text-indigo-400";
+const DOC_CLASS = "rounded px-0.5 font-medium text-indigo-600 underline dark:text-indigo-400";
 
-export function CommentBox({ taskId, members }: { taskId: string; members: Member[] }) {
+export function CommentBox({
+  taskId,
+  members,
+  taskDocuments,
+  projectDocuments,
+}: {
+  taskId: string;
+  members: Opt[];
+  taskDocuments: Opt[];
+  projectDocuments: Opt[];
+}) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [empty, setEmpty] = useState(true);
-  const [mention, setMention] = useState<{ query: string } | null>(null);
+  const [trigger, setTrigger] = useState<{ type: TriggerType; query: string } | null>(null);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const [active, setActive] = useState(0);
   const [pending, startTransition] = useTransition();
 
-  const matches = mention
-    ? members
-        .filter((m) =>
-          mention.query === "" ? true : m.name.toLowerCase().includes(mention.query.toLowerCase()),
+  const source =
+    trigger?.type === "docTask"
+      ? taskDocuments
+      : trigger?.type === "docProject"
+        ? projectDocuments
+        : members;
+  const matches = trigger
+    ? source
+        .filter((o) =>
+          trigger.query === "" ? true : o.name.toLowerCase().includes(trigger.query.toLowerCase()),
         )
         .slice(0, 6)
     : [];
-  const open = mention !== null && matches.length > 0;
+  const open = trigger !== null && matches.length > 0;
 
-  // Lit le contexte « @requête » juste avant le curseur dans l'éditeur.
-  function readMention(): { query: string; node: Text; atStart: number; caret: number } | null {
+  // Lit le contexte « @requête » ou « $requête » juste avant le curseur.
+  function readTrigger():
+    | { type: TriggerType; query: string; node: Text; atStart: number; caret: number }
+    | null {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return null;
     const node = sel.anchorNode;
@@ -32,20 +54,45 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
     if (!editorRef.current?.contains(node)) return null;
     const offset = sel.anchorOffset;
     const before = (node.textContent ?? "").slice(0, offset);
-    const m = before.match(/(?:^|\s)@([\p{L}\p{N}._-]*)$/u);
+    const m = before.match(/(?:^|\s)(@|\$\$?)([\p{L}\p{N}._-]*)$/u);
     if (!m) return null;
-    return { query: m[1], node: node as Text, atStart: offset - m[1].length - 1, caret: offset };
+    const type: TriggerType =
+      m[1] === "@" ? "user" : m[1] === "$$" ? "docProject" : "docTask";
+    return {
+      type,
+      query: m[2],
+      node: node as Text,
+      atStart: offset - m[2].length - m[1].length,
+      caret: offset,
+    };
   }
 
   function onInput() {
-    const ctx = readMention();
-    setMention(ctx ? { query: ctx.query } : null);
-    setActive(0);
+    const ctx = readTrigger();
+    // Ne réinitialiser la sélection que si le contexte change réellement :
+    // sinon la navigation clavier (flèches) la ramènerait en haut à chaque relâche.
+    const sameContext =
+      !!ctx && !!trigger && ctx.type === trigger.type && ctx.query === trigger.query;
+    setTrigger(ctx ? { type: ctx.type, query: ctx.query } : null);
+    if (!sameContext) setActive(0);
+
+    // Position du menu : juste sous le caractère déclencheur (@ ou $).
+    if (ctx && formRef.current) {
+      const range = document.createRange();
+      range.setStart(ctx.node, ctx.atStart);
+      range.collapse(true);
+      const caret = range.getBoundingClientRect();
+      const form = formRef.current.getBoundingClientRect();
+      setPos({ left: caret.left - form.left, top: caret.bottom - form.top + 4 });
+    } else {
+      setPos(null);
+    }
+
     setEmpty((editorRef.current?.textContent ?? "").trim() === "");
   }
 
-  function pick(member: Member) {
-    const ctx = readMention();
+  function pick(opt: Opt) {
+    const ctx = readTrigger();
     if (!ctx) return;
     const range = document.createRange();
     range.setStart(ctx.node, ctx.atStart);
@@ -53,11 +100,17 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
     range.deleteContents();
 
     const span = document.createElement("span");
-    span.dataset.mention = member.id;
     span.contentEditable = "false";
-    span.className = MENTION_CLASS;
-    span.textContent = `@${member.name}`;
-    const space = document.createTextNode(" ");
+    if (ctx.type === "user") {
+      span.dataset.mention = opt.id;
+      span.className = MENTION_CLASS;
+      span.textContent = `@${opt.name}`;
+    } else {
+      span.dataset.doc = opt.id;
+      span.className = DOC_CLASS;
+      span.textContent = `📄 ${opt.name}`;
+    }
+    const space = document.createTextNode(" ");
 
     range.insertNode(space);
     range.insertNode(span);
@@ -70,7 +123,7 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
     sel?.addRange(after);
 
     editorRef.current?.focus();
-    setMention(null);
+    setTrigger(null);
     setEmpty(false);
   }
 
@@ -86,11 +139,11 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
       e.preventDefault();
       pick(matches[active]);
     } else if (e.key === "Escape") {
-      setMention(null);
+      setTrigger(null);
     }
   }
 
-  // Sérialise le contenu : texte + jetons @[identifiant] pour les mentions.
+  // Sérialise : texte + jetons @[id] (personnes) et $[id] (documents).
   function serialize(): string {
     const root = editorRef.current;
     if (!root) return "";
@@ -99,6 +152,7 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node as HTMLElement;
         if (el.dataset.mention) return `@[${el.dataset.mention}]`;
+        if (el.dataset.doc) return `$[${el.dataset.doc}]`;
         if (el.tagName === "BR") return "\n";
         let s = el.tagName === "DIV" && el.previousSibling ? "\n" : "";
         el.childNodes.forEach((c) => (s += walk(c)));
@@ -108,7 +162,7 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
     };
     let out = "";
     root.childNodes.forEach((c) => (out += walk(c)));
-    return out.replace(/ /g, " ");
+    return out.replace(/ /g, " ");
   }
 
   function submit(e: React.FormEvent) {
@@ -122,12 +176,12 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
       await addComment(fd);
       if (editorRef.current) editorRef.current.innerHTML = "";
       setEmpty(true);
-      setMention(null);
+      setTrigger(null);
     });
   }
 
   return (
-    <form onSubmit={submit} className="relative space-y-2">
+    <form ref={formRef} onSubmit={submit} className="relative space-y-2">
       <div className="relative">
         <div
           ref={editorRef}
@@ -143,13 +197,16 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
         />
         {empty && (
           <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400">
-            Écrire un message… Tapez @ pour mentionner quelqu&apos;un.
+            Écrire un message… @ pour mentionner, $ pour un document de la tâche, $$ pour un document du projet.
           </span>
         )}
       </div>
 
       {open && (
-        <ul className="absolute z-10 left-0 right-0 max-h-56 overflow-auto rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+        <ul
+          style={pos ? { left: pos.left, top: pos.top } : undefined}
+          className="absolute z-10 max-h-56 min-w-[12rem] max-w-xs overflow-auto rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+        >
           {matches.map((m, i) => (
             <li key={m.id}>
               <button
@@ -164,7 +221,7 @@ export function CommentBox({ taskId, members }: { taskId: string; members: Membe
                     : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
-                {m.name}
+                {trigger?.type === "user" ? m.name : `📄 ${m.name}`}
               </button>
             </li>
           ))}

@@ -4,7 +4,15 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { markRead } from "@/lib/actions/discussion";
 
-type TabKey = "description" | "sous" | "docs" | "chat";
+type TabKey = "description" | "sous" | "docs" | "chat" | "followers";
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "description", label: "Description" },
+  { key: "sous", label: "Sous-tâches" },
+  { key: "docs", label: "Documents liés" },
+  { key: "chat", label: "Chat" },
+  { key: "followers", label: "Suivie par" },
+];
 
 // Mémorise l'onglet choisi (cookie) pour le conserver d'une tâche à l'autre.
 function rememberTab(tab: TabKey) {
@@ -15,31 +23,28 @@ function rememberTab(tab: TabKey) {
   }
 }
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "description", label: "Description" },
-  { key: "sous", label: "Sous-tâches" },
-  { key: "docs", label: "Documents liés" },
-  { key: "chat", label: "Chat" },
-];
-
 // Onglets de la fiche de tâche. Le compteur de non-lus du Chat persiste tant
 // que l'onglet n'est pas ouvert ; à son ouverture, la discussion est marquée lue.
 export function TaskTabs({
   taskId,
   initialTab = "description",
   chatUnread,
+  followerCount,
   description,
   subtasks,
   documents,
   chat,
+  followers,
 }: {
   taskId: string;
   initialTab?: TabKey;
   chatUnread: number;
+  followerCount: number;
   description: ReactNode;
   subtasks: ReactNode;
   documents: ReactNode;
   chat: ReactNode;
+  followers: ReactNode;
 }) {
   const [active, setActive] = useState<TabKey>(initialTab);
   const [unread, setUnread] = useState(chatUnread);
@@ -88,6 +93,11 @@ export function TaskTabs({
                 {unread}
               </span>
             )}
+            {t.key === "followers" && followerCount > 0 && (
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                {followerCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -97,6 +107,7 @@ export function TaskTabs({
         <div hidden={active !== "sous"}>{subtasks}</div>
         <div hidden={active !== "docs"}>{documents}</div>
         <div hidden={active !== "chat"}>{chat}</div>
+        <div hidden={active !== "followers"}>{followers}</div>
       </div>
     </div>
   );
