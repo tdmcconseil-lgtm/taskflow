@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { TaskForm } from "@/components/TaskForm";
+import { createTask } from "@/lib/actions/tasks";
 import { cardClass } from "@/components/ui";
 
 export default async function NewTaskPage({
@@ -44,7 +45,12 @@ export default async function NewTaskPage({
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Nouvelle tâche</h1>
       </div>
       <div className={cardClass}>
-        <TaskForm projectId={project.id} members={members} />
+        <TaskForm
+          action={createTask}
+          members={members}
+          hidden={{ projectId: project.id }}
+          submitLabel="Créer la tâche"
+        />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
 import { STATUS_LABELS, STATUS_ORDER } from "@/lib/labels";
 import { setTaskStatus } from "@/lib/actions/tasks";
@@ -23,7 +24,13 @@ const COLUMN_ACCENT: Record<TaskStatus, string> = {
   DONE: "border-t-green-400",
 };
 
-export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
+export function KanbanBoard({
+  tasks: initial,
+  projectId,
+}: {
+  tasks: BoardTask[];
+  projectId: string;
+}) {
   const [tasks, setTasks] = useState<BoardTask[]>(initial);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
@@ -102,13 +109,23 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
                     dragId === task.id ? "opacity-50" : ""
                   }`}
                 >
-                  <p
-                    className={`text-sm font-medium ${
-                      status === "DONE" ? "text-zinc-400 line-through" : ""
-                    }`}
-                  >
-                    {task.title}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p
+                      className={`text-sm font-medium ${
+                        status === "DONE" ? "text-zinc-400 line-through" : ""
+                      }`}
+                    >
+                      {task.title}
+                    </p>
+                    <Link
+                      href={`/app/projects/${projectId}/tasks/${task.id}/edit`}
+                      title="Modifier la tâche"
+                      onClick={(e) => e.stopPropagation()}
+                      className="shrink-0 rounded px-1 text-xs text-zinc-400 hover:text-indigo-600"
+                    >
+                      ✎
+                    </Link>
+                  </div>
                   {task.description && (
                     <p className="mt-1 line-clamp-2 text-xs text-zinc-500">
                       {task.description}

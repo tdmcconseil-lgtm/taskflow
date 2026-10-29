@@ -87,7 +87,7 @@ export default async function ProjectPage({
           Aucune tâche pour l&apos;instant. Créez la première.
         </p>
       ) : view === "tableau" ? (
-        <KanbanBoard tasks={boardTasks} />
+        <KanbanBoard tasks={boardTasks} projectId={project.id} />
       ) : (
         <div className="space-y-6">
           {STATUS_ORDER.map((status) => {
@@ -141,6 +141,13 @@ export default async function ProjectPage({
                         </div>
                         <div className="flex items-center gap-2">
                           <PriorityBadge priority={task.priority} />
+                          <Link
+                            href={`/app/projects/${project.id}/tasks/${task.id}/edit`}
+                            title="Modifier la tâche"
+                            className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
+                          >
+                            ✎
+                          </Link>
                           <TaskControls taskId={task.id} status={task.status} />
                         </div>
                       </li>

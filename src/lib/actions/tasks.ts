@@ -83,6 +83,61 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
   redirect(`/app/projects/${project.id}`);
 }
 
+const updateSchema = z.object({
+  taskId: z.string().min(1),
+  title: z.string().trim().min(1, "Le titre est requis."),
+  priority: z.enum(PRIORITIES),
+});
+
+export async function updateTask(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const parsed = updateSchema.safeParse({
+    taskId: formData.get("taskId"),
+    title: formData.get("title"),
+    priority: formData.get("priority") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+  }
+
+  const task = await prisma.task.findUnique({
+    where: { id: parsed.data.taskId },
+    select: { id: true, project: { select: { id: true, workspaceId: true } } },
+  });
+  if (!task) return { error: "Tâche introuvable." };
+
+  const membership = await getMembership(user.id, task.project.workspaceId);
+  if (!membership) return { error: "Accès refusé." };
+
+  // Champs facultatifs : une valeur vide efface le champ.
+  const description = String(formData.get("description") ?? "").trim() || null;
+
+  let assigneeId: string | null = null;
+  const rawAssignee = String(formData.get("assigneeId") ?? "").trim();
+  if (rawAssignee) {
+    const assigneeMembership = await getMembership(rawAssignee, task.project.workspaceId);
+    if (!assigneeMembership) {
+      return { error: "La personne assignée doit être membre de l'espace de travail." };
+    }
+    assigneeId = rawAssignee;
+  }
+
+  let dueDate: Date | null = null;
+  const rawDue = String(formData.get("dueDate") ?? "").trim();
+  if (rawDue) {
+    const d = new Date(rawDue);
+    if (!Number.isNaN(d.getTime())) dueDate = d;
+  }
+
+  await prisma.task.update({
+    where: { id: task.id },
+    data: { title: parsed.data.title, description, priority: parsed.data.priority, assigneeId, dueDate },
+  });
+
+  revalidatePath(`/app/projects/${task.project.id}`);
+  redirect(`/app/projects/${task.project.id}`);
+}
+
 const statusSchema = z.object({
   taskId: z.string().min(1),
   status: z.enum(STATUSES),
