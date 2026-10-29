@@ -51,8 +51,14 @@ async function followedTaskIds(userId: string): Promise<string[]> {
 // Un événement est visible s'il porte sur une tâche suivie (événement de tâche)
 // ou s'il m'est adressé (mention). `includeOwn` : inclure ou non mes propres
 // actions (masquées par défaut).
-function whereForUser(userId: string, followed: string[], includeOwn: boolean) {
+function whereForUser(
+  userId: string,
+  followed: string[],
+  includeOwn: boolean,
+  workspaceId?: string,
+) {
   const base = {
+    ...(workspaceId ? { task: { workspaceId } } : {}),
     OR: [
       { taskId: { in: followed }, targetUserId: null },
       { targetUserId: userId },
@@ -110,10 +116,11 @@ export async function getEventFeed(
   readAt: Date | null,
   includeOwn = false,
   limit = 100,
+  workspaceId?: string,
 ): Promise<EventGroup[]> {
   const followed = await followedTaskIds(userId);
   const rows = await prisma.taskActivity.findMany({
-    where: whereForUser(userId, followed, includeOwn),
+    where: whereForUser(userId, followed, includeOwn, workspaceId),
     orderBy: { createdAt: "desc" },
     take: limit,
     select: EVENT_SELECT,
