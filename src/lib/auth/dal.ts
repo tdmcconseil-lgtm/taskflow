@@ -20,6 +20,7 @@ export const getCurrentUser = cache(async () => {
       photoY: true,
       photoZoom: true,
       photoUpdatedAt: true,
+      eventsReadAt: true,
     },
   });
   return user;

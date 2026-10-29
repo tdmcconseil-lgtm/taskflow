@@ -47,6 +47,8 @@ enum TaskActivityType {
   DESCRIPTION_CHANGED
   SUBTASK_ADDED
   SUBTASK_REMOVED
+  COMMENT_ADDED
+  MENTIONED
 }
 
 // --- Utilisateur ---
@@ -66,6 +68,8 @@ model User {
   photoY         Int       @default(50)
   photoZoom      Int       @default(100)
   photoUpdatedAt DateTime?
+  // Date de dernière consultation de la page « Événements » (calcul des non-lus).
+  eventsReadAt   DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -77,6 +81,8 @@ model User {
   comments      Comment[]    @relation("CommentAuthor")
   follows       TaskFollow[] @relation("TaskFollower")
   activities    TaskActivity[] @relation("ActivityActor")
+  targetedActivities TaskActivity[] @relation("ActivityTarget")
+  uploadedDocuments Document[]   @relation("DocumentUploader")
 
   @@index([email])
 }
@@ -92,6 +98,7 @@ model Workspace {
   members     Membership[]
   tasks       Task[]
   invitations Invitation[]
+  documents   Document[]
 }
 
 // --- Invitation à rejoindre un workspace (par email) ---
@@ -159,10 +166,53 @@ model Task {
   comments   Comment[]
   followers  TaskFollow[]
   activities TaskActivity[]
+  // Documents liés à cette tâche (une tâche = une « action »).
+  documentLinks DocumentLink[] @relation("TaskDocuments")
+  // Documents dont cette tâche est le projet (tâche racine).
+  projectDocuments Document[]  @relation("ProjectDocuments")
 
   @@index([workspaceId])
   @@index([assigneeId])
   @@index([parentId])
+}
+
+// --- Document joint (stocké en base, servi par /api/documents/[id]) ---
+// Un document appartient à un projet (la tâche racine) et peut être lié à
+// plusieurs tâches de ce projet via DocumentLink.
+model Document {
+  id        String   @id @default(cuid())
+  name      String // nom simplifié affiché
+  fileName  String // nom de fichier d'origine
+  mime      String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  projectTaskId String
+  projectTask   Task   @relation("ProjectDocuments", fields: [projectTaskId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User   @relation("DocumentUploader", fields: [uploadedById], references: [id])
+
+  links DocumentLink[]
+
+  @@index([projectTaskId])
+  @@index([workspaceId])
+}
+
+// --- Lien entre un document et une tâche (« action ») ---
+model DocumentLink {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  taskId     String
+  task       Task     @relation("TaskDocuments", fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, taskId])
+  @@index([taskId])
 }
 
 // --- Journal d'activité d'une tâche (audit trail, en lecture seule) ---
@@ -172,14 +222,23 @@ model TaskActivity {
   fromValue  String? // ancienne valeur (statut/priorité/échéance/titre/ancien assigné)
   toValue    String? // nouvelle valeur
   targetName String? // nom d'une entité liée (assigné, sous-tâche…)
+  // Regroupe les événements écrits en une seule fois (une sauvegarde multi-champs,
+  // un commentaire et ses mentions) pour n'afficher qu'une ligne dans le flux.
+  groupId    String?
   createdAt  DateTime         @default(now())
 
   taskId  String
   task    Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   actorId String
   actor   User   @relation("ActivityActor", fields: [actorId], references: [id])
+  // Destinataire d'un événement ciblé (ex. mention). Null = événement de la
+  // tâche, visible par tous ses suiveurs.
+  targetUserId String?
+  targetUser   User?   @relation("ActivityTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
 
   @@index([taskId])
+  @@index([targetUserId])
+  @@index([groupId])
 }
 
 // --- Commentaire d'une tâche (discussion) ---

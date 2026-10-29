@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
+import { countNewEventGroups } from "@/lib/events";
 import { FramedAvatar } from "@/components/FramedAvatar";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
@@ -37,6 +38,9 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     return !!last && (!f.lastReadAt || last > f.lastReadAt);
   }).length;
 
+  // Nombre d'événements nouveaux depuis la dernière consultation.
+  const eventsCount = await countNewEventGroups(user.id, user.eventsReadAt ?? null);
+
   return (
     <div className="flex min-h-full flex-1">
       {/* Barre latérale */}
@@ -61,6 +65,17 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
               {unreadCount > 0 && (
                 <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                   {unreadCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              href="/app/evenements"
+              className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <span>🔔 Événements</span>
+              {eventsCount > 0 && (
+                <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
+                  {eventsCount > 99 ? "99+" : eventsCount}
                 </span>
               )}
             </Link>

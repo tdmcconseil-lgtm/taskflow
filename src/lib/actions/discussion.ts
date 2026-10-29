@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { ensureFollow, followMentioned } from "@/lib/follow";
+import { logActivity } from "@/lib/activity";
 
 const commentSchema = z.object({
   taskId: z.string().min(1),
@@ -28,7 +29,7 @@ export async function addComment(formData: FormData): Promise<void> {
   if (!task) return;
   if (!(await getMembership(user.id, task.workspaceId))) return;
 
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: { taskId: task.id, authorId: user.id, body: parsed.data.body },
   });
 
@@ -38,14 +39,36 @@ export async function addComment(formData: FormData): Promise<void> {
     data: { lastReadAt: new Date() },
   });
 
+  // Journal : nouveau message (événement de la tâche). Le commentaire et ses
+  // mentions partagent le même groupId → une seule ligne dans le flux.
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "COMMENT_ADDED",
+    groupId: comment.id,
+  });
+
   // Mentions sélectionnées : jetons @[identifiant] insérés par l'éditeur.
-  // La personne mentionnée se met à suivre (= tâche favorite) si elle est membre.
+  // La personne mentionnée se met à suivre (= tâche favorite) si elle est membre,
+  // et reçoit un événement ciblé « vous a mentionné ».
   const mentionIds = new Set(
     [...parsed.data.body.matchAll(/@\[([^\]]+)\]/g)].map((m) => m[1]),
   );
   for (const uid of mentionIds) {
-    if (await getMembership(uid, task.workspaceId)) {
+    if (uid !== user.id && (await getMembership(uid, task.workspaceId))) {
       await ensureFollow(uid, task.id);
+      const mentioned = await prisma.user.findUnique({
+        where: { id: uid },
+        select: { name: true },
+      });
+      await logActivity({
+        taskId: task.id,
+        actorId: user.id,
+        type: "MENTIONED",
+        targetUserId: uid,
+        targetName: mentioned?.name ?? null,
+        groupId: comment.id,
+      });
     }
   }
   // Secours : mentions tapées à la main (@prénom) non sélectionnées.
