@@ -5,18 +5,21 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
+import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
 
 const signupSchema = z.object({
-  name: z.string().trim().min(2, "Le nom doit faire au moins 2 caractères."),
+  firstName: z.string().trim().min(2, "Le prénom doit faire au moins 2 caractères."),
+  lastName: z.string().trim().optional().default(""),
   email: z.email("Adresse email invalide."),
   password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères."),
 });
 
 export async function signup(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = signupSchema.safeParse({
-    name: formData.get("name"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName") || "",
     email: String(formData.get("email") ?? "").trim().toLowerCase(),
     password: formData.get("password"),
   });
@@ -24,7 +27,8 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
     return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
   }
 
-  const { name, email, password } = parsed.data;
+  const { firstName, lastName, email, password } = parsed.data;
+  const name = composeName(firstName, lastName);
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -36,13 +40,15 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   // L'utilisateur est créé avec son propre espace de travail (dont il est OWNER).
   const user = await prisma.user.create({
     data: {
+      firstName,
+      lastName,
       name,
       email,
       passwordHash,
       memberships: {
         create: {
           role: "OWNER",
-          workspace: { create: { name: `Espace de ${name}` } },
+          workspace: { create: { name: `Espace de ${firstName}` } },
         },
       },
     },

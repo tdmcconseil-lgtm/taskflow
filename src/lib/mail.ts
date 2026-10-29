@@ -62,6 +62,33 @@ export async function sendMail(mail: Mail): Promise<void> {
   throw new Error(`Transport email non supporté : ${transport}`);
 }
 
+export function emailChangeEmail(params: {
+  name: string;
+  newEmail: string;
+  confirmUrl: string;
+  expiresAt: Date;
+}): { subject: string; body: string } {
+  const { name, newEmail, confirmUrl, expiresAt } = params;
+  return {
+    subject: "Confirmez votre nouvelle adresse email Taskflow",
+    body: [
+      `Bonjour ${name},`,
+      "",
+      `Une demande de changement d'adresse email vers « ${newEmail} » a été faite`,
+      "sur votre compte Taskflow. Pour la valider, cliquez sur le lien ci-dessous :",
+      "",
+      confirmUrl,
+      "",
+      `Ce lien expire le ${expiresAt.toLocaleString("fr-FR")}.`,
+      "",
+      "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email :",
+      "votre adresse actuelle reste inchangée.",
+      "",
+      "— L'équipe Taskflow",
+    ].join("\n"),
+  };
+}
+
 export function invitationEmail(params: {
   inviterName: string;
   workspaceName: string;

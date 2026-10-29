@@ -19,19 +19,45 @@ export function AcceptInvitationForm({
       <input type="hidden" name="token" value={token} />
 
       <div className="space-y-1">
-        <label className={labelClass}>Email</label>
+        <label htmlFor="email" className={labelClass}>
+          Email
+        </label>
+        {/* readOnly (et non disabled) + autocomplete=username : Chrome enregistre
+            le mot de passe avec l'email comme identifiant, pas avec le nom. */}
         <input
+          id="email"
+          name="email"
+          type="email"
           value={email}
-          disabled
+          readOnly
+          autoComplete="username"
           className={`${inputClass} cursor-not-allowed opacity-70`}
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="name" className={labelClass}>
-          Nom
-        </label>
-        <input id="name" name="name" autoComplete="name" className={inputClass} />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label htmlFor="firstName" className={labelClass}>
+            Prénom
+          </label>
+          <input
+            id="firstName"
+            name="firstName"
+            autoComplete="given-name"
+            className={inputClass}
+          />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="lastName" className={labelClass}>
+            Nom <span className="text-zinc-400">(facultatif)</span>
+          </label>
+          <input
+            id="lastName"
+            name="lastName"
+            autoComplete="family-name"
+            className={inputClass}
+          />
+        </div>
       </div>
 
       <div className="space-y-1">

@@ -15,11 +15,29 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   return (
     <form action={formAction} className="space-y-4">
       {mode === "signup" && (
-        <div className="space-y-1">
-          <label htmlFor="name" className="text-sm font-medium">
-            Nom
-          </label>
-          <input id="name" name="name" autoComplete="name" className={inputClass} />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label htmlFor="firstName" className="text-sm font-medium">
+              Prénom
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              autoComplete="given-name"
+              className={inputClass}
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="lastName" className="text-sm font-medium">
+              Nom <span className="text-zinc-400">(facultatif)</span>
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              autoComplete="family-name"
+              className={inputClass}
+            />
+          </div>
         </div>
       )}
 
@@ -31,7 +49,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           id="email"
           name="email"
           type="email"
-          autoComplete="email"
+          autoComplete="username"
           className={inputClass}
         />
       </div>
