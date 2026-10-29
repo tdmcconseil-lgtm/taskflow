@@ -56,10 +56,11 @@ model User {
 
 // --- Espace de travail (équipe) ---
 model Workspace {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String    @id @default(cuid())
+  name       String
+  archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   members     Membership[]
   projects    Project[]

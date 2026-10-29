@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
+import { archiveWorkspace, unarchiveWorkspace } from "@/lib/actions/workspaces";
 
 export default async function WorkspacePage({
   params,
@@ -24,6 +25,9 @@ export default async function WorkspacePage({
   });
   if (!workspace) notFound();
 
+  const isOwner = membership.role === "OWNER";
+  const isArchived = workspace.archivedAt !== null;
+
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -39,13 +43,55 @@ export default async function WorkspacePage({
             {workspace._count.members} membre{workspace._count.members > 1 ? "s" : ""} — gérer
           </Link>
         </div>
-        <Link
-          href={`/app/workspaces/${workspace.id}/projects/new`}
-          className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-        >
-          Nouveau projet
-        </Link>
+        <div className="flex items-center gap-2">
+          {!isArchived && (
+            <Link
+              href={`/app/workspaces/${workspace.id}/projects/new`}
+              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+            >
+              Nouveau projet
+            </Link>
+          )}
+          {isOwner && !isArchived && (
+            <form action={archiveWorkspace}>
+              <input type="hidden" name="workspaceId" value={workspace.id} />
+              <button
+                type="submit"
+                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              >
+                Archiver
+              </button>
+            </form>
+          )}
+        </div>
       </div>
+
+      {isArchived && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-900 dark:bg-amber-950/40">
+          <p className="text-amber-800 dark:text-amber-300">
+            Cet espace est archivé — masqué de votre liste active.
+          </p>
+          {isOwner && (
+            <div className="flex items-center gap-2">
+              <form action={unarchiveWorkspace}>
+                <input type="hidden" name="workspaceId" value={workspace.id} />
+                <button
+                  type="submit"
+                  className="rounded-md border border-amber-400 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                >
+                  Désarchiver
+                </button>
+              </form>
+              <Link
+                href={`/app/workspaces/${workspace.id}/delete`}
+                className="rounded-md border border-red-400 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
+              >
+                Supprimer définitivement
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Projets</h2>

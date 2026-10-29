@@ -3,11 +3,12 @@ import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { formatDate, isOverdue } from "@/lib/labels";
+import { unarchiveWorkspace } from "@/lib/actions/workspaces";
 
 export default async function DashboardPage() {
   const user = await requireUser();
 
-  const [myTasks, workspaces] = await Promise.all([
+  const [myTasks, workspaces, archivedWorkspaces] = await Promise.all([
     prisma.task.findMany({
       where: { assigneeId: user.id, status: { not: "DONE" } },
       orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
@@ -15,9 +16,17 @@ export default async function DashboardPage() {
       take: 50,
     }),
     prisma.workspace.findMany({
-      where: { members: { some: { userId: user.id } } },
+      where: { members: { some: { userId: user.id } }, archivedAt: null },
       orderBy: { createdAt: "asc" },
       include: { _count: { select: { projects: true, members: true } } },
+    }),
+    prisma.workspace.findMany({
+      where: { members: { some: { userId: user.id } }, archivedAt: { not: null } },
+      orderBy: { archivedAt: "desc" },
+      include: {
+        _count: { select: { projects: true, members: true } },
+        members: { where: { userId: user.id }, select: { role: true } },
+      },
     }),
   ]);
 
@@ -82,22 +91,75 @@ export default async function DashboardPage() {
             Nouvel espace
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {workspaces.map((ws) => (
-            <Link
-              key={ws.id}
-              href={`/app/workspaces/${ws.id}`}
-              className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
-            >
-              <p className="font-medium">{ws.name}</p>
-              <p className="mt-2 text-sm text-zinc-500">
-                {ws._count.projects} projet{ws._count.projects > 1 ? "s" : ""} ·{" "}
-                {ws._count.members} membre{ws._count.members > 1 ? "s" : ""}
-              </p>
-            </Link>
-          ))}
-        </div>
+        {workspaces.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
+            Aucun espace actif. Créez-en un pour commencer.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {workspaces.map((ws) => (
+              <Link
+                key={ws.id}
+                href={`/app/workspaces/${ws.id}`}
+                className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
+              >
+                <p className="font-medium">{ws.name}</p>
+                <p className="mt-2 text-sm text-zinc-500">
+                  {ws._count.projects} projet{ws._count.projects > 1 ? "s" : ""} ·{" "}
+                  {ws._count.members} membre{ws._count.members > 1 ? "s" : ""}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
+
+      {/* Espaces archivés */}
+      {archivedWorkspaces.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-500">Espaces archivés</h2>
+          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
+            {archivedWorkspaces.map((ws) => {
+              const isOwner = ws.members[0]?.role === "OWNER";
+              return (
+                <li
+                  key={ws.id}
+                  className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-zinc-600 dark:text-zinc-400">
+                      {ws.name}
+                    </p>
+                    <p className="text-xs text-zinc-400">
+                      Archivé le {formatDate(ws.archivedAt)} · {ws._count.projects} projet
+                      {ws._count.projects > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  {isOwner && (
+                    <div className="flex items-center gap-2">
+                      <form action={unarchiveWorkspace}>
+                        <input type="hidden" name="workspaceId" value={ws.id} />
+                        <button
+                          type="submit"
+                          className="rounded-md border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                        >
+                          Désarchiver
+                        </button>
+                      </form>
+                      <Link
+                        href={`/app/workspaces/${ws.id}/delete`}
+                        className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950/50"
+                      >
+                        Supprimer
+                      </Link>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
 
   const workspaces = await prisma.workspace.findMany({
-    where: { members: { some: { userId: user.id } } },
+    where: { members: { some: { userId: user.id } }, archivedAt: null },
     orderBy: { createdAt: "asc" },
     include: {
       projects: { orderBy: { createdAt: "asc" }, select: { id: true, name: true } },

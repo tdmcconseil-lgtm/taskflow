@@ -34,6 +34,84 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
   redirect("/app");
 }
 
+// Seul le propriétaire peut archiver/supprimer un espace. Renvoie l'erreur
+// éventuelle, ou null si l'utilisateur est bien OWNER.
+async function ensureOwner(userId: string, workspaceId: string): Promise<string | null> {
+  const membership = await getMembership(userId, workspaceId);
+  if (!membership) return "Vous n'avez pas accès à cet espace de travail.";
+  if (membership.role !== "OWNER") {
+    return "Seul le propriétaire peut effectuer cette action.";
+  }
+  return null;
+}
+
+export async function archiveWorkspace(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const workspaceId = String(formData.get("workspaceId") ?? "");
+  if (!workspaceId) return;
+  if (await ensureOwner(user.id, workspaceId)) return;
+
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { archivedAt: new Date() },
+  });
+  revalidatePath("/app");
+  redirect(`/app/workspaces/${workspaceId}`);
+}
+
+export async function unarchiveWorkspace(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const workspaceId = String(formData.get("workspaceId") ?? "");
+  if (!workspaceId) return;
+  if (await ensureOwner(user.id, workspaceId)) return;
+
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { archivedAt: null },
+  });
+  revalidatePath("/app");
+  redirect(`/app/workspaces/${workspaceId}`);
+}
+
+const deleteSchema = z.object({
+  workspaceId: z.string().min(1),
+  confirmName: z.string(),
+});
+
+export async function deleteWorkspace(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const parsed = deleteSchema.safeParse({
+    workspaceId: formData.get("workspaceId"),
+    confirmName: formData.get("confirmName"),
+  });
+  if (!parsed.success) return { error: "Données invalides." };
+
+  const ownerError = await ensureOwner(user.id, parsed.data.workspaceId);
+  if (ownerError) return { error: ownerError };
+
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: parsed.data.workspaceId },
+    select: { name: true, archivedAt: true },
+  });
+  if (!workspace) return { error: "Espace de travail introuvable." };
+
+  // Garde-fou : la suppression n'est possible que sur un espace archivé.
+  if (!workspace.archivedAt) {
+    return { error: "Archivez d'abord l'espace avant de le supprimer." };
+  }
+
+  // Confirmation forte : le nom saisi doit correspondre exactement.
+  if (parsed.data.confirmName.trim() !== workspace.name) {
+    return { error: "Le nom saisi ne correspond pas. Suppression annulée." };
+  }
+
+  // La suppression en cascade retire projets, tâches, membres et invitations.
+  await prisma.workspace.delete({ where: { id: parsed.data.workspaceId } });
+
+  revalidatePath("/app");
+  redirect("/app");
+}
+
 const inviteSchema = z.object({
   workspaceId: z.string().min(1),
   email: z.email("Adresse email invalide."),
