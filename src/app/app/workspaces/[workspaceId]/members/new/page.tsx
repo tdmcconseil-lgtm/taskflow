@@ -29,7 +29,7 @@ export default async function NewMemberPage({
         >
           ← Membres
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Ajouter un membre</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Inviter un membre</h1>
       </div>
       <div className={cardClass}>
         <AddMemberForm workspaceId={workspace.id} />

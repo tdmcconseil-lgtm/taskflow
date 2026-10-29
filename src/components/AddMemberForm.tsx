@@ -3,10 +3,10 @@
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
-import { addMember, type FormState } from "@/lib/actions/workspaces";
+import { inviteMember, type FormState } from "@/lib/actions/workspaces";
 
 export function AddMemberForm({ workspaceId }: { workspaceId: string }) {
-  const [state, formAction] = useActionState<FormState, FormData>(addMember, undefined);
+  const [state, formAction] = useActionState<FormState, FormData>(inviteMember, undefined);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -24,13 +24,14 @@ export function AddMemberForm({ workspaceId }: { workspaceId: string }) {
           placeholder="personne@exemple.fr"
         />
         <p className="text-xs text-zinc-500">
-          La personne doit déjà avoir un compte Taskflow.
+          Si elle a déjà un compte, elle est ajoutée immédiatement. Sinon, elle
+          reçoit un email l&apos;invitant à créer son compte.
         </p>
       </div>
 
       {state?.error && <p className={errorClass}>{state.error}</p>}
 
-      <SubmitButton>Ajouter au workspace</SubmitButton>
+      <SubmitButton>Envoyer l&apos;invitation</SubmitButton>
     </form>
   );
 }

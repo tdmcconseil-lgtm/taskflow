@@ -5,6 +5,10 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { hashPassword } from "@/lib/auth/password";
+import { createSession } from "@/lib/auth/session";
+import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
+import { sendMail, invitationEmail } from "@/lib/mail";
 
 export type FormState = { error?: string } | undefined;
 
@@ -30,14 +34,14 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
   redirect("/app");
 }
 
-const addMemberSchema = z.object({
+const inviteSchema = z.object({
   workspaceId: z.string().min(1),
   email: z.email("Adresse email invalide."),
 });
 
-export async function addMember(_prev: FormState, formData: FormData): Promise<FormState> {
+export async function inviteMember(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
-  const parsed = addMemberSchema.safeParse({
+  const parsed = inviteSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     email: String(formData.get("email") ?? "").trim().toLowerCase(),
   });
@@ -45,28 +49,154 @@ export async function addMember(_prev: FormState, formData: FormData): Promise<F
     return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
   }
 
-  // L'utilisateur courant doit être membre du workspace pour y inviter quelqu'un.
-  const membership = await getMembership(user.id, parsed.data.workspaceId);
+  const { workspaceId, email } = parsed.data;
+
+  // L'utilisateur courant doit être membre du workspace pour y inviter.
+  const membership = await getMembership(user.id, workspaceId);
   if (!membership) {
     return { error: "Vous n'avez pas accès à cet espace de travail." };
   }
 
-  const invitee = await prisma.user.findUnique({ where: { email: parsed.data.email } });
-  if (!invitee) {
-    return {
-      error: "Aucun utilisateur avec cet email. La personne doit d'abord créer un compte.",
-    };
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    select: { name: true },
+  });
+  if (!workspace) return { error: "Espace de travail introuvable." };
+
+  // Si la personne a déjà un compte, on l'ajoute directement.
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (existingUser) {
+    const already = await getMembership(existingUser.id, workspaceId);
+    if (already) return { error: "Cette personne est déjà membre de l'espace." };
+
+    await prisma.membership.create({
+      data: { userId: existingUser.id, workspaceId, role: "MEMBER" },
+    });
+    revalidatePath(`/app/workspaces/${workspaceId}/members`);
+    redirect(`/app/workspaces/${workspaceId}/members`);
   }
 
-  const already = await getMembership(invitee.id, parsed.data.workspaceId);
-  if (already) {
-    return { error: "Cette personne est déjà membre de l'espace." };
-  }
+  // Sinon, on crée (ou on renouvelle) une invitation et on envoie l'email.
+  const token = generateInvitationToken();
+  const tokenHash = hashToken(token);
+  const ttlDays = Number.parseInt(process.env.INVITATION_TTL_DAYS ?? "7", 10);
+  const expiresAt = new Date(Date.now() + ttlDays * 24 * 60 * 60 * 1000);
 
-  await prisma.membership.create({
-    data: { userId: invitee.id, workspaceId: parsed.data.workspaceId, role: "MEMBER" },
+  await prisma.$transaction([
+    // Supprime une éventuelle invitation en attente pour le même email/workspace.
+    prisma.invitation.deleteMany({
+      where: { email, workspaceId, acceptedAt: null },
+    }),
+    prisma.invitation.create({
+      data: { email, tokenHash, workspaceId, invitedById: user.id, expiresAt },
+    }),
+  ]);
+
+  const appUrl = process.env.APP_URL ?? "http://localhost:3001";
+  const mail = invitationEmail({
+    inviterName: user.name,
+    workspaceName: workspace.name,
+    acceptUrl: `${appUrl}/invitations/${token}`,
+    expiresAt,
+  });
+  await sendMail({ to: email, subject: mail.subject, body: mail.body });
+
+  revalidatePath(`/app/workspaces/${workspaceId}/members`);
+  redirect(`/app/workspaces/${workspaceId}/members`);
+}
+
+export async function cancelInvitation(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const invitationId = String(formData.get("invitationId") ?? "");
+  if (!invitationId) return;
+
+  const invitation = await prisma.invitation.findUnique({
+    where: { id: invitationId },
+    select: { id: true, workspaceId: true, acceptedAt: true },
+  });
+  if (!invitation || invitation.acceptedAt) return;
+
+  const membership = await getMembership(user.id, invitation.workspaceId);
+  if (!membership) return;
+
+  await prisma.invitation.delete({ where: { id: invitation.id } });
+  revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);
+}
+
+const acceptSchema = z
+  .object({
+    token: z.string().min(1),
+    name: z.string().trim().min(2, "Le nom doit faire au moins 2 caractères."),
+    password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères."),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, {
+    message: "Les deux mots de passe ne correspondent pas.",
+    path: ["confirm"],
   });
 
-  revalidatePath(`/app/workspaces/${parsed.data.workspaceId}/members`);
-  redirect(`/app/workspaces/${parsed.data.workspaceId}/members`);
+export async function acceptInvitation(_prev: FormState, formData: FormData): Promise<FormState> {
+  const parsed = acceptSchema.safeParse({
+    token: formData.get("token"),
+    name: formData.get("name"),
+    password: formData.get("password"),
+    confirm: formData.get("confirm"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+  }
+
+  const tokenHash = hashToken(parsed.data.token);
+  const invitation = await prisma.invitation.findUnique({ where: { tokenHash } });
+
+  if (!invitation || invitation.acceptedAt) {
+    return { error: "Invitation invalide ou déjà utilisée." };
+  }
+  if (invitation.expiresAt.getTime() < Date.now()) {
+    return { error: "Cette invitation a expiré." };
+  }
+
+  // Cas limite : un compte avec cet email a été créé entre-temps.
+  const existingUser = await prisma.user.findUnique({ where: { email: invitation.email } });
+  if (existingUser) {
+    const already = await getMembership(existingUser.id, invitation.workspaceId);
+    await prisma.$transaction([
+      ...(already
+        ? []
+        : [
+            prisma.membership.create({
+              data: {
+                userId: existingUser.id,
+                workspaceId: invitation.workspaceId,
+                role: invitation.role,
+              },
+            }),
+          ]),
+      prisma.invitation.update({
+        where: { id: invitation.id },
+        data: { acceptedAt: new Date() },
+      }),
+    ]);
+    redirect("/login");
+  }
+
+  const passwordHash = await hashPassword(parsed.data.password);
+  const newUser = await prisma.user.create({
+    data: {
+      name: parsed.data.name,
+      email: invitation.email,
+      passwordHash,
+      memberships: {
+        create: { workspaceId: invitation.workspaceId, role: invitation.role },
+      },
+    },
+  });
+
+  await prisma.invitation.update({
+    where: { id: invitation.id },
+    data: { acceptedAt: new Date() },
+  });
+
+  await createSession({ userId: newUser.id });
+  redirect("/app");
 }

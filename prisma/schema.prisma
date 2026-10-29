@@ -49,6 +49,7 @@ model User {
   createdProjects Project[]  @relation("ProjectCreatedBy")
   createdTasks  Task[]       @relation("TaskCreatedBy")
   assignedTasks Task[]       @relation("TaskAssignee")
+  sentInvitations Invitation[] @relation("InvitationInvitedBy")
 
   @@index([email])
 }
@@ -60,8 +61,29 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members  Membership[]
-  projects Project[]
+  members     Membership[]
+  projects    Project[]
+  invitations Invitation[]
+}
+
+// --- Invitation à rejoindre un workspace (par email) ---
+// Un jeton aléatoire est envoyé dans le lien email ; seul son hash est stocké.
+model Invitation {
+  id          String        @id @default(cuid())
+  email       String // destinataire (peut ne pas encore avoir de compte)
+  tokenHash   String        @unique
+  role        WorkspaceRole @default(MEMBER)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime      @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedById String
+  invitedBy   User      @relation("InvitationInvitedBy", fields: [invitedById], references: [id])
+
+  @@index([workspaceId])
+  @@index([email])
 }
 
 // --- Appartenance d'un utilisateur à un workspace ---

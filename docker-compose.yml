@@ -18,5 +18,18 @@ services:
       timeout: 5s
       retries: 10
 
+  # Attrape-mails de développement : capture tous les emails sortants (aucun
+  # envoi réel) et les affiche dans une boîte de réception web.
+  #   - SMTP   : localhost:1026 (utilisé par l'app)
+  #   - Web UI : http://localhost:8026 (consultation des emails de test)
+  # Ports décalés (1026/8026) pour cohabiter avec d'autres Mailpit locaux.
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: taskflow-mailpit
+    restart: unless-stopped
+    ports:
+      - "1026:1025"
+      - "8026:8025"
+
 volumes:
   taskflow_pgdata:

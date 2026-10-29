@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
+import { cancelInvitation } from "@/lib/actions/workspaces";
+import { formatDate } from "@/lib/labels";
 
 export default async function MembersPage({
   params,
@@ -19,12 +21,16 @@ export default async function MembersPage({
         orderBy: { createdAt: "asc" },
         include: { user: { select: { id: true, name: true, email: true } } },
       },
+      invitations: {
+        where: { acceptedAt: null },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
   if (!workspace) notFound();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
@@ -39,7 +45,7 @@ export default async function MembersPage({
           href={`/app/workspaces/${workspace.id}/members/new`}
           className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
         >
-          Ajouter un membre
+          Inviter un membre
         </Link>
       </div>
 
@@ -64,6 +70,45 @@ export default async function MembersPage({
           </li>
         ))}
       </ul>
+
+      {workspace.invitations.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            Invitations en attente
+          </h2>
+          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
+            {workspace.invitations.map((inv) => {
+              const expired = inv.expiresAt.getTime() < Date.now();
+              return (
+                <li
+                  key={inv.id}
+                  className="flex items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{inv.email}</p>
+                    <p className="text-xs text-zinc-500">
+                      {expired ? (
+                        <span className="text-red-600 dark:text-red-400">Expirée</span>
+                      ) : (
+                        <>En attente · expire le {formatDate(inv.expiresAt)}</>
+                      )}
+                    </p>
+                  </div>
+                  <form action={cancelInvitation}>
+                    <input type="hidden" name="invitationId" value={inv.id} />
+                    <button
+                      type="submit"
+                      className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
+                    >
+                      Annuler
+                    </button>
+                  </form>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
