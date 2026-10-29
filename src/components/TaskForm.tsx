@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
@@ -21,12 +22,14 @@ export function TaskForm({
   hidden = {},
   defaults = {},
   submitLabel,
+  cancelHref,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   members: Member[];
   hidden?: Record<string, string>;
   defaults?: TaskDefaults;
   submitLabel: string;
+  cancelHref?: string;
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
 
@@ -114,7 +117,17 @@ export function TaskForm({
 
       {state?.error && <p className={errorClass}>{state.error}</p>}
 
-      <SubmitButton>{submitLabel}</SubmitButton>
+      <div className="flex items-center gap-2">
+        <SubmitButton>{submitLabel}</SubmitButton>
+        {cancelHref && (
+          <Link
+            href={cancelHref}
+            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >
+            Annuler
+          </Link>
+        )}
+      </div>
     </form>
   );
 }

@@ -15,8 +15,9 @@ export default async function NewTaskPage({
   const workspaceParam = typeof sp.workspace === "string" ? sp.workspace : undefined;
 
   let workspaceId: string;
-  let parentTitle: string | null = null;
   let backHref: string;
+  // Chemin (fil d'Ariane) des tâches parentes, de la racine jusqu'au parent.
+  const ancestors: { id: string; title: string }[] = [];
 
   if (parentId) {
     const parent = await prisma.task.findUnique({
@@ -26,8 +27,20 @@ export default async function NewTaskPage({
     if (!parent) notFound();
     if (!(await getMembership(user.id, parent.workspaceId))) notFound();
     workspaceId = parent.workspaceId;
-    parentTitle = parent.title;
     backHref = `/app/tasks/${parent.id}`;
+
+    // Remonte la chaîne des parents pour afficher le chemin complet.
+    let cursor: string | null = parent.id;
+    for (let i = 0; cursor && i < 50; i++) {
+      const t: { id: string; title: string; parentId: string | null } | null =
+        await prisma.task.findUnique({
+          where: { id: cursor },
+          select: { id: true, title: true, parentId: true },
+        });
+      if (!t) break;
+      ancestors.unshift({ id: t.id, title: t.title });
+      cursor = t.parentId;
+    }
   } else if (workspaceParam) {
     if (!(await getMembership(user.id, workspaceParam))) notFound();
     workspaceId = workspaceParam;
@@ -39,6 +52,7 @@ export default async function NewTaskPage({
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     select: {
+      name: true,
       members: {
         orderBy: { createdAt: "asc" },
         select: { user: { select: { id: true, name: true } } },
@@ -53,20 +67,27 @@ export default async function NewTaskPage({
     ? { parentId: parentId! }
     : { workspaceId };
 
+  const currentLabel = isSubtask ? "Nouvelle sous-tâche" : "Nouveau projet";
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <Link href={backHref} className="text-sm text-zinc-500 hover:underline">
-          ← Retour
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
-          {isSubtask ? "Nouvelle sous-tâche" : "Nouveau projet"}
-        </h1>
-        {parentTitle && (
-          <p className="mt-1 text-sm text-zinc-500">
-            Sous-tâche de <span className="font-medium">{parentTitle}</span>
-          </p>
-        )}
+        <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500">
+          <Link href={`/app/workspaces/${workspaceId}`} className="hover:underline">
+            {workspace.name}
+          </Link>
+          {ancestors.map((a) => (
+            <span key={a.id} className="flex items-center gap-1">
+              <span className="text-zinc-300 dark:text-zinc-600">›</span>
+              <Link href={`/app/tasks/${a.id}`} className="hover:underline">
+                {a.title}
+              </Link>
+            </span>
+          ))}
+          <span className="text-zinc-300 dark:text-zinc-600">›</span>
+          <span className="text-zinc-700 dark:text-zinc-300">{currentLabel}</span>
+        </nav>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{currentLabel}</h1>
       </div>
       <div className={cardClass}>
         <TaskForm
@@ -74,6 +95,7 @@ export default async function NewTaskPage({
           members={members}
           hidden={hidden}
           submitLabel={isSubtask ? "Créer la sous-tâche" : "Créer le projet"}
+          cancelHref={backHref}
         />
       </div>
     </div>
