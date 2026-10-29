@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { KanbanBoard, type BoardTask } from "@/components/KanbanBoard";
 import { TaskRow } from "@/components/TaskRow";
+import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_LABELS, STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
 
@@ -44,14 +45,18 @@ export function TaskCollection({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
-          <Link href={`${toggleBase}?vue=tableau`} className={tabClass(view === "tableau")}>
+        <form
+          action={setTaskView}
+          className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
+        >
+          <input type="hidden" name="back" value={toggleBase} />
+          <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
             Tableau
-          </Link>
-          <Link href={`${toggleBase}?vue=liste`} className={tabClass(view === "liste")}>
+          </button>
+          <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
             Liste
-          </Link>
-        </div>
+          </button>
+        </form>
         {newTaskHref && (
           <Link
             href={newTaskHref}

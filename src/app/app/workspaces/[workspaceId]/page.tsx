@@ -5,15 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { archiveWorkspace, unarchiveWorkspace } from "@/lib/actions/workspaces";
 import { TaskCollection } from "@/components/TaskCollection";
 import { buildTaskIndex, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { getTaskView } from "@/lib/view";
 
 export default async function WorkspacePage({
   params,
-  searchParams,
 }: PageProps<"/app/workspaces/[workspaceId]">) {
   const user = await requireUser();
   const { workspaceId } = await params;
-  const sp = await searchParams;
-  const view = sp.vue === "liste" ? "liste" : "tableau";
+  const view = await getTaskView();
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();

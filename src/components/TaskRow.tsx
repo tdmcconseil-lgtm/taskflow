@@ -5,16 +5,15 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { formatDate, isOverdue } from "@/lib/labels";
 import type { TaskNode } from "@/lib/task-tree";
 
-export function TaskRow({ node, depth = 0 }: { node: TaskNode; depth?: number }) {
+// Une ligne de tâche. On n'affiche que les tâches de même niveau : les
+// sous-tâches ne sont pas dépliées ici (on indique seulement leur nombre),
+// elles s'affichent sur la page de détail de la tâche.
+export function TaskRow({ node }: { node: TaskNode }) {
   return (
     <li className="bg-white dark:bg-zinc-900">
-      <div
-        className="flex flex-wrap items-center justify-between gap-3 p-4"
-        style={depth > 0 ? { paddingLeft: `${1 + depth * 1.5}rem` } : undefined}
-      >
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0 flex-1">
           <p className="font-medium">
-            {depth > 0 && <span className="mr-1 text-zinc-300 dark:text-zinc-600">↳</span>}
             <Link
               href={`/app/tasks/${node.id}`}
               className={`hover:underline ${
@@ -66,14 +65,6 @@ export function TaskRow({ node, depth = 0 }: { node: TaskNode; depth?: number })
           <TaskControls taskId={node.id} status={node.status} />
         </div>
       </div>
-
-      {node.children.length > 0 && (
-        <ul className="divide-y divide-zinc-100 border-t border-zinc-100 dark:divide-zinc-800/60 dark:border-zinc-800/60">
-          {node.children.map((child) => (
-            <TaskRow key={child.id} node={child} depth={depth + 1} />
-          ))}
-        </ul>
-      )}
     </li>
   );
 }
