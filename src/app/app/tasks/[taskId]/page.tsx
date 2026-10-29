@@ -251,7 +251,7 @@ export default async function TaskDetailPage({
             <input type="hidden" name="taskId" value={task.id} />
             <button
               type="submit"
-              title={isFollowing ? "Ne plus suivre" : "Suivre cette tâche"}
+              title={isFollowing ? "Se désabonner" : "S'abonner à cette tâche"}
               className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 isFollowing
                   ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
@@ -259,8 +259,7 @@ export default async function TaskDetailPage({
               }`}
             >
               <span aria-hidden>👁</span>
-              <span>{isFollowing ? "Vous suivez" : "Suivre"}</span>
-              <span className="text-xs opacity-70">{followerCount}</span>
+              <span>{isFollowing ? "Abonné" : "S'abonner"}</span>
             </button>
           </form>
           <StatusSelect taskId={task.id} status={task.status} />
@@ -324,6 +323,7 @@ export default async function TaskDetailPage({
         taskId={task.id}
         initialTab={initialTab}
         chatUnread={chatUnread}
+        followerCount={followerCount}
         activity={<ActivityFeed activities={activities} />}
         subtasks={
           <TaskCollection

@@ -10,7 +10,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "sous", label: "Sous-tâches" },
   { key: "docs", label: "Documents" },
   { key: "chat", label: "Conversation" },
-  { key: "followers", label: "Suivi" },
+  { key: "followers", label: "Abonnés" },
   { key: "activite", label: "Activité" },
 ];
 
@@ -29,6 +29,7 @@ export function TaskTabs({
   taskId,
   initialTab = "sous",
   chatUnread,
+  followerCount,
   subtasks,
   documents,
   chat,
@@ -38,6 +39,7 @@ export function TaskTabs({
   taskId: string;
   initialTab?: TabKey;
   chatUnread: number;
+  followerCount: number;
   subtasks: ReactNode;
   documents: ReactNode;
   chat: ReactNode;
@@ -86,7 +88,7 @@ export function TaskTabs({
             }`}
           >
             {t.key === "followers" && <span aria-hidden>👁</span>}
-            {t.label}
+            {t.key === "followers" ? `${t.label} (${followerCount})` : t.label}
             {t.key === "chat" && unread > 0 && (
               <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                 {unread}
