@@ -1,0 +1,103 @@
+import Link from "next/link";
+import { requireUser } from "@/lib/auth/dal";
+import { prisma } from "@/lib/prisma";
+import { StatusBadge, PriorityBadge } from "@/components/badges";
+import { formatDate, isOverdue } from "@/lib/labels";
+
+export default async function DashboardPage() {
+  const user = await requireUser();
+
+  const [myTasks, workspaces] = await Promise.all([
+    prisma.task.findMany({
+      where: { assigneeId: user.id, status: { not: "DONE" } },
+      orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+      include: { project: { select: { id: true, name: true } } },
+      take: 50,
+    }),
+    prisma.workspace.findMany({
+      where: { members: { some: { userId: user.id } } },
+      orderBy: { createdAt: "asc" },
+      include: { _count: { select: { projects: true, members: true } } },
+    }),
+  ]);
+
+  return (
+    <div className="mx-auto max-w-5xl space-y-10">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Bonjour {user.name} 👋</h1>
+        <p className="mt-1 text-sm text-zinc-500">Voici un aperçu de votre travail.</p>
+      </div>
+
+      {/* Mes tâches */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Mes tâches à faire</h2>
+        {myTasks.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
+            Aucune tâche ne vous est assignée pour le moment.
+          </p>
+        ) : (
+          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+            {myTasks.map((task) => (
+              <li key={task.id} className="bg-white p-4 dark:bg-zinc-900">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{task.title}</p>
+                    <Link
+                      href={`/app/projects/${task.project.id}`}
+                      className="text-xs text-zinc-500 hover:underline"
+                    >
+                      {task.project.name}
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {task.dueDate && (
+                      <span
+                        className={`text-xs ${
+                          isOverdue(task.dueDate)
+                            ? "font-medium text-red-600 dark:text-red-400"
+                            : "text-zinc-500"
+                        }`}
+                      >
+                        {formatDate(task.dueDate)}
+                      </span>
+                    )}
+                    <PriorityBadge priority={task.priority} />
+                    <StatusBadge status={task.status} />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Mes espaces */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Mes espaces de travail</h2>
+          <Link
+            href="/app/workspaces/new"
+            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+          >
+            Nouvel espace
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {workspaces.map((ws) => (
+            <Link
+              key={ws.id}
+              href={`/app/workspaces/${ws.id}`}
+              className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
+            >
+              <p className="font-medium">{ws.name}</p>
+              <p className="mt-2 text-sm text-zinc-500">
+                {ws._count.projects} projet{ws._count.projects > 1 ? "s" : ""} ·{" "}
+                {ws._count.members} membre{ws._count.members > 1 ? "s" : ""}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
