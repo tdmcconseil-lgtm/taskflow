@@ -5,16 +5,18 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
 import { DeleteTaskButton } from "@/components/DeleteTaskButton";
-import { MarkDiscussionRead } from "@/components/MarkDiscussionRead";
+import { TaskTabs } from "@/components/TaskTabs";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskCollection } from "@/components/TaskCollection";
 import { UserAvatar } from "@/components/UserAvatar";
 import { CommentBox } from "@/components/CommentBox";
 import { CommentBody } from "@/components/CommentBody";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { TaskDocuments } from "@/components/TaskDocuments";
 import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { getTaskView, getTaskTab } from "@/lib/view";
 import { formatDate, formatDateTime, isOverdue, PRIORITY_LABELS } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
@@ -26,7 +28,8 @@ export default async function TaskDetailPage({
   const { taskId } = await params;
   const sp = await searchParams;
   const editing = sp.edit === "1";
-  const view = sp.vue === "liste" ? "liste" : "tableau";
+  const view = await getTaskView();
+  const initialTab = await getTaskTab();
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
@@ -50,15 +53,21 @@ export default async function TaskDetailPage({
           author: { select: { name: true } },
         },
       },
-      followers: { where: { userId: user.id }, select: { following: true } },
+      followers: { where: { userId: user.id }, select: { following: true, lastReadAt: true } },
     },
   });
   if (!task) notFound();
   if (!(await getMembership(user.id, task.workspaceId))) notFound();
 
   const isFollowing = task.followers[0]?.following === true;
+  // Messages non lus du chat (seulement si l'on suit la tâche) — affichés sur
+  // l'onglet tant qu'il n'est pas ouvert.
+  const lastReadAt = task.followers[0]?.lastReadAt ?? null;
+  const chatUnread = isFollowing
+    ? task.comments.filter((c) => !lastReadAt || c.createdAt > lastReadAt).length
+    : 0;
 
-  const [workspace, allTasks, followerCount, activities] = await Promise.all([
+  const [workspace, allTasks, followerCount, activities, docLinks, poolDocs] = await Promise.all([
     prisma.workspace.findUnique({
       where: { id: task.workspaceId },
       select: {
@@ -98,8 +107,22 @@ export default async function TaskDetailPage({
         actor: { select: ASSIGNEE_SELECT },
       },
     }),
+    prisma.documentLink.findMany({
+      where: { taskId: task.id },
+      orderBy: { createdAt: "desc" },
+      select: { document: { select: { id: true, name: true, fileName: true } } },
+    }),
+    task.parentId === null
+      ? prisma.document.findMany({
+          where: { projectTaskId: task.id },
+          orderBy: { createdAt: "desc" },
+          select: { id: true, name: true, fileName: true },
+        })
+      : Promise.resolve([] as { id: string; name: string; fileName: string }[]),
   ]);
   if (!workspace) notFound();
+
+  const linkedDocs = docLinks.map((l) => l.document);
 
   const { byId } = buildTaskIndex(allTasks as RawTask[]);
   const children = byId.get(task.id)?.children ?? [];
@@ -163,6 +186,11 @@ export default async function TaskDetailPage({
             submitLabel="Enregistrer"
           />
         </div>
+
+        <div className="flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <span className="text-sm text-zinc-500">Supprimer définitivement cette tâche.</span>
+          <DeleteTaskButton taskId={task.id} />
+        </div>
       </div>
     );
   }
@@ -173,10 +201,9 @@ export default async function TaskDetailPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <MarkDiscussionRead taskId={task.id} />
       {breadcrumb}
 
-      {/* Partie 1 : en-tête + bandeau de données + description */}
+      {/* En-tête permanent : titre, badges, actions, bandeau de données */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1
@@ -214,7 +241,6 @@ export default async function TaskDetailPage({
           >
             Modifier
           </Link>
-          <DeleteTaskButton taskId={task.id} />
         </div>
       </div>
 
@@ -248,72 +274,79 @@ export default async function TaskDetailPage({
         </div>
       </dl>
 
-      <div>
-        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Description
-        </h2>
-        {task.description ? (
-          <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
-            {task.description}
-          </p>
-        ) : (
-          <p className="text-sm italic text-zinc-400">Aucune description.</p>
-        )}
-      </div>
-
-      {/* Partie 2 : sous-tâches présentées comme la liste des tâches d'un projet */}
-      <section className="space-y-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold">Sous-tâches</h2>
-        <TaskCollection
-          roots={children}
-          view={view}
-          toggleBase={detailHref}
-          newTaskHref={`/app/tasks/new?parent=${task.id}`}
-          newTaskLabel="Nouvelle sous-tâche"
-          emptyLabel={
-            isTopLevel
-              ? "Aucune tâche dans ce projet. Créez la première."
-              : "Aucune sous-tâche."
-          }
-        />
-      </section>
-
-      {/* Discussion */}
-      <section className="space-y-4 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold">Discussion</h2>
-
-        {task.comments.length === 0 ? (
-          <p className="text-sm italic text-zinc-400">
-            Aucun message. Lancez la discussion.
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {task.comments.map((c) => (
-              <li
-                key={c.id}
-                className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <div className="mb-1 flex items-center gap-2 text-xs text-zinc-500">
-                  <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                    {c.author.name}
-                  </span>
-                  <span>·</span>
-                  <span>{formatDateTime(c.createdAt)}</span>
-                </div>
-                <CommentBody body={c.body} names={nameById} />
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <CommentBox taskId={task.id} members={members} />
-      </section>
-
-      {/* Activité (journal d'audit, en lecture seule) */}
-      <section className="space-y-4 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold">Activité</h2>
-        <ActivityFeed activities={activities} />
-      </section>
+      {/* Onglets : Description (+ activité), Sous-tâches, Documents, Chat */}
+      <TaskTabs
+        taskId={task.id}
+        initialTab={initialTab}
+        chatUnread={chatUnread}
+        description={
+          <div className="space-y-6">
+            <div>
+              {task.description ? (
+                <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
+                  {task.description}
+                </p>
+              ) : (
+                <p className="text-sm italic text-zinc-400">Aucune description.</p>
+              )}
+            </div>
+            <div className="space-y-4 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+              <h2 className="text-lg font-semibold">Activité</h2>
+              <ActivityFeed activities={activities} />
+            </div>
+          </div>
+        }
+        subtasks={
+          <TaskCollection
+            roots={children}
+            view={view}
+            toggleBase={detailHref}
+            newTaskHref={`/app/tasks/new?parent=${task.id}`}
+            newTaskLabel="Nouvelle sous-tâche"
+            emptyLabel={
+              isTopLevel
+                ? "Aucune tâche dans ce projet. Créez la première."
+                : "Aucune sous-tâche."
+            }
+          />
+        }
+        documents={
+          <TaskDocuments
+            taskId={task.id}
+            isTopLevel={isTopLevel}
+            linked={linkedDocs}
+            pool={poolDocs}
+          />
+        }
+        chat={
+          <div className="space-y-4">
+            {task.comments.length === 0 ? (
+              <p className="text-sm italic text-zinc-400">
+                Aucun message. Lancez la discussion.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {task.comments.map((c) => (
+                  <li
+                    key={c.id}
+                    className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                  >
+                    <div className="mb-1 flex items-center gap-2 text-xs text-zinc-500">
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                        {c.author.name}
+                      </span>
+                      <span>·</span>
+                      <span>{formatDateTime(c.createdAt)}</span>
+                    </div>
+                    <CommentBody body={c.body} names={nameById} />
+                  </li>
+                ))}
+              </ul>
+            )}
+            <CommentBox taskId={task.id} members={members} />
+          </div>
+        }
+      />
     </div>
   );
 }
