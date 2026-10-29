@@ -12,19 +12,22 @@ export default async function DashboardPage() {
     prisma.task.findMany({
       where: { assigneeId: user.id, status: { not: "DONE" } },
       orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
-      include: { project: { select: { id: true, name: true } } },
+      include: { workspace: { select: { id: true, name: true } } },
       take: 50,
     }),
     prisma.workspace.findMany({
       where: { members: { some: { userId: user.id } }, archivedAt: null },
       orderBy: { createdAt: "asc" },
-      include: { _count: { select: { projects: true, members: true } } },
+      include: {
+        _count: { select: { members: true } },
+        tasks: { where: { parentId: null }, select: { id: true } },
+      },
     }),
     prisma.workspace.findMany({
       where: { members: { some: { userId: user.id } }, archivedAt: { not: null } },
       orderBy: { archivedAt: "desc" },
       include: {
-        _count: { select: { projects: true, members: true } },
+        tasks: { where: { parentId: null }, select: { id: true } },
         members: { where: { userId: user.id }, select: { role: true } },
       },
     }),
@@ -50,12 +53,17 @@ export default async function DashboardPage() {
               <li key={task.id} className="bg-white p-4 dark:bg-zinc-900">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate font-medium">{task.title}</p>
                     <Link
-                      href={`/app/projects/${task.project.id}`}
+                      href={`/app/tasks/${task.id}`}
+                      className="block truncate font-medium hover:underline"
+                    >
+                      {task.title}
+                    </Link>
+                    <Link
+                      href={`/app/workspaces/${task.workspace.id}`}
                       className="text-xs text-zinc-500 hover:underline"
                     >
-                      {task.project.name}
+                      {task.workspace.name}
                     </Link>
                   </div>
                   <div className="flex items-center gap-2">
@@ -105,7 +113,7 @@ export default async function DashboardPage() {
               >
                 <p className="font-medium">{ws.name}</p>
                 <p className="mt-2 text-sm text-zinc-500">
-                  {ws._count.projects} projet{ws._count.projects > 1 ? "s" : ""} ·{" "}
+                  {ws.tasks.length} projet{ws.tasks.length > 1 ? "s" : ""} ·{" "}
                   {ws._count.members} membre{ws._count.members > 1 ? "s" : ""}
                 </p>
               </Link>
@@ -131,8 +139,8 @@ export default async function DashboardPage() {
                       {ws.name}
                     </p>
                     <p className="text-xs text-zinc-400">
-                      Archivé le {formatDate(ws.archivedAt)} · {ws._count.projects} projet
-                      {ws._count.projects > 1 ? "s" : ""}
+                      Archivé le {formatDate(ws.archivedAt)} · {ws.tasks.length} projet
+                      {ws.tasks.length > 1 ? "s" : ""}
                     </p>
                   </div>
                   {isOwner && (

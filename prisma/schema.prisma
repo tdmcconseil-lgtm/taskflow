@@ -36,20 +36,47 @@ enum TaskPriority {
   HIGH
 }
 
+// Type d'événement du journal d'activité d'une tâche.
+enum TaskActivityType {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  DUE_DATE_CHANGED
+  ASSIGNED
+  TITLE_CHANGED
+  DESCRIPTION_CHANGED
+  SUBTASK_ADDED
+  SUBTASK_REMOVED
+}
+
 // --- Utilisateur ---
 model User {
   id           String   @id @default(cuid())
+  // name = nom complet affiché, maintenu synchronisé = "firstName lastName".
+  firstName    String   @default("")
+  lastName     String   @default("")
   name         String
   email        String   @unique
   passwordHash String
+  // Photo de profil (stockée en base ; servie par /api/avatar/[userId]).
+  // Cadrage non destructif par point focal (x, y ∈ [0,100]) + zoom (≥ 100).
+  photoData      Bytes?
+  photoMime      String?
+  photoX         Int       @default(50)
+  photoY         Int       @default(50)
+  photoZoom      Int       @default(100)
+  photoUpdatedAt DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  emailChanges  EmailChangeRequest[]
   memberships   Membership[]
-  createdProjects Project[]  @relation("ProjectCreatedBy")
   createdTasks  Task[]       @relation("TaskCreatedBy")
   assignedTasks Task[]       @relation("TaskAssignee")
   sentInvitations Invitation[] @relation("InvitationInvitedBy")
+  comments      Comment[]    @relation("CommentAuthor")
+  follows       TaskFollow[] @relation("TaskFollower")
+  activities    TaskActivity[] @relation("ActivityActor")
 
   @@index([email])
 }
@@ -63,7 +90,7 @@ model Workspace {
   updatedAt  DateTime  @updatedAt
 
   members     Membership[]
-  projects    Project[]
+  tasks       Task[]
   invitations Invitation[]
 }
 
@@ -102,25 +129,9 @@ model Membership {
   @@index([workspaceId])
 }
 
-// --- Projet ---
-model Project {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  createdById String
-  createdBy   User      @relation("ProjectCreatedBy", fields: [createdById], references: [id])
-
-  tasks Task[]
-
-  @@index([workspaceId])
-}
-
 // --- Tâche ---
+// Modèle unique : une tâche est rattachée à un espace, avec éventuellement une
+// tâche parente. Une tâche sans parent est présentée comme un « projet ».
 model Task {
   id          String       @id @default(cuid())
   title       String
@@ -132,13 +143,87 @@ model Task {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  projectId  String
-  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   createdById String
-  createdBy   User   @relation("TaskCreatedBy", fields: [createdById], references: [id])
-  assigneeId String?
-  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy   User      @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
 
-  @@index([projectId])
+  // Hiérarchie : une tâche peut être la sous-tâche d'une autre (même espace).
+  // La suppression d'une tâche parente supprime ses sous-tâches en cascade.
+  parentId String?
+  parent   Task?  @relation("Subtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  children Task[] @relation("Subtasks")
+
+  comments   Comment[]
+  followers  TaskFollow[]
+  activities TaskActivity[]
+
+  @@index([workspaceId])
   @@index([assigneeId])
+  @@index([parentId])
+}
+
+// --- Journal d'activité d'une tâche (audit trail, en lecture seule) ---
+model TaskActivity {
+  id         String           @id @default(cuid())
+  type       TaskActivityType
+  fromValue  String? // ancienne valeur (statut/priorité/échéance/titre/ancien assigné)
+  toValue    String? // nouvelle valeur
+  targetName String? // nom d'une entité liée (assigné, sous-tâche…)
+  createdAt  DateTime         @default(now())
+
+  taskId  String
+  task    Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actorId String
+  actor   User   @relation("ActivityActor", fields: [actorId], references: [id])
+
+  @@index([taskId])
+}
+
+// --- Commentaire d'une tâche (discussion) ---
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  taskId   String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation("CommentAuthor", fields: [authorId], references: [id])
+
+  @@index([taskId])
+}
+
+// --- Suivi d'une tâche par un utilisateur (étoile) ---
+model TaskFollow {
+  id        String    @id @default(cuid())
+  // following=false : la tâche n'est plus suivie, mais la discussion reste dans
+  // la liste (sans compter en non-lu). lastReadAt : dernier message lu.
+  following  Boolean   @default(true)
+  lastReadAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  userId String
+  user   User   @relation("TaskFollower", fields: [userId], references: [id], onDelete: Cascade)
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
+  @@index([taskId])
+}
+
+// --- Demande de changement d'email (confirmation par lien envoyé au nouvel email) ---
+model EmailChangeRequest {
+  id        String   @id @default(cuid())
+  newEmail  String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

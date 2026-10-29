@@ -11,7 +11,16 @@ export const getCurrentUser = cache(async () => {
   if (!session) return null;
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { id: true, name: true, email: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      photoMime: true,
+      photoX: true,
+      photoY: true,
+      photoZoom: true,
+      photoUpdatedAt: true,
+    },
   });
   return user;
 });
@@ -21,21 +30,6 @@ export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   return user;
-}
-
-// Workspaces auxquels appartient l'utilisateur (avec son rôle).
-export async function getUserWorkspaces(userId: string) {
-  return prisma.workspace.findMany({
-    where: { members: { some: { userId } } },
-    orderBy: { createdAt: "asc" },
-    include: {
-      members: {
-        where: { userId },
-        select: { role: true },
-      },
-      _count: { select: { projects: true } },
-    },
-  });
 }
 
 // Vérifie que l'utilisateur est membre du workspace ; sinon 404-like (null).

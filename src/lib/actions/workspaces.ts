@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail } from "@/lib/mail";
+import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
 
@@ -204,7 +205,8 @@ export async function cancelInvitation(formData: FormData): Promise<void> {
 const acceptSchema = z
   .object({
     token: z.string().min(1),
-    name: z.string().trim().min(2, "Le nom doit faire au moins 2 caractères."),
+    firstName: z.string().trim().min(2, "Le prénom doit faire au moins 2 caractères."),
+    lastName: z.string().trim().optional().default(""),
     password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères."),
     confirm: z.string(),
   })
@@ -216,7 +218,8 @@ const acceptSchema = z
 export async function acceptInvitation(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = acceptSchema.safeParse({
     token: formData.get("token"),
-    name: formData.get("name"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName") || "",
     password: formData.get("password"),
     confirm: formData.get("confirm"),
   });
@@ -261,7 +264,9 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
   const passwordHash = await hashPassword(parsed.data.password);
   const newUser = await prisma.user.create({
     data: {
-      name: parsed.data.name,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+      name: composeName(parsed.data.firstName, parsed.data.lastName),
       email: invitation.email,
       passwordHash,
       memberships: {

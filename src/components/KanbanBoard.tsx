@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
+import { UserAvatar } from "@/components/UserAvatar";
+import type { AssigneeInfo } from "@/lib/task-tree";
 import { STATUS_LABELS, STATUS_ORDER } from "@/lib/labels";
 import { setTaskStatus } from "@/lib/actions/tasks";
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
@@ -13,9 +15,10 @@ export type BoardTask = {
   description: string | null;
   priority: TaskPriority;
   status: TaskStatus;
-  assigneeName: string | null;
+  assignee: AssigneeInfo | null;
   due: string | null;
   overdue: boolean;
+  subtaskCount: number;
 };
 
 const COLUMN_ACCENT: Record<TaskStatus, string> = {
@@ -24,16 +27,11 @@ const COLUMN_ACCENT: Record<TaskStatus, string> = {
   DONE: "border-t-green-400",
 };
 
-export function KanbanBoard({
-  tasks: initial,
-  projectId,
-}: {
-  tasks: BoardTask[];
-  projectId: string;
-}) {
+export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
   const [tasks, setTasks] = useState<BoardTask[]>(initial);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   function moveTask(taskId: string, status: TaskStatus) {
@@ -41,26 +39,46 @@ export function KanbanBoard({
     if (!task || task.status === status) return;
 
     const previousStatus = task.status;
+    setError(null);
     // Mise à jour optimiste : la carte bouge immédiatement.
     setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status } : t)));
 
     startTransition(async () => {
+      const fd = new FormData();
+      fd.set("taskId", taskId);
+      fd.set("status", status);
+      let result;
       try {
-        const fd = new FormData();
-        fd.set("taskId", taskId);
-        fd.set("status", status);
-        await setTaskStatus(fd);
+        result = await setTaskStatus(undefined, fd);
       } catch {
-        // Échec : on remet la carte dans sa colonne d'origine.
+        result = { error: "Une erreur est survenue." };
+      }
+      // Refus (ex. sous-tâches non terminées) : on annule le déplacement.
+      if (result?.error) {
         setTasks((prev) =>
           prev.map((t) => (t.id === taskId ? { ...t, status: previousStatus } : t)),
         );
+        setError(result.error);
       }
     });
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="space-y-3">
+      {error && (
+        <div className="flex items-center justify-between gap-3 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            aria-label="Fermer"
+            className="text-red-500 hover:text-red-700"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {STATUS_ORDER.map((status) => {
         const columnTasks = tasks.filter((t) => t.status === status);
         return (
@@ -93,8 +111,9 @@ export function KanbanBoard({
 
             <div className="flex min-h-24 flex-1 flex-col gap-2">
               {columnTasks.map((task) => (
-                <article
+                <Link
                   key={task.id}
+                  href={`/app/tasks/${task.id}`}
                   draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData("text/plain", task.id);
@@ -105,27 +124,17 @@ export function KanbanBoard({
                     setDragId(null);
                     setOverCol(null);
                   }}
-                  className={`cursor-grab rounded-lg border border-zinc-200 bg-white p-3 shadow-sm active:cursor-grabbing dark:border-zinc-700 dark:bg-zinc-800 ${
+                  className={`block cursor-grab rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition hover:border-indigo-300 active:cursor-grabbing dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-indigo-700 ${
                     dragId === task.id ? "opacity-50" : ""
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <p
-                      className={`text-sm font-medium ${
-                        status === "DONE" ? "text-zinc-400 line-through" : ""
-                      }`}
-                    >
-                      {task.title}
-                    </p>
-                    <Link
-                      href={`/app/projects/${projectId}/tasks/${task.id}/edit`}
-                      title="Modifier la tâche"
-                      onClick={(e) => e.stopPropagation()}
-                      className="shrink-0 rounded px-1 text-xs text-zinc-400 hover:text-indigo-600"
-                    >
-                      ✎
-                    </Link>
-                  </div>
+                  <p
+                    className={`text-sm font-medium ${
+                      status === "DONE" ? "text-zinc-400 line-through" : ""
+                    }`}
+                  >
+                    {task.title}
+                  </p>
                   {task.description && (
                     <p className="mt-1 line-clamp-2 text-xs text-zinc-500">
                       {task.description}
@@ -133,7 +142,15 @@ export function KanbanBoard({
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                     <PriorityBadge priority={task.priority} />
-                    {task.assigneeName && <span>👤 {task.assigneeName}</span>}
+                    {task.subtaskCount > 0 && (
+                      <span title="Sous-tâches">↳ {task.subtaskCount}</span>
+                    )}
+                    {task.assignee && (
+                      <span className="inline-flex items-center gap-1">
+                        <UserAvatar user={task.assignee} className="h-4 w-4" />
+                        {task.assignee.name}
+                      </span>
+                    )}
                     {task.due && (
                       <span
                         className={
@@ -146,7 +163,7 @@ export function KanbanBoard({
                       </span>
                     )}
                   </div>
-                </article>
+                </Link>
               ))}
 
               {columnTasks.length === 0 && (
@@ -158,6 +175,7 @@ export function KanbanBoard({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

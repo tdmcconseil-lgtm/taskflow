@@ -37,6 +37,17 @@ export function formatDate(date: Date | null | undefined): string | null {
   return dateFormatter.format(date);
 }
 
+const dateTimeFormatter = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+export function formatDateTime(date: Date): string {
+  return dateTimeFormatter.format(date);
+}
+
 // Vrai si la date d'échéance est passée (par rapport à aujourd'hui).
 export function isOverdue(date: Date | null | undefined): boolean {
   if (!date) return false;

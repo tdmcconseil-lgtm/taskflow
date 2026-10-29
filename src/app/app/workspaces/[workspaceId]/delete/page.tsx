@@ -24,16 +24,16 @@ export default async function DeleteWorkspacePage({
   // La suppression n'est possible qu'une fois l'espace archivé.
   if (!workspace.archivedAt) redirect(`/app/workspaces/${workspace.id}`);
 
-  const [projects, tasks, members, invitations] = await Promise.all([
-    prisma.project.count({ where: { workspaceId } }),
-    prisma.task.count({ where: { project: { workspaceId } } }),
+  const [projects, subtasks, members, invitations] = await Promise.all([
+    prisma.task.count({ where: { workspaceId, parentId: null } }),
+    prisma.task.count({ where: { workspaceId, parentId: { not: null } } }),
     prisma.membership.count({ where: { workspaceId } }),
     prisma.invitation.count({ where: { workspaceId, acceptedAt: null } }),
   ]);
 
   const rows = [
     { label: "Projets", value: projects },
-    { label: "Tâches", value: tasks },
+    { label: "Sous-tâches", value: subtasks },
     { label: "Membres", value: members },
     { label: "Invitations en attente", value: invitations },
   ];
