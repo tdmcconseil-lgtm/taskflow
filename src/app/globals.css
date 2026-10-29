@@ -13,3 +13,15 @@ html,
 body {
   height: 100%;
 }
+
+/* Tailwind v4 n'applique plus le curseur « main » par défaut : on le
+   rétablit sur toutes les zones cliquables (boutons, etc.). */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select,
+  label[for] {
+    cursor: pointer;
+  }
+}

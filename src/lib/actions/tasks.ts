@@ -190,23 +190,25 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
   // Être assigné à une tâche la fait suivre.
   if (assigneeId) await ensureFollow(assigneeId, old.id);
 
-  // Journal : une entrée par champ réellement modifié.
+  // Journal : une entrée par champ réellement modifié, toutes reliées par un
+  // même groupId (une seule ligne dans le flux d'événements).
+  const groupId = crypto.randomUUID();
   if (old.title !== parsed.data.title) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "TITLE_CHANGED", fromValue: old.title, toValue: parsed.data.title });
+    await logActivity({ taskId: old.id, actorId: user.id, type: "TITLE_CHANGED", fromValue: old.title, toValue: parsed.data.title, groupId });
   }
   if ((old.description ?? null) !== description) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "DESCRIPTION_CHANGED" });
+    await logActivity({ taskId: old.id, actorId: user.id, type: "DESCRIPTION_CHANGED", groupId });
   }
   if (old.priority !== parsed.data.priority) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "PRIORITY_CHANGED", fromValue: old.priority, toValue: parsed.data.priority });
+    await logActivity({ taskId: old.id, actorId: user.id, type: "PRIORITY_CHANGED", fromValue: old.priority, toValue: parsed.data.priority, groupId });
   }
   const oldDue = old.dueDate ? old.dueDate.getTime() : null;
   const newDue = dueDate ? dueDate.getTime() : null;
   if (oldDue !== newDue) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "DUE_DATE_CHANGED", fromValue: formatDate(old.dueDate), toValue: formatDate(dueDate) });
+    await logActivity({ taskId: old.id, actorId: user.id, type: "DUE_DATE_CHANGED", fromValue: formatDate(old.dueDate), toValue: formatDate(dueDate), groupId });
   }
   if ((old.assigneeId ?? null) !== (assigneeId ?? null)) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "ASSIGNED", fromValue: old.assignee?.name ?? null, targetName: assigneeName });
+    await logActivity({ taskId: old.id, actorId: user.id, type: "ASSIGNED", fromValue: old.assignee?.name ?? null, targetName: assigneeName, groupId });
   }
 
   revalidatePath(`/app/tasks/${old.id}`);
@@ -277,13 +279,26 @@ export async function setTaskStatus(
   return undefined;
 }
 
-export async function deleteTask(formData: FormData): Promise<void> {
+export async function deleteTask(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const user = await requireUser();
   const taskId = String(formData.get("taskId") ?? "");
-  if (!taskId) return;
+  if (!taskId) return { error: "Tâche introuvable." };
 
   const task = await loadTaskForUser(user.id, taskId);
-  if (!task) return;
+  if (!task) return { error: "Tâche introuvable ou accès refusé." };
+
+  // On ne peut pas supprimer une tâche qui a encore des sous-tâches.
+  const childCount = await prisma.task.count({ where: { parentId: task.id } });
+  if (childCount > 0) {
+    return {
+      error: `Impossible de supprimer : cette tâche a ${childCount} sous-tâche${
+        childCount > 1 ? "s" : ""
+      }. Supprimez-les d'abord.`,
+    };
+  }
 
   const info = await prisma.task.findUnique({
     where: { id: task.id },

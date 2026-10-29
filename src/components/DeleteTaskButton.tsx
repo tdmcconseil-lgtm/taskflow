@@ -1,19 +1,17 @@
 "use client";
 
+import { useActionState } from "react";
 import { deleteTask } from "@/lib/actions/tasks";
 
 export function DeleteTaskButton({ taskId }: { taskId: string }) {
+  const [state, action] = useActionState(deleteTask, undefined);
+
   return (
     <form
-      action={deleteTask}
+      action={action}
+      className="relative"
       onSubmit={(e) => {
-        if (
-          !confirm(
-            "Supprimer cette tâche ? Ses sous-tâches éventuelles seront aussi supprimées.",
-          )
-        ) {
-          e.preventDefault();
-        }
+        if (!confirm("Supprimer cette tâche ?")) e.preventDefault();
       }}
     >
       <input type="hidden" name="taskId" value={taskId} />
@@ -23,6 +21,11 @@ export function DeleteTaskButton({ taskId }: { taskId: string }) {
       >
         Supprimer
       </button>
+      {state?.error && (
+        <p className="absolute right-0 top-full z-10 mt-1 w-64 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 shadow dark:bg-red-950 dark:text-red-300">
+          {state.error}
+        </p>
+      )}
     </form>
   );
 }

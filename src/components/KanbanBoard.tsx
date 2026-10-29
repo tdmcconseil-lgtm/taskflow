@@ -124,7 +124,7 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
                     setDragId(null);
                     setOverCol(null);
                   }}
-                  className={`block cursor-grab rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition hover:border-indigo-300 active:cursor-grabbing dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-indigo-700 ${
+                  className={`block cursor-pointer rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition hover:border-indigo-300 active:cursor-grabbing dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-indigo-700 ${
                     dragId === task.id ? "opacity-50" : ""
                   }`}
                 >

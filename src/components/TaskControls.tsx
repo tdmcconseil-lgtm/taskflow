@@ -1,16 +1,20 @@
 "use client";
 
+import { useActionState } from "react";
 import { deleteTask } from "@/lib/actions/tasks";
 import { StatusSelect } from "@/components/StatusSelect";
 import type { TaskStatus } from "@/generated/prisma/client";
 
 export function TaskControls({ taskId, status }: { taskId: string; status: TaskStatus }) {
+  const [state, action] = useActionState(deleteTask, undefined);
+
   return (
     <div className="flex items-center gap-1">
       <StatusSelect taskId={taskId} status={status} />
 
       <form
-        action={deleteTask}
+        action={action}
+        className="relative"
         onSubmit={(e) => {
           if (!confirm("Supprimer cette tâche ?")) e.preventDefault();
         }}
@@ -23,6 +27,11 @@ export function TaskControls({ taskId, status }: { taskId: string; status: TaskS
         >
           ✕
         </button>
+        {state?.error && (
+          <p className="absolute right-0 top-full z-10 mt-1 w-64 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 shadow dark:bg-red-950 dark:text-red-300">
+            {state.error}
+          </p>
+        )}
       </form>
     </div>
   );
