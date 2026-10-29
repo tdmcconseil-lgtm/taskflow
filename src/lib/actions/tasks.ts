@@ -90,6 +90,11 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     if (!Number.isNaN(d.getTime())) dueDate = d;
   }
 
+  // Nouvelle tâche ajoutée en fin de liste de sa fratrie.
+  const position = await prisma.task.count({
+    where: parentId ? { parentId } : { workspaceId, parentId: null },
+  });
+
   const task = await prisma.task.create({
     data: {
       title: parsed.data.title,
@@ -100,6 +105,7 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
       assigneeId,
       dueDate,
       parentId,
+      position,
     },
   });
 
@@ -277,6 +283,31 @@ export async function setTaskStatus(
   else revalidatePath(`/app/workspaces/${task.workspaceId}`);
   revalidatePath("/app");
   return undefined;
+}
+
+// Réordonne les sous-tâches d'un parent : applique l'ordre reçu (ids) en
+// position 0..n. N'affecte que les tâches réellement enfants de `parentId`.
+export async function reorderTasks(parentId: string, orderedIds: string[]): Promise<void> {
+  const user = await requireUser();
+  const parent = await prisma.task.findUnique({
+    where: { id: parentId },
+    select: { workspaceId: true },
+  });
+  if (!parent) return;
+  if (!(await getMembership(user.id, parent.workspaceId))) return;
+
+  const children = await prisma.task.findMany({
+    where: { parentId },
+    select: { id: true },
+  });
+  const childIds = new Set(children.map((c) => c.id));
+  const valid = orderedIds.filter((id) => childIds.has(id));
+
+  await prisma.$transaction(
+    valid.map((id, i) => prisma.task.update({ where: { id }, data: { position: i } })),
+  );
+
+  revalidatePath(`/app/tasks/${parentId}`);
 }
 
 export async function deleteTask(

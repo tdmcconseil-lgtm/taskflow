@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { KanbanBoard, type BoardTask } from "@/components/KanbanBoard";
 import { TaskRow } from "@/components/TaskRow";
+import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
 import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_LABELS, STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
@@ -15,6 +16,7 @@ export function TaskCollection({
   newTaskHref,
   newTaskLabel,
   emptyLabel,
+  reorderParentId,
 }: {
   roots: TaskNode[];
   view: "liste" | "tableau";
@@ -22,6 +24,8 @@ export function TaskCollection({
   newTaskHref?: string | null;
   newTaskLabel?: string;
   emptyLabel: string;
+  // Si fourni, la vue Liste devient une liste à plat réordonnable (sous-tâches).
+  reorderParentId?: string | null;
 }) {
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
@@ -73,6 +77,24 @@ export function TaskCollection({
         </p>
       ) : view === "tableau" ? (
         <KanbanBoard tasks={boardTasks} />
+      ) : reorderParentId ? (
+        <ReorderableSubtasks
+          parentId={reorderParentId}
+          items={roots.map(
+            (n): SubtaskItem => ({
+              id: n.id,
+              title: n.title,
+              description: n.description,
+              status: n.status,
+              priority: n.priority,
+              assignee: n.assignee,
+              due: formatDate(n.dueDate),
+              overdue: isOverdue(n.dueDate) && n.status !== "DONE",
+              childCount: n.children.length,
+              attachmentCount: n.attachmentCount,
+            }),
+          )}
+        />
       ) : (
         <div className="space-y-6">
           {STATUS_ORDER.map((status) => {

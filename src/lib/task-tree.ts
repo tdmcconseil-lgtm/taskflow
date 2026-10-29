@@ -18,6 +18,7 @@ export type TaskNode = {
   priority: TaskPriority;
   assignee: AssigneeInfo | null;
   dueDate: Date | null;
+  attachmentCount: number;
   children: TaskNode[];
 };
 
@@ -29,6 +30,7 @@ export type RawTask = {
   priority: TaskPriority;
   dueDate: Date | null;
   parentId: string | null;
+  attachmentCount?: number;
   assignee: {
     id: string;
     name: string;
@@ -76,6 +78,7 @@ export function buildTaskIndex(tasks: RawTask[]): {
       priority: t.priority,
       assignee: toAssigneeInfo(t.assignee),
       dueDate: t.dueDate,
+      attachmentCount: t.attachmentCount ?? 0,
       children: [],
     });
   }

@@ -147,6 +147,8 @@ model Task {
   priority    TaskPriority @default(MEDIUM)
   dueDate     DateTime?
   completedAt DateTime?
+  // Ordre manuel au sein d'une même fratrie (réordonnable par glisser-déposer).
+  position    Int          @default(0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
@@ -246,6 +248,7 @@ model Comment {
   id        String   @id @default(cuid())
   body      String
   createdAt DateTime @default(now())
+  editedAt  DateTime? // non null = message modifié après publication
 
   taskId   String
   task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
