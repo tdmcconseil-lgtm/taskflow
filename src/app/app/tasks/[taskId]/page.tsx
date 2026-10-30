@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { canAccessTask } from "@/lib/access";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
@@ -31,6 +31,7 @@ export default async function TaskDetailPage({
 }: PageProps<"/app/tasks/[taskId]">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { taskId } = await params;
   const sp = await searchParams;
   const editing = sp.edit === "1";
@@ -372,7 +373,7 @@ export default async function TaskDetailPage({
                     overdue ? "font-medium text-red-600 dark:text-red-400" : ""
                   }`}
                 >
-                  {task.dueDate ? formatDate(task.dueDate) : "—"}
+                  {task.dueDate ? formatDate(task.dueDate, locale) : "—"}
                 </dd>
               </div>
               <div>

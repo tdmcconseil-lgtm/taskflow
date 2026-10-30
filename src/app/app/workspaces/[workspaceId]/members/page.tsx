@@ -4,7 +4,7 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { cancelInvitation, resendInvitation } from "@/lib/actions/workspaces";
 import { formatDate } from "@/lib/labels";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 export default async function MembersPage({
   params,
@@ -12,6 +12,7 @@ export default async function MembersPage({
 }: PageProps<"/app/workspaces/[workspaceId]/members">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const sentTo = typeof sp.sent === "string" ? sp.sent : null;
@@ -102,7 +103,7 @@ export default async function MembersPage({
                         <span className="text-red-600 dark:text-red-400">{t.membersPage.expired}</span>
                       ) : (
                         <>
-                          {t.membersPage.pendingExpires} {formatDate(inv.expiresAt)}
+                          {t.membersPage.pendingExpires} {formatDate(inv.expiresAt, locale)}
                         </>
                       )}
                     </p>

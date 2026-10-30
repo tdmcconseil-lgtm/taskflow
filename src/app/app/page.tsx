@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { unarchiveWorkspace } from "@/lib/actions/workspaces";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 export default async function DashboardPage() {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
 
   const [myTasks, workspaces, archivedWorkspaces] = await Promise.all([
     prisma.task.findMany({
@@ -79,7 +80,7 @@ export default async function DashboardPage() {
                             : "text-zinc-500"
                         }`}
                       >
-                        {formatDate(task.dueDate)}
+                        {formatDate(task.dueDate, locale)}
                       </span>
                     )}
                     <PriorityBadge priority={task.priority} />
@@ -145,7 +146,7 @@ export default async function DashboardPage() {
                       {ws.name}
                     </p>
                     <p className="text-xs text-zinc-400">
-                      {t.dashboard.archivedOn} {formatDate(ws.archivedAt)} · {ws.tasks.length}{" "}
+                      {t.dashboard.archivedOn} {formatDate(ws.archivedAt, locale)} · {ws.tasks.length}{" "}
                       {ws.tasks.length > 1 ? t.dashboard.projectsWord : t.dashboard.projectWord}
                     </p>
                   </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/dal";
 import { getDiscussionRows } from "@/lib/discussions";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { DiscussionList } from "@/components/DiscussionList";
 
 export const metadata: Metadata = { title: "Discussions — Taskflow" };
@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: "Discussions — Taskflow" };
 export default async function DiscussionsPage() {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const rows = await getDiscussionRows(user.id);
 
   return (
@@ -18,6 +19,7 @@ export default async function DiscussionsPage() {
         rows={rows}
         emptyLabel={t.discussionsPage.empty}
         notFollowingLabel={t.workspace.notFollowing}
+        locale={locale}
       />
     </div>
   );

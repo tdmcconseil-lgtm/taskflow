@@ -31,3 +31,7 @@ export function useI18n(): I18nValue {
 export function useT(): Dictionary {
   return useI18n().t;
 }
+
+export function useLocale(): Locale {
+  return useI18n().locale;
+}

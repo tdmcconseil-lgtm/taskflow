@@ -7,7 +7,7 @@ import { RenameDocumentForm } from "@/components/RenameDocumentForm";
 import { DeleteDocumentButton } from "@/components/DeleteDocumentButton";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDateTime } from "@/lib/labels";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 function formatBytes(n: number, t: Dictionary): string {
@@ -21,6 +21,7 @@ export default async function DocumentPage({
 }: PageProps<"/app/documents/[documentId]">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { documentId } = await params;
 
   const doc = await prisma.document.findUnique({
@@ -91,7 +92,7 @@ export default async function DocumentPage({
         </div>
         <div>
           <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.documentPage.uploadedOn}</dt>
-          <dd className="mt-1 text-sm">{formatDateTime(doc.createdAt)}</dd>
+          <dd className="mt-1 text-sm">{formatDateTime(doc.createdAt, locale)}</dd>
         </div>
         <div>
           <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.documentPage.size}</dt>

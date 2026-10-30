@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/dal";
 import { getEventFeed } from "@/lib/events";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { MarkEventsRead } from "@/components/MarkEventsRead";
 import { EventFilter } from "@/components/EventFilter";
 import { EventList } from "@/components/EventList";
@@ -13,6 +13,7 @@ export default async function EvenementsPage({
 }: PageProps<"/app/evenements">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
   const groups = await getEventFeed(user.id, user.eventsReadAt ?? null, t, includeOwn);
@@ -29,7 +30,7 @@ export default async function EvenementsPage({
         </div>
       </div>
 
-      <EventList groups={groups} emptyLabel={t.events.empty} />
+      <EventList groups={groups} emptyLabel={t.events.empty} locale={locale} />
     </div>
   );
 }

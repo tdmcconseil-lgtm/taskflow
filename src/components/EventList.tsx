@@ -2,13 +2,16 @@ import Link from "next/link";
 import { UserAvatar } from "@/components/UserAvatar";
 import { formatDateTime } from "@/lib/labels";
 import type { EventGroup } from "@/lib/events";
+import type { Locale } from "@/lib/i18n/config";
 
 export function EventList({
   groups,
   emptyLabel,
+  locale = "fr",
 }: {
   groups: EventGroup[];
   emptyLabel: string;
+  locale?: Locale;
 }) {
   if (groups.length === 0) {
     return (
@@ -38,7 +41,7 @@ export function EventList({
                   {g.task.title}
                 </p>
                 <span className="shrink-0 text-xs text-zinc-400">
-                  {formatDateTime(g.createdAt)}
+                  {formatDateTime(g.createdAt, locale)}
                 </span>
               </div>
               <p className="mt-0.5 text-sm text-zinc-500">

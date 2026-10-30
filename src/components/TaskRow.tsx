@@ -5,7 +5,7 @@ import { PriorityBadge } from "@/components/badges";
 import { TaskControls } from "@/components/TaskControls";
 import { UserAvatar } from "@/components/UserAvatar";
 import { formatDate, isOverdue } from "@/lib/labels";
-import { useT } from "@/lib/i18n/context";
+import { useT, useLocale } from "@/lib/i18n/context";
 import type { TaskNode } from "@/lib/task-tree";
 
 // Une ligne de tâche. On n'affiche que les tâches de même niveau : les
@@ -13,6 +13,7 @@ import type { TaskNode } from "@/lib/task-tree";
 // elles s'affichent sur la page de détail de la tâche.
 export function TaskRow({ node, followed = false }: { node: TaskNode; followed?: boolean }) {
   const t = useT();
+  const locale = useLocale();
   const prefix = node.parentId === null ? t.task.prefixProject : t.task.prefixTask;
   return (
     <li className="bg-white dark:bg-zinc-900">
@@ -53,7 +54,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
                     : ""
                 }
               >
-                📅 {formatDate(node.dueDate)}
+                📅 {formatDate(node.dueDate, locale)}
               </span>
             )}
             {node.children.length > 0 && (

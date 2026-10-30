@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CommentBody } from "@/components/CommentBody";
 import { CommentBox } from "@/components/CommentBox";
 import { formatDateTime } from "@/lib/labels";
-import { useT } from "@/lib/i18n/context";
+import { useT, useLocale } from "@/lib/i18n/context";
 
 type Opt = { id: string; name: string };
 
@@ -37,6 +37,7 @@ export function EditableComment({
   projectDocuments: Opt[];
 }) {
   const t = useT();
+  const locale = useLocale();
   const [editing, setEditing] = useState(false);
   const mine = comment.authorId === currentUserId;
 
@@ -48,11 +49,11 @@ export function EditableComment({
             {comment.authorName}
           </span>
           <span>·</span>
-          <span>{formatDateTime(comment.createdAt)}</span>
+          <span>{formatDateTime(comment.createdAt, locale)}</span>
           {comment.editedAt && (
             <span
               className="italic text-zinc-400"
-              title={`${t.comments.editedOn} ${formatDateTime(comment.editedAt)}`}
+              title={`${t.comments.editedOn} ${formatDateTime(comment.editedAt, locale)}`}
             >
               {t.comments.edited}
             </span>

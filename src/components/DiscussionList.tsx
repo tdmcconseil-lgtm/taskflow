@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { formatDateTime } from "@/lib/labels";
 import type { DiscussionRow } from "@/lib/discussions";
+import type { Locale } from "@/lib/i18n/config";
 
 export function DiscussionList({
   rows,
   emptyLabel,
   notFollowingLabel = "(plus suivie)",
+  locale = "fr",
 }: {
   rows: DiscussionRow[];
   emptyLabel: string;
   notFollowingLabel?: string;
+  locale?: Locale;
 }) {
   if (rows.length === 0) {
     return (
@@ -41,7 +44,7 @@ export function DiscussionList({
                   )}
                 </p>
                 <span className="shrink-0 text-xs text-zinc-400">
-                  {formatDateTime(r.last.createdAt)}
+                  {formatDateTime(r.last.createdAt, locale)}
                 </span>
               </div>
               <p className="mt-0.5 truncate text-sm text-zinc-500">

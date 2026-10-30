@@ -1,4 +1,8 @@
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
+import type { Locale } from "@/lib/i18n/config";
+
+// Correspondance langue de l'app → locale Intl pour le formatage des dates.
+const INTL_LOCALE: Record<Locale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES" };
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
   TODO: "À faire",
@@ -26,26 +30,25 @@ export const PRIORITY_STYLES: Record<TaskPriority, string> = {
   HIGH: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
 };
 
-const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-export function formatDate(date: Date | null | undefined): string | null {
+export function formatDate(
+  date: Date | null | undefined,
+  locale: Locale = "fr",
+): string | null {
   if (!date) return null;
-  return dateFormatter.format(date);
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
-const dateTimeFormatter = new Intl.DateTimeFormat("fr-FR", {
-  day: "numeric",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-export function formatDateTime(date: Date): string {
-  return dateTimeFormatter.format(date);
+export function formatDateTime(date: Date, locale: Locale = "fr"): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 // Titre préfixé selon la nature de la tâche : « Projet : … » (tâche racine)

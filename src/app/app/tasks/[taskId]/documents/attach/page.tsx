@@ -4,13 +4,14 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { rootTaskId, attachDocument } from "@/lib/actions/documents";
 import { formatDate } from "@/lib/labels";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 export default async function AttachDocumentPage({
   params,
 }: PageProps<"/app/tasks/[taskId]/documents/attach">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { taskId } = await params;
 
   const task = await prisma.task.findUnique({
@@ -63,7 +64,7 @@ export default async function AttachDocumentPage({
                   <span className="truncate">{d.name}</span>
                 </p>
                 <p className="mt-0.5 truncate text-xs text-zinc-400">
-                  {d.fileName} · {d.uploadedBy.name} · {formatDate(d.createdAt)}
+                  {d.fileName} · {d.uploadedBy.name} · {formatDate(d.createdAt, locale)}
                 </p>
               </div>
               <form action={attachDocument}>

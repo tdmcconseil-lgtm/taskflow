@@ -4,7 +4,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { toAssigneeInfo, type RawTask } from "@/lib/task-tree";
 import { formatDateTime } from "@/lib/labels";
 import { describeActivity } from "@/lib/activity-text";
-import { useT } from "@/lib/i18n/context";
+import { useT, useLocale } from "@/lib/i18n/context";
 import type { TaskActivityType } from "@/generated/prisma/client";
 
 type ActorInfo = NonNullable<RawTask["assignee"]>;
@@ -21,6 +21,7 @@ export type Activity = {
 
 export function ActivityFeed({ activities }: { activities: Activity[] }) {
   const t = useT();
+  const locale = useLocale();
   if (activities.length === 0) {
     return <p className="text-sm italic text-zinc-400">{t.activity.none}</p>;
   }
@@ -35,7 +36,7 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
           <p>
             <span className="font-medium text-zinc-700 dark:text-zinc-300">{a.actor.name}</span>{" "}
             {describeActivity(a, t)}
-            <span className="ml-1 text-xs text-zinc-400">· {formatDateTime(a.createdAt)}</span>
+            <span className="ml-1 text-xs text-zinc-400">· {formatDateTime(a.createdAt, locale)}</span>
           </p>
         </li>
       ))}

@@ -7,7 +7,7 @@ import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableS
 import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
-import { useT } from "@/lib/i18n/context";
+import { useT, useLocale } from "@/lib/i18n/context";
 
 // Présentation d'une collection de tâches (les « projets » d'un espace, ou les
 // sous-tâches d'une tâche) avec bascule Liste / Tableau — comme l'ancienne page
@@ -34,6 +34,7 @@ export function TaskCollection({
   followedIds?: Set<string>;
 }) {
   const t = useT();
+  const locale = useLocale();
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
     title: `${n.parentId === null ? t.task.prefixProject : t.task.prefixTask} : ${n.title}`,
@@ -41,7 +42,7 @@ export function TaskCollection({
     priority: n.priority,
     status: n.status,
     assignee: n.assignee,
-    due: formatDate(n.dueDate),
+    due: formatDate(n.dueDate, locale),
     overdue: isOverdue(n.dueDate),
     subtaskCount: n.children.length,
   }));
@@ -95,7 +96,7 @@ export function TaskCollection({
               status: n.status,
               priority: n.priority,
               assignee: n.assignee,
-              due: formatDate(n.dueDate),
+              due: formatDate(n.dueDate, locale),
               overdue: isOverdue(n.dueDate) && n.status !== "DONE",
               childCount: n.children.length,
               attachmentCount: n.attachmentCount,

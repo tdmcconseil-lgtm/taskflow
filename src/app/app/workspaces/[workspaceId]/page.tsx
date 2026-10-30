@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { archiveWorkspace, unarchiveWorkspace, cancelInvitation } from "@/lib/actions/workspaces";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
@@ -23,6 +23,7 @@ export default async function WorkspacePage({
 }: PageProps<"/app/workspaces/[workspaceId]">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
@@ -221,7 +222,7 @@ export default async function WorkspacePage({
                         <span className="text-red-600 dark:text-red-400">{t.members.expired}</span>
                       ) : (
                         <>
-                          {t.members.pendingExpires} {formatDate(inv.expiresAt)}
+                          {t.members.pendingExpires} {formatDate(inv.expiresAt, locale)}
                         </>
                       )}
                     </p>
@@ -285,7 +286,7 @@ export default async function WorkspacePage({
         <p className="text-sm text-zinc-500">{t.workspace.eventsDesc}</p>
         <EventFilter hideMine={!includeOwn} />
       </div>
-      <EventList groups={eventGroups} emptyLabel={t.workspace.eventsEmpty} />
+      <EventList groups={eventGroups} emptyLabel={t.workspace.eventsEmpty} locale={locale} />
     </div>
   );
 
@@ -296,6 +297,7 @@ export default async function WorkspacePage({
         rows={discussionRows}
         emptyLabel={t.workspace.discussionsEmpty}
         notFollowingLabel={t.workspace.notFollowing}
+        locale={locale}
       />
     </div>
   );

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { setDecisionProject, deleteDecision } from "@/lib/actions/decisions";
 import { formatDate } from "@/lib/labels";
-import { useT } from "@/lib/i18n/context";
+import { useT, useLocale } from "@/lib/i18n/context";
 
 export type DecisionItem = {
   id: string;
@@ -34,6 +34,7 @@ export function TaskDecisions({
   projectDecisions: ProjectDecisionItem[];
 }) {
   const t = useT();
+  const locale = useLocale();
   return (
     <div className="space-y-8">
       {isTopLevel && (
@@ -54,7 +55,7 @@ export function TaskDecisions({
                   </p>
                   <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400">
                     <span>
-                      {d.authorName} · {formatDate(d.createdAt)} · {t.decisions.inTask}{" "}
+                      {d.authorName} · {formatDate(d.createdAt, locale)} · {t.decisions.inTask}{" "}
                       <Link href={`/app/tasks/${d.taskId}`} className="hover:underline">
                         {d.taskTitle}
                       </Link>
@@ -100,7 +101,7 @@ export function TaskDecisions({
                 </p>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
                   <span>
-                    {d.authorName} · {formatDate(d.createdAt)}
+                    {d.authorName} · {formatDate(d.createdAt, locale)}
                   </span>
                   {d.document && (
                     <Link
