@@ -25,3 +25,14 @@ body {
     cursor: pointer;
   }
 }
+
+/* Barre de défilement masquée (rangées d'onglets défilables sur mobile). */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

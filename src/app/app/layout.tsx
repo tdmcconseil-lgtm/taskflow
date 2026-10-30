@@ -6,6 +6,7 @@ import { logout } from "@/lib/actions/auth";
 import { countNewEventGroups } from "@/lib/events";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
+import { MobileDrawer } from "@/components/MobileDrawer";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -64,57 +65,67 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     }
   }
 
+  const nav = (
+    <>
+      <Link href="/app" className="mb-6 block text-lg font-semibold tracking-tight">
+        Taskflow
+      </Link>
+
+      <nav className="flex-1 space-y-6 overflow-y-auto">
+        <div className="space-y-0.5">
+          <Link
+            href="/app"
+            className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            🏠 Accueil
+          </Link>
+          <Link
+            href="/app/discussions"
+            className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <span>💬 Discussions</span>
+            {unreadCount > 0 && (
+              <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
+                {unreadCount}
+              </span>
+            )}
+          </Link>
+          <Link
+            href="/app/evenements"
+            className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <span>🔔 Événements</span>
+            {eventsCount > 0 && (
+              <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
+                {eventsCount > 99 ? "99+" : eventsCount}
+              </span>
+            )}
+          </Link>
+        </div>
+
+        <WorkspaceNav workspaces={workspaces} initialActiveId={activeWorkspaceId} />
+      </nav>
+    </>
+  );
+
   return (
     <div className="flex min-h-full flex-1">
-      {/* Barre latérale */}
+      {/* Barre latérale (bureau) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-zinc-200 bg-white p-4 md:flex dark:border-zinc-800 dark:bg-zinc-900">
-        <Link href="/app" className="mb-6 block text-lg font-semibold tracking-tight">
-          Taskflow
-        </Link>
-
-        <nav className="flex-1 space-y-6 overflow-y-auto">
-          <div className="space-y-0.5">
-            <Link
-              href="/app"
-              className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            >
-              🏠 Accueil
-            </Link>
-            <Link
-              href="/app/discussions"
-              className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            >
-              <span>💬 Discussions</span>
-              {unreadCount > 0 && (
-                <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              href="/app/evenements"
-              className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            >
-              <span>🔔 Événements</span>
-              {eventsCount > 0 && (
-                <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
-                  {eventsCount > 99 ? "99+" : eventsCount}
-                </span>
-              )}
-            </Link>
-          </div>
-
-          <WorkspaceNav workspaces={workspaces} initialActiveId={activeWorkspaceId} />
-        </nav>
+        {nav}
       </aside>
 
       {/* Zone principale */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <Link href="/app" className="text-sm font-semibold md:hidden">
-            Taskflow
-          </Link>
-          <div className="ml-auto flex items-center gap-4">
+        <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 py-3 sm:px-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-2">
+            {/* Menu en tiroir (mobile) : reprend la même navigation */}
+            <MobileDrawer>{nav}</MobileDrawer>
+            <Link href="/app" className="text-sm font-semibold md:hidden">
+              Taskflow
+            </Link>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/app/profile"
               className="flex items-center gap-2 text-sm font-medium text-zinc-700 hover:underline dark:text-zinc-300"
@@ -127,7 +138,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
                 fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
                 className="h-7 w-7 shrink-0 rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
               />
-              <span>{user.name}</span>
+              <span className="hidden sm:inline">{user.name}</span>
             </Link>
             <form action={logout}>
               <button
@@ -140,7 +151,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
           </div>
         </header>
 
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
