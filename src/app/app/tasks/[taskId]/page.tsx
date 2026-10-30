@@ -140,6 +140,17 @@ export default async function TaskDetailPage({
   const { byId } = buildTaskIndex(rawTasks);
   const children = byId.get(task.id)?.children ?? [];
 
+  // Sous-tâches directes que l'utilisateur courant suit (pour l'œil 👁).
+  const childIds = children.map((c) => c.id);
+  const myChildFollows =
+    childIds.length > 0
+      ? await prisma.taskFollow.findMany({
+          where: { userId: user.id, following: true, taskId: { in: childIds } },
+          select: { taskId: true },
+        })
+      : [];
+  const followedChildIds = new Set(myChildFollows.map((f) => f.taskId));
+
   // Fil d'Ariane : espace › ancêtres › tâche courante.
   const rawById = new Map(allTasks.map((t) => [t.id, t]));
   const ancestors: { id: string; title: string }[] = [];
@@ -333,6 +344,7 @@ export default async function TaskDetailPage({
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel="Nouvelle sous-tâche"
             reorderParentId={task.id}
+            followedIds={followedChildIds}
             emptyLabel={
               isTopLevel
                 ? "Aucune tâche dans ce projet. Créez la première."

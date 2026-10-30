@@ -49,9 +49,9 @@ export function formatDateTime(date: Date): string {
 }
 
 // Titre préfixé selon la nature de la tâche : « Projet : … » (tâche racine)
-// ou « Action : … » (sous-tâche).
+// ou « Tâche : … » (sous-tâche).
 export function prefixedTitle(title: string, isProject: boolean): string {
-  return `${isProject ? "Projet" : "Action"} : ${title}`;
+  return `${isProject ? "Projet" : "Tâche"} : ${title}`;
 }
 
 // Vrai si la date d'échéance est passée (par rapport à aujourd'hui).

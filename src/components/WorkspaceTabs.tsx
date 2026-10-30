@@ -12,14 +12,6 @@ const TABS: { key: WsTab; label: string }[] = [
   { key: "discussions", label: "Discussions" },
 ];
 
-function rememberTab(tab: WsTab) {
-  try {
-    document.cookie = `tf_ws_tab=${tab}; path=/; max-age=31536000; samesite=lax`;
-  } catch {
-    // Cookies indisponibles : préférence simplement non conservée.
-  }
-}
-
 export function WorkspaceTabs({
   initialTab = "projets",
   memberCount,
@@ -41,7 +33,6 @@ export function WorkspaceTabs({
 
   function open(tab: WsTab) {
     setActive(tab);
-    rememberTab(tab);
   }
 
   return (

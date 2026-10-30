@@ -8,7 +8,6 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
-import { getWorkspaceTab } from "@/lib/view";
 import { TaskRow } from "@/components/TaskRow";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
@@ -28,8 +27,6 @@ export default async function WorkspacePage({
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
-
-  const initialTab = await getWorkspaceTab();
 
   const [workspace, allTasks, followedTasks, eventGroups, discussionRows] = await Promise.all([
     prisma.workspace.findUnique({
@@ -331,7 +328,7 @@ export default async function WorkspacePage({
       )}
 
       <WorkspaceTabs
-        initialTab={initialTab}
+        key={workspace.id}
         memberCount={workspace._count.members}
         projets={projetsPanel}
         membres={membresPanel}

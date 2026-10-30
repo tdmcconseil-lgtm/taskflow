@@ -17,6 +17,7 @@ export function TaskCollection({
   newTaskLabel,
   emptyLabel,
   reorderParentId,
+  followedIds,
 }: {
   roots: TaskNode[];
   view: "liste" | "tableau";
@@ -26,6 +27,8 @@ export function TaskCollection({
   emptyLabel: string;
   // Si fourni, la vue Liste devient une liste à plat réordonnable (sous-tâches).
   reorderParentId?: string | null;
+  // Identifiants des tâches auxquelles l'utilisateur est abonné (œil 👁).
+  followedIds?: Set<string>;
 }) {
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
@@ -92,6 +95,7 @@ export function TaskCollection({
               overdue: isOverdue(n.dueDate) && n.status !== "DONE",
               childCount: n.children.length,
               attachmentCount: n.attachmentCount,
+              followed: followedIds?.has(n.id) ?? false,
             }),
           )}
         />
@@ -112,7 +116,11 @@ export function TaskCollection({
                 ) : (
                   <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
                     {rootsOfStatus.map((node) => (
-                      <TaskRow key={node.id} node={node} />
+                      <TaskRow
+                        key={node.id}
+                        node={node}
+                        followed={followedIds?.has(node.id) ?? false}
+                      />
                     ))}
                   </ul>
                 )}

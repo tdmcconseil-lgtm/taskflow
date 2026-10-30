@@ -14,11 +14,6 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0 flex-1">
           <p className="font-medium">
-            {followed && (
-              <span title="Vous êtes abonné" className="mr-1" aria-label="Abonné">
-                👁
-              </span>
-            )}
             <Link
               href={`/app/tasks/${node.id}`}
               className={`hover:underline ${
@@ -27,6 +22,11 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
             >
               {prefixedTitle(node.title, node.parentId === null)}
             </Link>
+            {followed && (
+              <span className="ml-1" title="Vous êtes abonné" aria-label="Abonné">
+                👁
+              </span>
+            )}
           </p>
           {node.description && (
             <p className="mt-0.5 line-clamp-1 text-sm text-zinc-500">{node.description}</p>

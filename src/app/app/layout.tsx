@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
 import { countNewEventGroups } from "@/lib/events";
 import { FramedAvatar } from "@/components/FramedAvatar";
+import { WorkspaceNav } from "@/components/WorkspaceNav";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -42,8 +43,6 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     const last = f.task.comments[0]?.createdAt;
     return !!last && (!f.lastReadAt || last > f.lastReadAt);
   }).length;
-  // Projets (tâches) auxquels l'utilisateur est abonné — pour l'œil dans le menu.
-  const followedIds = new Set(follows.map((f) => f.taskId));
 
   // Nombre d'événements nouveaux depuis la dernière consultation.
   const eventsCount = await countNewEventGroups(user.id, user.eventsReadAt ?? null);
@@ -105,66 +104,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             </Link>
           </div>
 
-          <div>
-            <div className="mb-2 flex items-center justify-between px-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Espaces
-              </span>
-              <Link
-                href="/app/workspaces/new"
-                className="text-sm text-indigo-600 hover:underline"
-                title="Nouvel espace de travail"
-              >
-                +
-              </Link>
-            </div>
-
-            <ul className="space-y-3">
-              {workspaces.map((ws) => {
-                const isActive = ws.id === activeWorkspaceId;
-                return (
-                  <li key={ws.id}>
-                    <Link
-                      href={`/app/workspaces/${ws.id}`}
-                      className={`block truncate rounded-lg px-2 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
-                        isActive ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white" : ""
-                      }`}
-                    >
-                      {ws.name}
-                    </Link>
-                    {isActive && (
-                      <ul className="mt-1 space-y-0.5 border-l border-zinc-200 pl-3 dark:border-zinc-800">
-                        {ws.tasks.map((t) => (
-                          <li key={t.id}>
-                            <Link
-                              href={`/app/tasks/${t.id}`}
-                              className="flex items-center gap-1 rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                            >
-                              <span className="truncate">{t.title}</span>
-                              {followedIds.has(t.id) && (
-                                <span
-                                  className="shrink-0"
-                                  title="Vous êtes abonné"
-                                  aria-label="Abonné"
-                                >
-                                  👁
-                                </span>
-                              )}
-                            </Link>
-                          </li>
-                        ))}
-                        {ws.tasks.length === 0 && (
-                          <li className="px-2 py-1 text-xs italic text-zinc-400">
-                            Aucun projet
-                          </li>
-                        )}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <WorkspaceNav workspaces={workspaces} initialActiveId={activeWorkspaceId} />
         </nav>
       </aside>
 

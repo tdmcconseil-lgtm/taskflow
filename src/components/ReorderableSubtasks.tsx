@@ -21,6 +21,7 @@ export type SubtaskItem = {
   overdue: boolean;
   childCount: number;
   attachmentCount: number;
+  followed: boolean;
 };
 
 export function ReorderableSubtasks({
@@ -96,6 +97,11 @@ export function ReorderableSubtasks({
                 >
                   {prefixedTitle(t.title, false)}
                 </Link>
+                {t.followed && (
+                  <span className="ml-1" title="Vous êtes abonné" aria-label="Abonné">
+                    👁
+                  </span>
+                )}
               </p>
               {t.description && (
                 <p
