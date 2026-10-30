@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ASSIGNEE_SELECT, toAssigneeInfo, type AssigneeInfo, type RawTask } from "@/lib/task-tree";
-import { describeActivity, ASPECT_LABELS, joinFr } from "@/lib/activity-text";
+import { describeActivity, aspectLabel, joinWithAnd } from "@/lib/activity-text";
 import type { TaskActivityType } from "@/generated/prisma/client";
+import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 type ActorInfo = NonNullable<RawTask["assignee"]>;
 
@@ -67,23 +68,23 @@ function whereForUser(
   return includeOwn ? base : { actorId: { not: userId }, ...base };
 }
 
-// Résumé d'un groupe d'événements (sans le nom de l'auteur).
-function summarize(events: EventRow[]): string {
+// Résumé d'un groupe d'événements (sans le nom de l'auteur), traduit.
+function summarize(events: EventRow[], t: Dictionary): string {
   if (events.some((e) => e.type === "MENTIONED")) {
-    return "vous a mentionné dans la discussion";
+    return t.activity.mentionedYou;
   }
   if (events.length === 1) {
-    return describeActivity(events[0]);
+    return describeActivity(events[0], t);
   }
   // Plusieurs changements d'une même sauvegarde → une seule ligne.
-  const aspects = events.map((e) => ASPECT_LABELS[e.type]).filter((x): x is string => !!x);
-  if (aspects.length === 0) return "a mis à jour cette tâche";
-  return `a mis à jour cette tâche : ${joinFr(aspects)}`;
+  const aspects = events.map((e) => aspectLabel(e.type, t)).filter((x): x is string => !!x);
+  if (aspects.length === 0) return t.activity.updatedTask;
+  return `${t.activity.updatedTaskWith} ${joinWithAnd(aspects, t.activity.and)}`;
 }
 
 // Regroupe les événements partageant un groupId (sauvegarde multi-champs,
 // commentaire + mentions) ; ceux sans groupId restent individuels.
-function groupEvents(rows: EventRow[], readAt: Date | null): EventGroup[] {
+function groupEvents(rows: EventRow[], readAt: Date | null, t: Dictionary): EventGroup[] {
   const map = new Map<string, EventRow[]>();
   const order: string[] = [];
   for (const r of rows) {
@@ -104,7 +105,7 @@ function groupEvents(rows: EventRow[], readAt: Date | null): EventGroup[] {
       actorName: head.actor.name,
       task: { id: head.task.id, title: head.task.title, workspace: head.task.workspace.name },
       createdAt,
-      summary: summarize(evs),
+      summary: summarize(evs, t),
       unread: !readAt || createdAt > readAt,
     };
   });
@@ -114,6 +115,7 @@ function groupEvents(rows: EventRow[], readAt: Date | null): EventGroup[] {
 export async function getEventFeed(
   userId: string,
   readAt: Date | null,
+  t: Dictionary,
   includeOwn = false,
   limit = 100,
   workspaceId?: string,
@@ -125,7 +127,7 @@ export async function getEventFeed(
     take: limit,
     select: EVENT_SELECT,
   });
-  return groupEvents(rows as EventRow[], readAt);
+  return groupEvents(rows as EventRow[], readAt, t);
 }
 
 // Nombre de lignes d'événements nouvelles depuis la dernière consultation.

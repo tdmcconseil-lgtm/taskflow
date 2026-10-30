@@ -1,7 +1,10 @@
+"use client";
+
 import { UserAvatar } from "@/components/UserAvatar";
 import { toAssigneeInfo, type RawTask } from "@/lib/task-tree";
 import { formatDateTime } from "@/lib/labels";
 import { describeActivity } from "@/lib/activity-text";
+import { useT } from "@/lib/i18n/context";
 import type { TaskActivityType } from "@/generated/prisma/client";
 
 type ActorInfo = NonNullable<RawTask["assignee"]>;
@@ -17,8 +20,9 @@ export type Activity = {
 };
 
 export function ActivityFeed({ activities }: { activities: Activity[] }) {
+  const t = useT();
   if (activities.length === 0) {
-    return <p className="text-sm italic text-zinc-400">Aucune activité pour le moment.</p>;
+    return <p className="text-sm italic text-zinc-400">{t.activity.none}</p>;
   }
   return (
     <ul className="space-y-3">
@@ -30,7 +34,7 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
           <UserAvatar user={toAssigneeInfo(a.actor)!} className="mt-0.5 h-5 w-5" />
           <p>
             <span className="font-medium text-zinc-700 dark:text-zinc-300">{a.actor.name}</span>{" "}
-            {describeActivity(a)}
+            {describeActivity(a, t)}
             <span className="ml-1 text-xs text-zinc-400">· {formatDateTime(a.createdAt)}</span>
           </p>
         </li>

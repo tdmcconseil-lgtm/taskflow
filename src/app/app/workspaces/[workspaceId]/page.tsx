@@ -78,7 +78,7 @@ export default async function WorkspacePage({
         },
       },
     }),
-    getEventFeed(user.id, user.eventsReadAt ?? null, includeOwn, 50, workspaceId),
+    getEventFeed(user.id, user.eventsReadAt ?? null, t, includeOwn, 50, workspaceId),
     getDiscussionRows(user.id, workspaceId),
   ]);
   if (!workspace) notFound();
