@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { composeName } from "@/lib/name";
+import { cookies } from "next/headers";
+import { locales, LOCALE_COOKIE } from "@/lib/i18n/config";
 
 export type FormState = { error?: string } | undefined;
 
@@ -80,6 +82,15 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
 
   const ok = await verifyPassword(user.passwordHash, parsed.data.password);
   if (!ok) return genericError;
+
+  // Appliquer la langue préférée du compte (si définie) à cette session.
+  if (user.locale && (locales as readonly string[]).includes(user.locale)) {
+    (await cookies()).set(LOCALE_COOKIE, user.locale, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+  }
 
   await createSession({ userId: user.id });
   redirect("/app");

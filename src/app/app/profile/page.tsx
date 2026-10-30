@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { NameForm, EmailForm, PasswordForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { cardClass } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Mon profil — Taskflow" };
@@ -77,6 +78,14 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
           Identité
         </h2>
         <NameForm firstName={user.firstName} lastName={user.lastName} />
+      </section>
+
+      {/* Langue */}
+      <section className={cardClass}>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Langue
+        </h2>
+        <LocaleSwitcher />
       </section>
 
       {/* Email */}

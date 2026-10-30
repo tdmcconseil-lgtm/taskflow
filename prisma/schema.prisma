@@ -71,6 +71,8 @@ model User {
   photoUpdatedAt DateTime?
   // Date de dernière consultation de la page « Événements » (calcul des non-lus).
   eventsReadAt   DateTime?
+  // Langue d'interface préférée (fr | en | es) ; sert de défaut à la connexion.
+  locale         String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
