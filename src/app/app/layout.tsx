@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
@@ -9,7 +10,10 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
 
   const workspaces = await prisma.workspace.findMany({
-    where: { members: { some: { userId: user.id } }, archivedAt: null },
+    where: {
+      members: { some: { userId: user.id, deactivatedAt: null } },
+      archivedAt: null,
+    },
     orderBy: { createdAt: "asc" },
     include: {
       // Les « projets » sont les tâches de 1er niveau (sans parent).
@@ -25,6 +29,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const follows = await prisma.taskFollow.findMany({
     where: { userId: user.id, following: true },
     select: {
+      taskId: true,
       lastReadAt: true,
       task: {
         select: {
@@ -37,9 +42,28 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     const last = f.task.comments[0]?.createdAt;
     return !!last && (!f.lastReadAt || last > f.lastReadAt);
   }).length;
+  // Projets (tâches) auxquels l'utilisateur est abonné — pour l'œil dans le menu.
+  const followedIds = new Set(follows.map((f) => f.taskId));
 
   // Nombre d'événements nouveaux depuis la dernière consultation.
   const eventsCount = await countNewEventGroups(user.id, user.eventsReadAt ?? null);
+
+  // Espace en cours de visite — on ne déplie que ses projets dans le menu.
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  let activeWorkspaceId: string | null = null;
+  const wsMatch = pathname.match(/^\/app\/workspaces\/([^/]+)/);
+  if (wsMatch) {
+    activeWorkspaceId = wsMatch[1];
+  } else {
+    const taskMatch = pathname.match(/^\/app\/tasks\/([^/]+)/);
+    if (taskMatch) {
+      const t = await prisma.task.findUnique({
+        where: { id: taskMatch[1] },
+        select: { workspaceId: true },
+      });
+      activeWorkspaceId = t?.workspaceId ?? null;
+    }
+  }
 
   return (
     <div className="flex min-h-full flex-1">
@@ -96,33 +120,49 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             </div>
 
             <ul className="space-y-3">
-              {workspaces.map((ws) => (
-                <li key={ws.id}>
-                  <Link
-                    href={`/app/workspaces/${ws.id}`}
-                    className="block truncate rounded-lg px-2 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  >
-                    {ws.name}
-                  </Link>
-                  <ul className="mt-1 space-y-0.5 border-l border-zinc-200 pl-3 dark:border-zinc-800">
-                    {ws.tasks.map((t) => (
-                      <li key={t.id}>
-                        <Link
-                          href={`/app/tasks/${t.id}`}
-                          className="block truncate rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                        >
-                          {t.title}
-                        </Link>
-                      </li>
-                    ))}
-                    {ws.tasks.length === 0 && (
-                      <li className="px-2 py-1 text-xs italic text-zinc-400">
-                        Aucun projet
-                      </li>
+              {workspaces.map((ws) => {
+                const isActive = ws.id === activeWorkspaceId;
+                return (
+                  <li key={ws.id}>
+                    <Link
+                      href={`/app/workspaces/${ws.id}`}
+                      className={`block truncate rounded-lg px-2 py-1 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                        isActive ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white" : ""
+                      }`}
+                    >
+                      {ws.name}
+                    </Link>
+                    {isActive && (
+                      <ul className="mt-1 space-y-0.5 border-l border-zinc-200 pl-3 dark:border-zinc-800">
+                        {ws.tasks.map((t) => (
+                          <li key={t.id}>
+                            <Link
+                              href={`/app/tasks/${t.id}`}
+                              className="flex items-center gap-1 rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                            >
+                              <span className="truncate">{t.title}</span>
+                              {followedIds.has(t.id) && (
+                                <span
+                                  className="shrink-0"
+                                  title="Vous êtes abonné"
+                                  aria-label="Abonné"
+                                >
+                                  👁
+                                </span>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                        {ws.tasks.length === 0 && (
+                          <li className="px-2 py-1 text-xs italic text-zinc-400">
+                            Aucun projet
+                          </li>
+                        )}
+                      </ul>
                     )}
-                  </ul>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </nav>

@@ -34,7 +34,11 @@ export async function proxy(request: NextRequest) {
   if (isAuthPage && valid) {
     return NextResponse.redirect(new URL("/app", request.url));
   }
-  return NextResponse.next();
+
+  // Transmet le chemin courant aux composants serveur (barre latérale).
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
