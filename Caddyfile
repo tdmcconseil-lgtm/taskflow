@@ -1,3 +1,9 @@
+# www redirige vers le domaine racine (adresse canonique).
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+# Application, derrière HTTPS automatique (certificat Let's Encrypt).
 {$DOMAIN} {
 	reverse_proxy app:3001
 }

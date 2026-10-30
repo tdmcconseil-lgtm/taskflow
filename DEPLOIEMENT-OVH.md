@@ -14,11 +14,12 @@ Ce qui est déjà prêt dans le dépôt : `Dockerfile`, `docker-compose.prod.yml
 1. Sur OVH, commande un **VPS** (le modèle d'entrée de gamme suffit pour
    démarrer) avec **Ubuntu 24.04** ou **Debian 12**. Note l'**adresse IP** et le
    mot de passe/clé SSH fournis.
-2. Si tu as un **nom de domaine** (chez OVH ou ailleurs), crée un enregistrement
-   **DNS de type A** qui pointe un sous-domaine (ex. `taskflow.ton-domaine.fr`)
-   vers l'**IP du VPS**. (La propagation peut prendre quelques minutes.)
-   - Pas de domaine ? On peut démarrer en HTTP sur l'IP, mais HTTPS a besoin d'un
-     domaine — dis-le-moi et j'adapte.
+2. Dans la zone DNS de **getrida.com**, crée deux enregistrements **A** vers
+   l'**IP du VPS** :
+   - hôte `@` (racine) → IP du VPS
+   - hôte `www` → IP du VPS (redirigé automatiquement vers la racine)
+
+   (La propagation peut prendre de quelques minutes à quelques heures.)
 
 ## 2. Se connecter en SSH
 
@@ -65,9 +66,9 @@ cp .env.production.example .env
 nano .env
 ```
 
-Remplis : `POSTGRES_PASSWORD` (le même dans `DATABASE_URL`), `AUTH_SECRET`
-(génère-le avec la commande indiquée dans le fichier), `DOMAIN` et `APP_URL`
-avec ton sous-domaine.
+Remplis : `POSTGRES_PASSWORD` (le même dans `DATABASE_URL`) et `AUTH_SECRET`
+(génère-le avec la commande indiquée dans le fichier). `DOMAIN` et `APP_URL`
+sont déjà pré-remplis avec `getrida.com`.
 
 ## 6. Démarrer
 
@@ -85,7 +86,7 @@ docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f app
 ```
 
-Ouvre `https://taskflow.ton-domaine.fr` → crée ton compte via **/signup**
+Ouvre `https://getrida.com` → crée ton compte via **/signup**
 (la base démarre vide).
 
 > Pense à ouvrir les ports **80** et **443** dans le pare-feu du VPS si besoin.
