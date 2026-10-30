@@ -37,10 +37,10 @@ services:
       - "443:443"
     environment:
       DOMAIN: ${DOMAIN:?Definir DOMAIN dans .env}
-      # Identifiants d'accès à la préprod (basic auth). Hash non versionné,
-      # défini dans .env (STAGING_HASH = sortie de `caddy hash-password`).
-      STAGING_USER: ${STAGING_USER:-preview}
-      STAGING_HASH: ${STAGING_HASH:?Definir STAGING_HASH dans .env}
+    # Identifiants d'accès à la préprod (basic auth), NON versionnés.
+    # Créer caddy.env à partir de caddy.env.example (sur le serveur).
+    env_file:
+      - ./caddy.env
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

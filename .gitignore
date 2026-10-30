@@ -36,6 +36,9 @@ yarn-error.log*
 !.env.production.example
 !.env.staging.example
 
+# Identifiants d'accès à la préprod (voir caddy.env.example)
+caddy.env
+
 # vercel
 .vercel
 
