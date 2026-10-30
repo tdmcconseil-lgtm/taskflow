@@ -301,6 +301,20 @@ const fr = {
     unitKb: "Ko",
     unitMb: "Mo",
   },
+  profileForms: {
+    save: "Enregistrer",
+    currentEmail: "Adresse actuelle :",
+    newEmail: "Nouvelle adresse email",
+    currentPassword: "Mot de passe actuel",
+    emailChangeHint:
+      "Un email de confirmation sera envoyé à la nouvelle adresse ; le changement ne prend effet qu'après avoir cliqué sur le lien reçu.",
+    sendConfirmation: "Envoyer la confirmation",
+    newPassword: "Nouveau mot de passe",
+    confirmNewPassword: "Confirmer le nouveau mot de passe",
+    changePassword: "Changer le mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    createAndJoin: "Créer mon compte et rejoindre",
+  },
 };
 
 export type Dictionary = typeof fr;

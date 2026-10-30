@@ -302,6 +302,20 @@ const en: Dictionary = {
     unitKb: "KB",
     unitMb: "MB",
   },
+  profileForms: {
+    save: "Save",
+    currentEmail: "Current address:",
+    newEmail: "New email address",
+    currentPassword: "Current password",
+    emailChangeHint:
+      "A confirmation email will be sent to the new address; the change only takes effect after you click the link you receive.",
+    sendConfirmation: "Send confirmation",
+    newPassword: "New password",
+    confirmNewPassword: "Confirm the new password",
+    changePassword: "Change password",
+    confirmPassword: "Confirm password",
+    createAndJoin: "Create my account and join",
+  },
 };
 
 export default en;

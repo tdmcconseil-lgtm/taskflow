@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
+import { useT } from "@/lib/i18n/context";
 import {
   updateProfileName,
   requestEmailChange,
@@ -17,13 +18,14 @@ export function NameForm({
   firstName: string;
   lastName: string;
 }) {
+  const t = useT();
   const [state, action] = useActionState<FormState, FormData>(updateProfileName, undefined);
   return (
     <form action={action} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <label htmlFor="firstName" className={labelClass}>
-            Prénom
+            {t.auth.firstName}
           </label>
           <input
             id="firstName"
@@ -35,7 +37,7 @@ export function NameForm({
         </div>
         <div className="space-y-1">
           <label htmlFor="lastName" className={labelClass}>
-            Nom <span className="text-zinc-400">(facultatif)</span>
+            {t.auth.lastName} <span className="text-zinc-400">{t.auth.optional}</span>
           </label>
           <input
             id="lastName"
@@ -47,27 +49,29 @@ export function NameForm({
         </div>
       </div>
       {state?.error && <p className={errorClass}>{state.error}</p>}
-      <SubmitButton>Enregistrer</SubmitButton>
+      <SubmitButton>{t.profileForms.save}</SubmitButton>
     </form>
   );
 }
 
 export function EmailForm({ currentEmail }: { currentEmail: string }) {
+  const t = useT();
   const [state, action] = useActionState<FormState, FormData>(requestEmailChange, undefined);
   return (
     <form action={action} className="space-y-3">
       <p className="text-sm text-zinc-500">
-        Adresse actuelle : <span className="font-medium text-zinc-700 dark:text-zinc-300">{currentEmail}</span>
+        {t.profileForms.currentEmail}{" "}
+        <span className="font-medium text-zinc-700 dark:text-zinc-300">{currentEmail}</span>
       </p>
       <div className="space-y-1">
         <label htmlFor="newEmail" className={labelClass}>
-          Nouvelle adresse email
+          {t.profileForms.newEmail}
         </label>
         <input id="newEmail" name="newEmail" type="email" autoComplete="off" className={inputClass} />
       </div>
       <div className="space-y-1">
         <label htmlFor="emailPassword" className={labelClass}>
-          Mot de passe actuel
+          {t.profileForms.currentPassword}
         </label>
         <input
           id="emailPassword"
@@ -77,23 +81,21 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
           className={inputClass}
         />
       </div>
-      <p className="text-xs text-zinc-500">
-        Un email de confirmation sera envoyé à la nouvelle adresse ; le changement
-        ne prend effet qu&apos;après avoir cliqué sur le lien reçu.
-      </p>
+      <p className="text-xs text-zinc-500">{t.profileForms.emailChangeHint}</p>
       {state?.error && <p className={errorClass}>{state.error}</p>}
-      <SubmitButton>Envoyer la confirmation</SubmitButton>
+      <SubmitButton>{t.profileForms.sendConfirmation}</SubmitButton>
     </form>
   );
 }
 
 export function PasswordForm() {
+  const t = useT();
   const [state, action] = useActionState<FormState, FormData>(changePassword, undefined);
   return (
     <form action={action} className="space-y-3">
       <div className="space-y-1">
         <label htmlFor="current" className={labelClass}>
-          Mot de passe actuel
+          {t.profileForms.currentPassword}
         </label>
         <input
           id="current"
@@ -105,7 +107,7 @@ export function PasswordForm() {
       </div>
       <div className="space-y-1">
         <label htmlFor="newPassword" className={labelClass}>
-          Nouveau mot de passe
+          {t.profileForms.newPassword}
         </label>
         <input
           id="newPassword"
@@ -114,11 +116,11 @@ export function PasswordForm() {
           autoComplete="new-password"
           className={inputClass}
         />
-        <p className="text-xs text-zinc-500">8 caractères minimum.</p>
+        <p className="text-xs text-zinc-500">{t.auth.passwordHint}</p>
       </div>
       <div className="space-y-1">
         <label htmlFor="confirm" className={labelClass}>
-          Confirmer le nouveau mot de passe
+          {t.profileForms.confirmNewPassword}
         </label>
         <input
           id="confirm"
@@ -129,7 +131,7 @@ export function PasswordForm() {
         />
       </div>
       {state?.error && <p className={errorClass}>{state.error}</p>}
-      <SubmitButton>Changer le mot de passe</SubmitButton>
+      <SubmitButton>{t.profileForms.changePassword}</SubmitButton>
     </form>
   );
 }
