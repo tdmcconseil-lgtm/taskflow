@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail } from "@/lib/mail";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
@@ -222,12 +223,18 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   ]);
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3001";
-  const mail = invitationEmail({
-    inviterName: user.name,
-    workspaceName: workspace.name,
-    acceptUrl: `${appUrl}/invitations/${token}`,
-    expiresAt,
-  });
+  const t = await getDictionary();
+  const locale = await getLocale();
+  const mail = invitationEmail(
+    {
+      inviterName: user.name,
+      workspaceName: workspace.name,
+      acceptUrl: `${appUrl}/invitations/${token}`,
+      expiresAt,
+    },
+    t,
+    locale,
+  );
   await sendMail({ to: email, subject: mail.subject, body: mail.body });
 
   revalidatePath(`/app/workspaces/${workspaceId}/members`);
@@ -267,12 +274,18 @@ export async function resendInvitation(formData: FormData): Promise<void> {
   });
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3001";
-  const mail = invitationEmail({
-    inviterName: user.name,
-    workspaceName: workspace.name,
-    acceptUrl: `${appUrl}/invitations/${token}`,
-    expiresAt,
-  });
+  const t = await getDictionary();
+  const locale = await getLocale();
+  const mail = invitationEmail(
+    {
+      inviterName: user.name,
+      workspaceName: workspace.name,
+      acceptUrl: `${appUrl}/invitations/${token}`,
+      expiresAt,
+    },
+    t,
+    locale,
+  );
   await sendMail({ to: invitation.email, subject: mail.subject, body: mail.body });
 
   revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);

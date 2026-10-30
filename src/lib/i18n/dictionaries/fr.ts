@@ -343,6 +343,14 @@ const fr = {
     resend: "Renvoyer",
     cancel: "Annuler",
   },
+  email: {
+    changeSubject: "Confirmez votre nouvelle adresse email Taskflow",
+    changeBody:
+      "Bonjour {name},\n\nUne demande de changement d'adresse email vers « {newEmail} » a été faite sur votre compte Taskflow. Pour la valider, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email : votre adresse actuelle reste inchangée.\n\n— L'équipe Taskflow",
+    inviteSubject: "{inviter} vous invite à rejoindre « {workspace} » sur Taskflow",
+    inviteBody:
+      "Bonjour,\n\n{inviter} vous invite à collaborer dans l'espace de travail « {workspace} » sur Taskflow. Pour créer votre compte et le rejoindre, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe Taskflow",
+  },
 };
 
 export type Dictionary = typeof fr;

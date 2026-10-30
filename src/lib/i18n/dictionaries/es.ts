@@ -344,6 +344,14 @@ const es: Dictionary = {
     resend: "Reenviar",
     cancel: "Cancelar",
   },
+  email: {
+    changeSubject: "Confirma tu nueva dirección de correo de Taskflow",
+    changeBody:
+      "Hola {name},\n\nSe ha solicitado cambiar la dirección de correo a «{newEmail}» en tu cuenta de Taskflow. Para confirmarlo, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no has solicitado este cambio, ignora este correo: tu dirección actual no cambia.\n\n— El equipo de Taskflow",
+    inviteSubject: "{inviter} te invita a unirte a «{workspace}» en Taskflow",
+    inviteBody:
+      "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en Taskflow. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de Taskflow",
+  },
 };
 
 export default es;

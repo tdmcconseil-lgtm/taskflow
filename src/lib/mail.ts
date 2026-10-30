@@ -5,6 +5,10 @@
 //    (docker-compose) qui capture tout — boîte web sur http://localhost:8026.
 
 import nodemailer, { type Transporter } from "nodemailer";
+import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
+import type { Locale } from "@/lib/i18n/config";
+
+const INTL_LOCALE: Record<Locale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES" };
 
 type Mail = {
   to: string;
@@ -62,56 +66,46 @@ export async function sendMail(mail: Mail): Promise<void> {
   throw new Error(`Transport email non supporté : ${transport}`);
 }
 
-export function emailChangeEmail(params: {
-  name: string;
-  newEmail: string;
-  confirmUrl: string;
-  expiresAt: Date;
-}): { subject: string; body: string } {
-  const { name, newEmail, confirmUrl, expiresAt } = params;
+export function emailChangeEmail(
+  params: {
+    name: string;
+    newEmail: string;
+    confirmUrl: string;
+    expiresAt: Date;
+  },
+  t: Dictionary,
+  locale: Locale,
+): { subject: string; body: string } {
+  const expires = params.expiresAt.toLocaleString(INTL_LOCALE[locale]);
   return {
-    subject: "Confirmez votre nouvelle adresse email Taskflow",
-    body: [
-      `Bonjour ${name},`,
-      "",
-      `Une demande de changement d'adresse email vers « ${newEmail} » a été faite`,
-      "sur votre compte Taskflow. Pour la valider, cliquez sur le lien ci-dessous :",
-      "",
-      confirmUrl,
-      "",
-      `Ce lien expire le ${expiresAt.toLocaleString("fr-FR")}.`,
-      "",
-      "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email :",
-      "votre adresse actuelle reste inchangée.",
-      "",
-      "— L'équipe Taskflow",
-    ].join("\n"),
+    subject: t.email.changeSubject,
+    body: t.email.changeBody
+      .replace("{name}", params.name)
+      .replace("{newEmail}", params.newEmail)
+      .replace("{url}", params.confirmUrl)
+      .replace("{expires}", expires),
   };
 }
 
-export function invitationEmail(params: {
-  inviterName: string;
-  workspaceName: string;
-  acceptUrl: string;
-  expiresAt: Date;
-}): { subject: string; body: string } {
-  const { inviterName, workspaceName, acceptUrl, expiresAt } = params;
+export function invitationEmail(
+  params: {
+    inviterName: string;
+    workspaceName: string;
+    acceptUrl: string;
+    expiresAt: Date;
+  },
+  t: Dictionary,
+  locale: Locale,
+): { subject: string; body: string } {
+  const expires = params.expiresAt.toLocaleString(INTL_LOCALE[locale]);
   return {
-    subject: `${inviterName} vous invite à rejoindre « ${workspaceName} » sur Taskflow`,
-    body: [
-      "Bonjour,",
-      "",
-      `${inviterName} vous invite à collaborer dans l'espace de travail`,
-      `« ${workspaceName} » sur Taskflow. Pour créer votre compte et le rejoindre,`,
-      "cliquez sur le lien ci-dessous :",
-      "",
-      acceptUrl,
-      "",
-      `Ce lien expire le ${expiresAt.toLocaleString("fr-FR")}.`,
-      "",
-      "Si vous n'êtes pas concerné, ignorez simplement cet email.",
-      "",
-      "— L'équipe Taskflow",
-    ].join("\n"),
+    subject: t.email.inviteSubject
+      .replace("{inviter}", params.inviterName)
+      .replace("{workspace}", params.workspaceName),
+    body: t.email.inviteBody
+      .replace("{inviter}", params.inviterName)
+      .replace("{workspace}", params.workspaceName)
+      .replace("{url}", params.acceptUrl)
+      .replace("{expires}", expires),
   };
 }

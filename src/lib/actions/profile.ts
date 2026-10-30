@@ -8,6 +8,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, emailChangeEmail } from "@/lib/mail";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
@@ -197,12 +198,18 @@ export async function requestEmailChange(_prev: FormState, formData: FormData): 
   ]);
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3001";
-  const mail = emailChangeEmail({
-    name: user.name,
-    newEmail: parsed.data.newEmail,
-    confirmUrl: `${appUrl}/profile/confirm-email/${token}`,
-    expiresAt,
-  });
+  const t = await getDictionary();
+  const locale = await getLocale();
+  const mail = emailChangeEmail(
+    {
+      name: user.name,
+      newEmail: parsed.data.newEmail,
+      confirmUrl: `${appUrl}/profile/confirm-email/${token}`,
+      expiresAt,
+    },
+    t,
+    locale,
+  );
   await sendMail({ to: parsed.data.newEmail, subject: mail.subject, body: mail.body });
 
   redirect("/app/profile?emailSent=1");
