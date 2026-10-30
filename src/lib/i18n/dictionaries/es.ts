@@ -316,6 +316,34 @@ const es: Dictionary = {
     confirmPassword: "Confirmar la contraseña",
     createAndJoin: "Crear mi cuenta y unirme",
   },
+  invitePage: {
+    unavailable: "Invitación no disponible",
+    expired: "Este enlace de invitación ha caducado. Pide a la persona que te envíe uno nuevo.",
+    invalid: "Este enlace de invitación no es válido o ya se ha usado.",
+    goToLogin: "Ir al inicio de sesión",
+    invitesYou: "te invita a unirte al espacio",
+    createToAccept: "Crea tu cuenta para aceptar.",
+  },
+  confirmEmail: {
+    unavailable: "Enlace no disponible",
+    expired: "Este enlace de confirmación ha caducado. Reinicia la solicitud desde tu perfil.",
+    invalid: "Este enlace no es válido o ya se ha usado.",
+    prompt: "Confirma el cambio de tu dirección de correo a",
+    confirmButton: "Confirmar mi nuevo correo",
+  },
+  membersPage: {
+    title: "Miembros",
+    invite: "Invitar a un miembro",
+    resent: "Se reenvió un correo de invitación a {email}.",
+    you: "(tú)",
+    owner: "Propietario",
+    member: "Miembro",
+    pendingInvitations: "Invitaciones pendientes",
+    expired: "Caducada",
+    pendingExpires: "Pendiente · caduca el",
+    resend: "Reenviar",
+    cancel: "Cancelar",
+  },
 };
 
 export default es;

@@ -316,6 +316,34 @@ const en: Dictionary = {
     confirmPassword: "Confirm password",
     createAndJoin: "Create my account and join",
   },
+  invitePage: {
+    unavailable: "Invitation unavailable",
+    expired: "This invitation link has expired. Ask the person to send you a new one.",
+    invalid: "This invitation link is invalid or has already been used.",
+    goToLogin: "Go to login",
+    invitesYou: "invites you to join the workspace",
+    createToAccept: "Create your account to accept.",
+  },
+  confirmEmail: {
+    unavailable: "Link unavailable",
+    expired: "This confirmation link has expired. Restart the request from your profile.",
+    invalid: "This link is invalid or has already been used.",
+    prompt: "Confirm changing your email address to",
+    confirmButton: "Confirm my new email",
+  },
+  membersPage: {
+    title: "Members",
+    invite: "Invite a member",
+    resent: "An invitation email was resent to {email}.",
+    you: "(you)",
+    owner: "Owner",
+    member: "Member",
+    pendingInvitations: "Pending invitations",
+    expired: "Expired",
+    pendingExpires: "Pending · expires on",
+    resend: "Resend",
+    cancel: "Cancel",
+  },
 };
 
 export default en;

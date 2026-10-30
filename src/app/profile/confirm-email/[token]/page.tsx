@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/lib/auth/tokens";
 import { ConfirmEmailForm } from "@/components/ConfirmEmailForm";
+import { getDictionary } from "@/lib/i18n/server";
 
 export const metadata: Metadata = { title: "Changement d'email — Taskflow" };
 
@@ -20,6 +21,7 @@ export default async function ConfirmEmailPage({
   params,
 }: PageProps<"/profile/confirm-email/[token]">) {
   const { token } = await params;
+  const t = await getDictionary();
 
   const request = await prisma.emailChangeRequest.findUnique({
     where: { tokenHash: hashToken(token) },
@@ -31,17 +33,15 @@ export default async function ConfirmEmailPage({
   if (!request || expired) {
     return (
       <Card>
-        <h1 className="text-xl font-semibold tracking-tight">Lien indisponible</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t.confirmEmail.unavailable}</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          {expired
-            ? "Ce lien de confirmation a expiré. Relancez la demande depuis votre profil."
-            : "Ce lien est invalide ou a déjà été utilisé."}
+          {expired ? t.confirmEmail.expired : t.confirmEmail.invalid}
         </p>
         <Link
           href="/login"
           className="mt-6 inline-block text-sm font-medium text-indigo-600 hover:underline"
         >
-          Aller à la connexion
+          {t.invitePage.goToLogin}
         </Link>
       </Card>
     );
@@ -52,7 +52,7 @@ export default async function ConfirmEmailPage({
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Taskflow</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          Confirmez le changement de votre adresse email vers{" "}
+          {t.confirmEmail.prompt}{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">{request.newEmail}</span>.
         </p>
       </div>

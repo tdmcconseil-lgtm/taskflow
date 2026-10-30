@@ -315,6 +315,34 @@ const fr = {
     confirmPassword: "Confirmer le mot de passe",
     createAndJoin: "Créer mon compte et rejoindre",
   },
+  invitePage: {
+    unavailable: "Invitation indisponible",
+    expired: "Ce lien d'invitation a expiré. Demandez à la personne de vous en renvoyer une.",
+    invalid: "Ce lien d'invitation est invalide ou a déjà été utilisé.",
+    goToLogin: "Aller à la connexion",
+    invitesYou: "vous invite à rejoindre l'espace",
+    createToAccept: "Créez votre compte pour accepter.",
+  },
+  confirmEmail: {
+    unavailable: "Lien indisponible",
+    expired: "Ce lien de confirmation a expiré. Relancez la demande depuis votre profil.",
+    invalid: "Ce lien est invalide ou a déjà été utilisé.",
+    prompt: "Confirmez le changement de votre adresse email vers",
+    confirmButton: "Confirmer mon nouvel email",
+  },
+  membersPage: {
+    title: "Membres",
+    invite: "Inviter un membre",
+    resent: "Un email d'invitation a été renvoyé à {email}.",
+    you: "(vous)",
+    owner: "Propriétaire",
+    member: "Membre",
+    pendingInvitations: "Invitations en attente",
+    expired: "Expirée",
+    pendingExpires: "En attente · expire le",
+    resend: "Renvoyer",
+    cancel: "Annuler",
+  },
 };
 
 export type Dictionary = typeof fr;

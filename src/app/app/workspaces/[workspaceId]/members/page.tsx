@@ -4,12 +4,14 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { cancelInvitation, resendInvitation } from "@/lib/actions/workspaces";
 import { formatDate } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function MembersPage({
   params,
   searchParams,
 }: PageProps<"/app/workspaces/[workspaceId]/members">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const sentTo = typeof sp.sent === "string" ? sp.sent : null;
@@ -42,19 +44,19 @@ export default async function MembersPage({
           >
             ← {workspace.name}
           </Link>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">Membres</h1>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.membersPage.title}</h1>
         </div>
         <Link
           href={`/app/workspaces/${workspace.id}/members/new`}
           className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
         >
-          Inviter un membre
+          {t.membersPage.invite}
         </Link>
       </div>
 
       {sentTo && (
         <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
-          Un email d&apos;invitation a été renvoyé à {sentTo}.
+          {t.membersPage.resent.replace("{email}", sentTo)}
         </p>
       )}
 
@@ -68,13 +70,13 @@ export default async function MembersPage({
               <p className="font-medium">
                 {m.user.name}
                 {m.user.id === user.id && (
-                  <span className="ml-2 text-xs text-zinc-400">(vous)</span>
+                  <span className="ml-2 text-xs text-zinc-400">{t.membersPage.you}</span>
                 )}
               </p>
               <p className="text-sm text-zinc-500">{m.user.email}</p>
             </div>
             <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              {m.role === "OWNER" ? "Propriétaire" : "Membre"}
+              {m.role === "OWNER" ? t.membersPage.owner : t.membersPage.member}
             </span>
           </li>
         ))}
@@ -83,7 +85,7 @@ export default async function MembersPage({
       {workspace.invitations.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Invitations en attente
+            {t.membersPage.pendingInvitations}
           </h2>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
             {workspace.invitations.map((inv) => {
@@ -97,9 +99,11 @@ export default async function MembersPage({
                     <p className="truncate font-medium">{inv.email}</p>
                     <p className="text-xs text-zinc-500">
                       {expired ? (
-                        <span className="text-red-600 dark:text-red-400">Expirée</span>
+                        <span className="text-red-600 dark:text-red-400">{t.membersPage.expired}</span>
                       ) : (
-                        <>En attente · expire le {formatDate(inv.expiresAt)}</>
+                        <>
+                          {t.membersPage.pendingExpires} {formatDate(inv.expiresAt)}
+                        </>
                       )}
                     </p>
                   </div>
@@ -110,7 +114,7 @@ export default async function MembersPage({
                         type="submit"
                         className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40"
                       >
-                        Renvoyer
+                        {t.membersPage.resend}
                       </button>
                     </form>
                     <form action={cancelInvitation}>
@@ -119,7 +123,7 @@ export default async function MembersPage({
                         type="submit"
                         className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
                       >
-                        Annuler
+                        {t.membersPage.cancel}
                       </button>
                     </form>
                   </div>
