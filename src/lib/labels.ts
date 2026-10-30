@@ -48,6 +48,12 @@ export function formatDateTime(date: Date): string {
   return dateTimeFormatter.format(date);
 }
 
+// Titre préfixé selon la nature de la tâche : « Projet : … » (tâche racine)
+// ou « Action : … » (sous-tâche).
+export function prefixedTitle(title: string, isProject: boolean): string {
+  return `${isProject ? "Projet" : "Action"} : ${title}`;
+}
+
 // Vrai si la date d'échéance est passée (par rapport à aujourd'hui).
 export function isOverdue(date: Date | null | undefined): boolean {
   if (!date) return false;

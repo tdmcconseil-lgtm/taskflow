@@ -3,17 +3,19 @@ import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { archiveWorkspace, unarchiveWorkspace, cancelInvitation } from "@/lib/actions/workspaces";
-import { buildTaskIndex, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { UserAvatar } from "@/components/UserAvatar";
+import { MemberControls } from "@/components/MemberControls";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
 import { getWorkspaceTab } from "@/lib/view";
 import { TaskRow } from "@/components/TaskRow";
-import { StatusBadge } from "@/components/badges";
+import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
 import { EventFilter } from "@/components/EventFilter";
 import { DiscussionList } from "@/components/DiscussionList";
-import { formatDate } from "@/lib/labels";
+import { formatDate, prefixedTitle } from "@/lib/labels";
 
 export default async function WorkspacePage({
   params,
@@ -42,7 +44,8 @@ export default async function WorkspacePage({
           select: {
             id: true,
             role: true,
-            user: { select: { id: true, name: true, email: true } },
+            deactivatedAt: true,
+            user: { select: { ...ASSIGNEE_SELECT, email: true } },
           },
         },
         invitations: {
@@ -70,7 +73,11 @@ export default async function WorkspacePage({
     prisma.taskFollow.findMany({
       where: { userId: user.id, following: true, task: { workspaceId } },
       orderBy: { createdAt: "desc" },
-      select: { task: { select: { id: true, title: true, status: true } } },
+      select: {
+        task: {
+          select: { id: true, title: true, status: true, priority: true, parentId: true },
+        },
+      },
     }),
     getEventFeed(user.id, user.eventsReadAt ?? null, includeOwn, 50, workspaceId),
     getDiscussionRows(user.id, workspaceId),
@@ -79,12 +86,19 @@ export default async function WorkspacePage({
 
   const { roots } = buildTaskIndex(allTasks as RawTask[]);
   const isOwner = membership.role === "OWNER";
+  const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
   const isArchived = workspace.archivedAt !== null;
+
+  const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
+    r === "MEMBER" ? "Utilisateur" : "Administrateur";
+
+  // Tâches suivies par l'utilisateur (pour afficher l'œil sur les projets).
+  const followedIds = new Set(followedTasks.map((f) => f.task.id));
 
   const projetsPanel = (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Projets</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-zinc-500">Liste des projets associés à cet espace.</p>
         {!isArchived && (
           <Link
             href={`/app/tasks/new?workspace=${workspace.id}`}
@@ -101,7 +115,7 @@ export default async function WorkspacePage({
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {roots.map((node) => (
-            <TaskRow key={node.id} node={node} />
+            <TaskRow key={node.id} node={node} followed={followedIds.has(node.id)} />
           ))}
         </ul>
       )}
@@ -110,35 +124,62 @@ export default async function WorkspacePage({
 
   const membresPanel = (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Membres</h2>
-        <Link
-          href={`/app/workspaces/${workspace.id}/members/new`}
-          className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-        >
-          Inviter un membre
-        </Link>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-zinc-500">Liste des membres associés à cet espace.</p>
+        {isAdmin && (
+          <Link
+            href={`/app/workspaces/${workspace.id}/members/new`}
+            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+          >
+            Inviter un membre
+          </Link>
+        )}
       </div>
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-        {workspace.members.map((m) => (
-          <li
-            key={m.id}
-            className="flex items-center justify-between bg-white p-4 dark:bg-zinc-900"
-          >
-            <div>
-              <p className="font-medium">
-                {m.user.name}
-                {m.user.id === user.id && (
-                  <span className="ml-2 text-xs text-zinc-400">(vous)</span>
+        {workspace.members.map((m) => {
+          const deactivated = m.deactivatedAt !== null;
+          const canManage = isAdmin && m.role !== "OWNER" && m.user.id !== user.id;
+          return (
+            <li
+              key={m.id}
+              className={`flex flex-wrap items-center justify-between gap-3 p-4 ${
+                deactivated ? "bg-zinc-50 dark:bg-zinc-800/40" : "bg-white dark:bg-zinc-900"
+              }`}
+            >
+              <div className={`flex min-w-0 items-center gap-3 ${deactivated ? "opacity-60" : ""}`}>
+                <UserAvatar user={toAssigneeInfo(m.user)!} className="h-9 w-9" />
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {m.user.name}
+                    {m.user.id === user.id && (
+                      <span className="ml-2 text-xs text-zinc-400">(vous)</span>
+                    )}
+                    {deactivated && (
+                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+                        désactivé
+                      </span>
+                    )}
+                  </p>
+                  <p className="truncate text-sm text-zinc-500">{m.user.email}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  {roleLabel(m.role)}
+                  {m.role === "OWNER" && " (créateur)"}
+                </span>
+                {canManage && (
+                  <MemberControls
+                    workspaceId={workspace.id}
+                    memberUserId={m.user.id}
+                    role={m.role === "ADMIN" ? "ADMIN" : "MEMBER"}
+                    deactivated={deactivated}
+                  />
                 )}
-              </p>
-              <p className="text-sm text-zinc-500">{m.user.email}</p>
-            </div>
-            <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              {m.role === "OWNER" ? "Propriétaire" : "Membre"}
-            </span>
-          </li>
-        ))}
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       {workspace.invitations.length > 0 && (
@@ -184,7 +225,9 @@ export default async function WorkspacePage({
 
   const suiviesPanel = (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold">Tâches suivies</h2>
+      <p className="text-sm text-zinc-500">
+        Les tâches de cet espace auxquelles vous êtes abonné (👁).
+      </p>
       {followedTasks.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
           Vous ne suivez aucune tâche dans cet espace.
@@ -202,9 +245,12 @@ export default async function WorkspacePage({
                     f.task.status === "DONE" ? "text-zinc-400 line-through" : ""
                   }`}
                 >
-                  {f.task.title}
+                  {prefixedTitle(f.task.title, f.task.parentId === null)}
                 </span>
-                <StatusBadge status={f.task.status} />
+                <div className="flex shrink-0 items-center gap-2">
+                  <PriorityBadge priority={f.task.priority} />
+                  <StatusBadge status={f.task.status} />
+                </div>
               </Link>
             </li>
           ))}
@@ -216,7 +262,10 @@ export default async function WorkspacePage({
   const evenementsPanel = (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">Événements</h2>
+        <p className="text-sm text-zinc-500">
+          Les changements récents survenus sur les tâches de cet espace auxquelles vous êtes
+          abonné, du plus récent au plus ancien.
+        </p>
         <EventFilter hideMine={!includeOwn} />
       </div>
       <EventList groups={eventGroups} emptyLabel="Aucun événement dans cet espace." />
@@ -225,7 +274,9 @@ export default async function WorkspacePage({
 
   const discussionsPanel = (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold">Discussions</h2>
+      <p className="text-sm text-zinc-500">
+        Les discussions des tâches de cet espace avec un message reçu alors que vous êtes abonné.
+      </p>
       <DiscussionList rows={discussionRows} emptyLabel="Aucune discussion dans cet espace." />
     </div>
   );
@@ -234,13 +285,10 @@ export default async function WorkspacePage({
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/app" className="text-sm text-zinc-500 hover:underline">
-            ← Accueil
-          </Link>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{workspace.name}</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            {workspace._count.members} membre{workspace._count.members > 1 ? "s" : ""}
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            <span className="text-zinc-400">Espace : </span>
+            {workspace.name}
+          </h1>
         </div>
         {isOwner && !isArchived && (
           <form action={archiveWorkspace}>
@@ -284,6 +332,7 @@ export default async function WorkspacePage({
 
       <WorkspaceTabs
         initialTab={initialTab}
+        memberCount={workspace._count.members}
         projets={projetsPanel}
         membres={membresPanel}
         suivies={suiviesPanel}

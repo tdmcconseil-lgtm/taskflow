@@ -19,6 +19,7 @@ export type TaskNode = {
   assignee: AssigneeInfo | null;
   dueDate: Date | null;
   attachmentCount: number;
+  parentId: string | null;
   children: TaskNode[];
 };
 
@@ -79,6 +80,7 @@ export function buildTaskIndex(tasks: RawTask[]): {
       assignee: toAssigneeInfo(t.assignee),
       dueDate: t.dueDate,
       attachmentCount: t.attachmentCount ?? 0,
+      parentId: t.parentId,
       children: [],
     });
   }

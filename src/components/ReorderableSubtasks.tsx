@@ -6,6 +6,7 @@ import { PriorityBadge } from "@/components/badges";
 import { UserAvatar } from "@/components/UserAvatar";
 import { TaskControls } from "@/components/TaskControls";
 import { reorderTasks } from "@/lib/actions/tasks";
+import { prefixedTitle } from "@/lib/labels";
 import type { AssigneeInfo } from "@/lib/task-tree";
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 
@@ -93,7 +94,7 @@ export function ReorderableSubtasks({
                   draggable={false}
                   className={`hover:underline ${done ? "text-zinc-400 dark:text-zinc-500" : ""}`}
                 >
-                  {t.title}
+                  {prefixedTitle(t.title, false)}
                 </Link>
               </p>
               {t.description && (

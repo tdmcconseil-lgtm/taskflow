@@ -2,25 +2,30 @@ import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
 import { TaskControls } from "@/components/TaskControls";
 import { UserAvatar } from "@/components/UserAvatar";
-import { formatDate, isOverdue } from "@/lib/labels";
+import { formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
 import type { TaskNode } from "@/lib/task-tree";
 
 // Une ligne de tâche. On n'affiche que les tâches de même niveau : les
 // sous-tâches ne sont pas dépliées ici (on indique seulement leur nombre),
 // elles s'affichent sur la page de détail de la tâche.
-export function TaskRow({ node }: { node: TaskNode }) {
+export function TaskRow({ node, followed = false }: { node: TaskNode; followed?: boolean }) {
   return (
     <li className="bg-white dark:bg-zinc-900">
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0 flex-1">
           <p className="font-medium">
+            {followed && (
+              <span title="Vous êtes abonné" className="mr-1" aria-label="Abonné">
+                👁
+              </span>
+            )}
             <Link
               href={`/app/tasks/${node.id}`}
               className={`hover:underline ${
                 node.status === "DONE" ? "text-zinc-400 line-through" : ""
               }`}
             >
-              {node.title}
+              {prefixedTitle(node.title, node.parentId === null)}
             </Link>
           </p>
           {node.description && (

@@ -4,7 +4,7 @@ import { TaskRow } from "@/components/TaskRow";
 import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
 import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
-import { STATUS_LABELS, STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
+import { STATUS_LABELS, STATUS_ORDER, formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
 
 // Présentation d'une collection de tâches (les « projets » d'un espace, ou les
 // sous-tâches d'une tâche) avec bascule Liste / Tableau — comme l'ancienne page
@@ -29,7 +29,7 @@ export function TaskCollection({
 }) {
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
-    title: n.title,
+    title: prefixedTitle(n.title, n.parentId === null),
     description: n.description,
     priority: n.priority,
     status: n.status,

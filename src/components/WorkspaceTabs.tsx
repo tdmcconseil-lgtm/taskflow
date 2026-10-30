@@ -7,7 +7,7 @@ type WsTab = "projets" | "membres" | "suivies" | "evenements" | "discussions";
 const TABS: { key: WsTab; label: string }[] = [
   { key: "projets", label: "Projets" },
   { key: "membres", label: "Membres" },
-  { key: "suivies", label: "Tâches suivies" },
+  { key: "suivies", label: "Mes tâches suivies" },
   { key: "evenements", label: "Événements" },
   { key: "discussions", label: "Discussions" },
 ];
@@ -22,6 +22,7 @@ function rememberTab(tab: WsTab) {
 
 export function WorkspaceTabs({
   initialTab = "projets",
+  memberCount,
   projets,
   membres,
   suivies,
@@ -29,6 +30,7 @@ export function WorkspaceTabs({
   discussions,
 }: {
   initialTab?: WsTab;
+  memberCount: number;
   projets: ReactNode;
   membres: ReactNode;
   suivies: ReactNode;
@@ -61,7 +63,7 @@ export function WorkspaceTabs({
                 : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
-            {t.label}
+            {t.key === "membres" ? `${t.label} (${memberCount})` : t.label}
           </button>
         ))}
       </div>

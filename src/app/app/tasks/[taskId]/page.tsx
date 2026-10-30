@@ -19,7 +19,7 @@ import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { getTaskView, getTaskTab } from "@/lib/view";
-import { formatDate, isOverdue } from "@/lib/labels";
+import { formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
 export default async function TaskDetailPage({
@@ -243,7 +243,7 @@ export default async function TaskDetailPage({
               task.status === "DONE" ? "text-zinc-400 line-through" : ""
             }`}
           >
-            {task.title}
+            {prefixedTitle(task.title, task.parentId === null)}
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
