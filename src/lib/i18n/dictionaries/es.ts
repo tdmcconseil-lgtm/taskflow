@@ -94,6 +94,37 @@ const es: Dictionary = {
     MEDIUM: "Media",
     HIGH: "Alta",
   },
+  dashboard: {
+    greeting: "Hola",
+    overview: "Aquí tienes un resumen de tu trabajo.",
+    myTasks: "Mis tareas por hacer",
+    noMyTasks: "No tienes ninguna tarea asignada por ahora.",
+    myWorkspaces: "Mis espacios de trabajo",
+    newWorkspace: "Nuevo espacio",
+    noWorkspaces: "Ningún espacio activo. Crea uno para empezar.",
+    archivedWorkspaces: "Espacios archivados",
+    archivedOn: "Archivado el",
+    unarchive: "Desarchivar",
+    delete: "Eliminar",
+    projectWord: "proyecto",
+    projectsWord: "proyectos",
+    memberWord: "miembro",
+    membersWord: "miembros",
+  },
+  profile: {
+    back: "Inicio",
+    title: "Mi perfil",
+    photo: "Foto",
+    identity: "Identidad",
+    language: "Idioma",
+    email: "Dirección de correo",
+    password: "Contraseña",
+    savedProfile: "Perfil actualizado.",
+    passwordChanged: "Contraseña modificada.",
+    emailSent:
+      "Correo de confirmación enviado a la nueva dirección. Haz clic en el enlace recibido para validar.",
+    emailChanged: "Tu dirección de correo ha sido modificada.",
+  },
 };
 
 export default es;

@@ -5,12 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { NameForm, EmailForm, PasswordForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Mon profil — Taskflow" };
 
 export default async function ProfilePage({ searchParams }: PageProps<"/app/profile">) {
   const sessionUser = await requireUser();
+  const t = await getDictionary();
   const sp = await searchParams;
 
   const user = await prisma.user.findUnique({
@@ -32,22 +34,22 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
   const banner =
     sp.saved === "1"
-      ? "Profil mis à jour."
+      ? t.profile.savedProfile
       : sp.pwChanged === "1"
-        ? "Mot de passe modifié."
+        ? t.profile.passwordChanged
         : sp.emailSent === "1"
-          ? "Email de confirmation envoyé à la nouvelle adresse. Cliquez sur le lien reçu pour valider."
+          ? t.profile.emailSent
           : sp.emailChanged === "1"
-            ? "Votre adresse email a bien été modifiée."
+            ? t.profile.emailChanged
             : null;
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <Link href="/app" className="text-sm text-zinc-500 hover:underline">
-          ← Accueil
+          ← {t.profile.back}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Mon profil</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.profile.title}</h1>
       </div>
 
       {banner && (
@@ -59,7 +61,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       {/* Photo */}
       <section className={cardClass}>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Photo
+          {t.profile.photo}
         </h2>
         <PhotoCard
           userId={user.id}
@@ -75,7 +77,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       {/* Identité */}
       <section className={cardClass}>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Identité
+          {t.profile.identity}
         </h2>
         <NameForm firstName={user.firstName} lastName={user.lastName} />
       </section>
@@ -83,7 +85,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       {/* Langue */}
       <section className={cardClass}>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Langue
+          {t.profile.language}
         </h2>
         <LocaleSwitcher />
       </section>
@@ -91,7 +93,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       {/* Email */}
       <section className={cardClass}>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Adresse email
+          {t.profile.email}
         </h2>
         <EmailForm currentEmail={user.email} />
       </section>
@@ -99,7 +101,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       {/* Mot de passe */}
       <section className={cardClass}>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Mot de passe
+          {t.profile.password}
         </h2>
         <PasswordForm />
       </section>

@@ -94,6 +94,37 @@ const en: Dictionary = {
     MEDIUM: "Medium",
     HIGH: "High",
   },
+  dashboard: {
+    greeting: "Hello",
+    overview: "Here's an overview of your work.",
+    myTasks: "My tasks to do",
+    noMyTasks: "No tasks are assigned to you right now.",
+    myWorkspaces: "My workspaces",
+    newWorkspace: "New workspace",
+    noWorkspaces: "No active workspace. Create one to get started.",
+    archivedWorkspaces: "Archived workspaces",
+    archivedOn: "Archived on",
+    unarchive: "Unarchive",
+    delete: "Delete",
+    projectWord: "project",
+    projectsWord: "projects",
+    memberWord: "member",
+    membersWord: "members",
+  },
+  profile: {
+    back: "Home",
+    title: "My profile",
+    photo: "Photo",
+    identity: "Identity",
+    language: "Language",
+    email: "Email address",
+    password: "Password",
+    savedProfile: "Profile updated.",
+    passwordChanged: "Password changed.",
+    emailSent:
+      "Confirmation email sent to the new address. Click the link you receive to confirm.",
+    emailChanged: "Your email address has been changed.",
+  },
 };
 
 export default en;

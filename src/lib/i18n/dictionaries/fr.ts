@@ -93,6 +93,37 @@ const fr = {
     MEDIUM: "Moyenne",
     HIGH: "Haute",
   },
+  dashboard: {
+    greeting: "Bonjour",
+    overview: "Voici un aperçu de votre travail.",
+    myTasks: "Mes tâches à faire",
+    noMyTasks: "Aucune tâche ne vous est assignée pour le moment.",
+    myWorkspaces: "Mes espaces de travail",
+    newWorkspace: "Nouvel espace",
+    noWorkspaces: "Aucun espace actif. Créez-en un pour commencer.",
+    archivedWorkspaces: "Espaces archivés",
+    archivedOn: "Archivé le",
+    unarchive: "Désarchiver",
+    delete: "Supprimer",
+    projectWord: "projet",
+    projectsWord: "projets",
+    memberWord: "membre",
+    membersWord: "membres",
+  },
+  profile: {
+    back: "Accueil",
+    title: "Mon profil",
+    photo: "Photo",
+    identity: "Identité",
+    language: "Langue",
+    email: "Adresse email",
+    password: "Mot de passe",
+    savedProfile: "Profil mis à jour.",
+    passwordChanged: "Mot de passe modifié.",
+    emailSent:
+      "Email de confirmation envoyé à la nouvelle adresse. Cliquez sur le lien reçu pour valider.",
+    emailChanged: "Votre adresse email a bien été modifiée.",
+  },
 };
 
 export type Dictionary = typeof fr;

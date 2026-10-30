@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { unarchiveWorkspace } from "@/lib/actions/workspaces";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function DashboardPage() {
   const user = await requireUser();
+  const t = await getDictionary();
 
   const [myTasks, workspaces, archivedWorkspaces] = await Promise.all([
     prisma.task.findMany({
@@ -36,16 +38,18 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Bonjour {user.name} 👋</h1>
-        <p className="mt-1 text-sm text-zinc-500">Voici un aperçu de votre travail.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t.dashboard.greeting} {user.name} 👋
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500">{t.dashboard.overview}</p>
       </div>
 
       {/* Mes tâches */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Mes tâches à faire</h2>
+        <h2 className="text-lg font-semibold">{t.dashboard.myTasks}</h2>
         {myTasks.length === 0 ? (
           <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
-            Aucune tâche ne vous est assignée pour le moment.
+            {t.dashboard.noMyTasks}
           </p>
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
@@ -91,17 +95,17 @@ export default async function DashboardPage() {
       {/* Mes espaces */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Mes espaces de travail</h2>
+          <h2 className="text-lg font-semibold">{t.dashboard.myWorkspaces}</h2>
           <Link
             href="/app/workspaces/new"
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Nouvel espace
+            {t.dashboard.newWorkspace}
           </Link>
         </div>
         {workspaces.length === 0 ? (
           <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
-            Aucun espace actif. Créez-en un pour commencer.
+            {t.dashboard.noWorkspaces}
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -113,8 +117,10 @@ export default async function DashboardPage() {
               >
                 <p className="font-medium">{ws.name}</p>
                 <p className="mt-2 text-sm text-zinc-500">
-                  {ws.tasks.length} projet{ws.tasks.length > 1 ? "s" : ""} ·{" "}
-                  {ws._count.members} membre{ws._count.members > 1 ? "s" : ""}
+                  {ws.tasks.length}{" "}
+                  {ws.tasks.length > 1 ? t.dashboard.projectsWord : t.dashboard.projectWord} ·{" "}
+                  {ws._count.members}{" "}
+                  {ws._count.members > 1 ? t.dashboard.membersWord : t.dashboard.memberWord}
                 </p>
               </Link>
             ))}
@@ -125,7 +131,7 @@ export default async function DashboardPage() {
       {/* Espaces archivés */}
       {archivedWorkspaces.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-500">Espaces archivés</h2>
+          <h2 className="text-lg font-semibold text-zinc-500">{t.dashboard.archivedWorkspaces}</h2>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
             {archivedWorkspaces.map((ws) => {
               const isOwner = ws.members[0]?.role === "OWNER";
@@ -139,8 +145,8 @@ export default async function DashboardPage() {
                       {ws.name}
                     </p>
                     <p className="text-xs text-zinc-400">
-                      Archivé le {formatDate(ws.archivedAt)} · {ws.tasks.length} projet
-                      {ws.tasks.length > 1 ? "s" : ""}
+                      {t.dashboard.archivedOn} {formatDate(ws.archivedAt)} · {ws.tasks.length}{" "}
+                      {ws.tasks.length > 1 ? t.dashboard.projectsWord : t.dashboard.projectWord}
                     </p>
                   </div>
                   {isOwner && (
@@ -151,14 +157,14 @@ export default async function DashboardPage() {
                           type="submit"
                           className="rounded-md border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
                         >
-                          Désarchiver
+                          {t.dashboard.unarchive}
                         </button>
                       </form>
                       <Link
                         href={`/app/workspaces/${ws.id}/delete`}
                         className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950/50"
                       >
-                        Supprimer
+                        {t.dashboard.delete}
                       </Link>
                     </div>
                   )}
