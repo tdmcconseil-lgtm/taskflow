@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { getDictionary } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { archiveWorkspace, unarchiveWorkspace, cancelInvitation } from "@/lib/actions/workspaces";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
@@ -21,6 +22,7 @@ export default async function WorkspacePage({
   searchParams,
 }: PageProps<"/app/workspaces/[workspaceId]">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
@@ -115,19 +117,19 @@ export default async function WorkspacePage({
   const projetsPanel = (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">Liste des projets associés à cet espace.</p>
+        <p className="text-sm text-zinc-500">{t.task.projectsList}</p>
         {!isArchived && (
           <Link
             href={`/app/tasks/new?workspace=${workspace.id}`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Nouveau projet
+            {t.task.newProject}
           </Link>
         )}
       </div>
       {visibleRoots.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
-          Aucun projet. Créez-en un pour commencer.
+          {t.task.noProjects}
         </p>
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">

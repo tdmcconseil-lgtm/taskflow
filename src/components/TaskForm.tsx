@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 import type { FormState } from "@/lib/actions/tasks";
+import { useT } from "@/lib/i18n/context";
 
 type Member = { id: string; name: string };
 
@@ -34,6 +35,7 @@ export function TaskForm({
   // Affiche la section « Accès au projet » (uniquement à la création d'un projet).
   showAccess?: boolean;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
 
   return (
@@ -44,20 +46,20 @@ export function TaskForm({
 
       <div className="space-y-1">
         <label htmlFor="title" className={labelClass}>
-          Titre
+          {t.task.title}
         </label>
         <input
           id="title"
           name="title"
           defaultValue={defaults.title}
           className={inputClass}
-          placeholder="Ex. Rédiger la page d'accueil"
+          placeholder={t.task.titlePlaceholder}
         />
       </div>
 
       <div className="space-y-1">
         <label htmlFor="description" className={labelClass}>
-          Description <span className="text-zinc-400">(facultatif)</span>
+          {t.task.description} <span className="text-zinc-400">{t.task.optional}</span>
         </label>
         <textarea
           id="description"
@@ -71,7 +73,7 @@ export function TaskForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="space-y-1">
           <label htmlFor="assigneeId" className={labelClass}>
-            Assigné à
+            {t.task.assignee}
           </label>
           <select
             id="assigneeId"
@@ -79,7 +81,7 @@ export function TaskForm({
             defaultValue={defaults.assigneeId ?? ""}
             className={inputClass}
           >
-            <option value="">Personne</option>
+            <option value="">{t.task.nobody}</option>
             {members.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name}
@@ -90,7 +92,7 @@ export function TaskForm({
 
         <div className="space-y-1">
           <label htmlFor="priority" className={labelClass}>
-            Priorité
+            {t.task.priority}
           </label>
           <select
             id="priority"
@@ -98,15 +100,15 @@ export function TaskForm({
             defaultValue={defaults.priority ?? "MEDIUM"}
             className={inputClass}
           >
-            <option value="LOW">Basse</option>
-            <option value="MEDIUM">Moyenne</option>
-            <option value="HIGH">Haute</option>
+            <option value="LOW">{t.task.priorityLow}</option>
+            <option value="MEDIUM">{t.task.priorityMedium}</option>
+            <option value="HIGH">{t.task.priorityHigh}</option>
           </select>
         </div>
 
         <div className="space-y-1">
           <label htmlFor="dueDate" className={labelClass}>
-            Échéance
+            {t.task.dueDate}
           </label>
           <input
             id="dueDate"
@@ -120,23 +122,24 @@ export function TaskForm({
 
       {showAccess && (
         <fieldset className="space-y-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
-          <legend className={`${labelClass} px-1`}>Accès au projet</legend>
+          <legend className={`${labelClass} px-1`}>{t.task.access}</legend>
           <label className="flex items-start gap-2 text-sm">
             <input type="radio" name="visibility" value="RESTRICTED" defaultChecked className="mt-0.5" />
             <span>
-              <span className="font-medium">Restreint</span> — le créateur, les
-              administrateurs et les membres choisis ci-dessous.
+              <span className="font-medium">{t.task.accessRestricted}</span> —{" "}
+              {t.task.accessRestrictedDesc}
             </span>
           </label>
           <label className="flex items-start gap-2 text-sm">
             <input type="radio" name="visibility" value="WORKSPACE" className="mt-0.5" />
             <span>
-              <span className="font-medium">Tout l&apos;espace</span> — tous les membres de l&apos;espace.
+              <span className="font-medium">{t.task.accessWorkspace}</span> —{" "}
+              {t.task.accessWorkspaceDesc}
             </span>
           </label>
           {members.length > 0 && (
             <div className="pt-1">
-              <p className="mb-1 text-xs text-zinc-500">Membres autorisés (si restreint) :</p>
+              <p className="mb-1 text-xs text-zinc-500">{t.task.allowedMembers}</p>
               <div className="space-y-1">
                 {members.map((m) => (
                   <label key={m.id} className="flex items-center gap-2 text-sm">
@@ -159,7 +162,7 @@ export function TaskForm({
             href={cancelHref}
             className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            Annuler
+            {t.task.cancel}
           </Link>
         )}
       </div>

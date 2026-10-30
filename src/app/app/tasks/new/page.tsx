@@ -5,12 +5,14 @@ import { canAccessTask } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 import { TaskForm } from "@/components/TaskForm";
 import { createTask } from "@/lib/actions/tasks";
+import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 
 export default async function NewTaskPage({
   searchParams,
 }: PageProps<"/app/tasks/new">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const sp = await searchParams;
   const parentId = typeof sp.parent === "string" ? sp.parent : undefined;
   const workspaceParam = typeof sp.workspace === "string" ? sp.workspace : undefined;
@@ -69,7 +71,7 @@ export default async function NewTaskPage({
     ? { parentId: parentId! }
     : { workspaceId };
 
-  const currentLabel = isSubtask ? "Nouvelle sous-tâche" : "Nouveau projet";
+  const currentLabel = isSubtask ? t.task.newSubtask : t.task.newProject;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -96,7 +98,7 @@ export default async function NewTaskPage({
           action={createTask}
           members={members}
           hidden={hidden}
-          submitLabel={isSubtask ? "Créer la sous-tâche" : "Créer le projet"}
+          submitLabel={isSubtask ? t.task.createSubtask : t.task.createProject}
           cancelHref={backHref}
           showAccess={!isSubtask}
         />
