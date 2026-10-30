@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { setMemberRole, setMemberActive } from "@/lib/actions/workspaces";
+import { useT } from "@/lib/i18n/context";
 
 export function MemberControls({
   workspaceId,
@@ -14,6 +15,7 @@ export function MemberControls({
   role: "ADMIN" | "MEMBER";
   deactivated: boolean;
 }) {
+  const t = useT();
   const [pending, start] = useTransition();
 
   return (
@@ -28,8 +30,8 @@ export function MemberControls({
         }
         className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
       >
-        <option value="MEMBER">Utilisateur</option>
-        <option value="ADMIN">Administrateur</option>
+        <option value="MEMBER">{t.members.roleUser}</option>
+        <option value="ADMIN">{t.members.roleAdmin}</option>
       </select>
       <button
         type="button"
@@ -41,7 +43,7 @@ export function MemberControls({
             : "border-red-300 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
         }`}
       >
-        {deactivated ? "Réactiver" : "Désactiver"}
+        {deactivated ? t.members.reactivate : t.members.deactivate}
       </button>
     </div>
   );

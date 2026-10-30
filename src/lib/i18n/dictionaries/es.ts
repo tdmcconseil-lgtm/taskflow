@@ -125,6 +125,28 @@ const es: Dictionary = {
       "Correo de confirmación enviado a la nueva dirección. Haz clic en el enlace recibido para validar.",
     emailChanged: "Tu dirección de correo ha sido modificada.",
   },
+  members: {
+    list: "Miembros de este espacio.",
+    invite: "Invitar a un miembro",
+    you: "(tú)",
+    deactivated: "desactivado",
+    creator: "(creador)",
+    roleUser: "Usuario",
+    roleAdmin: "Administrador",
+    pendingInvitations: "Invitaciones pendientes",
+    expired: "Caducada",
+    pendingExpires: "Pendiente · caduca el",
+    cancel: "Cancelar",
+    emailLabel: "Correo de la persona",
+    emailPlaceholder: "persona@ejemplo.com",
+    emailHint:
+      "Si ya tiene una cuenta, se añade inmediatamente. Si no, recibe un correo invitándola a crear una cuenta.",
+    roleLabel: "Rol",
+    roleHint: "Un administrador puede invitar, desactivar y gestionar los roles de los miembros.",
+    sendInvitation: "Enviar invitación",
+    reactivate: "Reactivar",
+    deactivate: "Desactivar",
+  },
 };
 
 export default es;

@@ -125,6 +125,28 @@ const en: Dictionary = {
       "Confirmation email sent to the new address. Click the link you receive to confirm.",
     emailChanged: "Your email address has been changed.",
   },
+  members: {
+    list: "Members of this workspace.",
+    invite: "Invite a member",
+    you: "(you)",
+    deactivated: "deactivated",
+    creator: "(creator)",
+    roleUser: "User",
+    roleAdmin: "Administrator",
+    pendingInvitations: "Pending invitations",
+    expired: "Expired",
+    pendingExpires: "Pending · expires on",
+    cancel: "Cancel",
+    emailLabel: "Person's email",
+    emailPlaceholder: "person@example.com",
+    emailHint:
+      "If they already have an account, they are added immediately. Otherwise, they receive an email inviting them to create an account.",
+    roleLabel: "Role",
+    roleHint: "An administrator can invite, deactivate and manage members' roles.",
+    sendInvitation: "Send invitation",
+    reactivate: "Reactivate",
+    deactivate: "Deactivate",
+  },
 };
 
 export default en;

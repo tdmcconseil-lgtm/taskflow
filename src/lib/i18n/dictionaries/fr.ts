@@ -124,6 +124,28 @@ const fr = {
       "Email de confirmation envoyé à la nouvelle adresse. Cliquez sur le lien reçu pour valider.",
     emailChanged: "Votre adresse email a bien été modifiée.",
   },
+  members: {
+    list: "Liste des membres associés à cet espace.",
+    invite: "Inviter un membre",
+    you: "(vous)",
+    deactivated: "désactivé",
+    creator: "(créateur)",
+    roleUser: "Utilisateur",
+    roleAdmin: "Administrateur",
+    pendingInvitations: "Invitations en attente",
+    expired: "Expirée",
+    pendingExpires: "En attente · expire le",
+    cancel: "Annuler",
+    emailLabel: "Email de la personne",
+    emailPlaceholder: "personne@exemple.fr",
+    emailHint:
+      "Si elle a déjà un compte, elle est ajoutée immédiatement. Sinon, elle reçoit un email l'invitant à créer son compte.",
+    roleLabel: "Rôle",
+    roleHint: "Un administrateur peut inviter, désactiver et gérer les rôles des membres.",
+    sendInvitation: "Envoyer l'invitation",
+    reactivate: "Réactiver",
+    deactivate: "Désactiver",
+  },
 };
 
 export type Dictionary = typeof fr;

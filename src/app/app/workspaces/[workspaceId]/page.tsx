@@ -109,7 +109,7 @@ export default async function WorkspacePage({
   }
 
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
-    r === "MEMBER" ? "Utilisateur" : "Administrateur";
+    r === "MEMBER" ? t.members.roleUser : t.members.roleAdmin;
 
   // Tâches suivies par l'utilisateur (pour afficher l'œil sur les projets).
   const followedIds = new Set(followedTasks.map((f) => f.task.id));
@@ -144,13 +144,13 @@ export default async function WorkspacePage({
   const membresPanel = (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">Liste des membres associés à cet espace.</p>
+        <p className="text-sm text-zinc-500">{t.members.list}</p>
         {isAdmin && (
           <Link
             href={`/app/workspaces/${workspace.id}/members/new`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Inviter un membre
+            {t.members.invite}
           </Link>
         )}
       </div>
@@ -171,11 +171,11 @@ export default async function WorkspacePage({
                   <p className="font-medium">
                     {m.user.name}
                     {m.user.id === user.id && (
-                      <span className="ml-2 text-xs text-zinc-400">(vous)</span>
+                      <span className="ml-2 text-xs text-zinc-400">{t.members.you}</span>
                     )}
                     {deactivated && (
                       <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-                        désactivé
+                        {t.members.deactivated}
                       </span>
                     )}
                   </p>
@@ -185,7 +185,7 @@ export default async function WorkspacePage({
               <div className="flex shrink-0 items-center gap-3">
                 <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
                   {roleLabel(m.role)}
-                  {m.role === "OWNER" && " (créateur)"}
+                  {m.role === "OWNER" && ` ${t.members.creator}`}
                 </span>
                 {canManage && (
                   <MemberControls
@@ -204,7 +204,7 @@ export default async function WorkspacePage({
       {workspace.invitations.length > 0 && (
         <section className="space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Invitations en attente
+            {t.members.pendingInvitations}
           </h3>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
             {workspace.invitations.map((inv) => {
@@ -218,9 +218,11 @@ export default async function WorkspacePage({
                     <p className="truncate font-medium">{inv.email}</p>
                     <p className="text-xs text-zinc-500">
                       {expired ? (
-                        <span className="text-red-600 dark:text-red-400">Expirée</span>
+                        <span className="text-red-600 dark:text-red-400">{t.members.expired}</span>
                       ) : (
-                        <>En attente · expire le {formatDate(inv.expiresAt)}</>
+                        <>
+                          {t.members.pendingExpires} {formatDate(inv.expiresAt)}
+                        </>
                       )}
                     </p>
                   </div>
@@ -230,7 +232,7 @@ export default async function WorkspacePage({
                       type="submit"
                       className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
                     >
-                      Annuler
+                      {t.members.cancel}
                     </button>
                   </form>
                 </li>
