@@ -29,6 +29,19 @@ export function AddMemberForm({ workspaceId }: { workspaceId: string }) {
         </p>
       </div>
 
+      <div className="space-y-1">
+        <label htmlFor="role" className={labelClass}>
+          Rôle
+        </label>
+        <select id="role" name="role" defaultValue="MEMBER" className={inputClass}>
+          <option value="MEMBER">Utilisateur</option>
+          <option value="ADMIN">Administrateur</option>
+        </select>
+        <p className="text-xs text-zinc-500">
+          Un administrateur peut inviter, désactiver et gérer les rôles des membres.
+        </p>
+      </div>
+
       {state?.error && <p className={errorClass}>{state.error}</p>}
 
       <SubmitButton>Envoyer l&apos;invitation</SubmitButton>

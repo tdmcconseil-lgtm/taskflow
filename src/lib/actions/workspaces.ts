@@ -46,6 +46,56 @@ async function ensureOwner(userId: string, workspaceId: string): Promise<string 
   return null;
 }
 
+// Administrateur = créateur (OWNER) ou administrateur (ADMIN).
+async function ensureAdmin(userId: string, workspaceId: string): Promise<string | null> {
+  const membership = await getMembership(userId, workspaceId);
+  if (!membership) return "Vous n'avez pas accès à cet espace de travail.";
+  if (membership.role !== "OWNER" && membership.role !== "ADMIN") {
+    return "Seul un administrateur peut effectuer cette action.";
+  }
+  return null;
+}
+
+// Change le rôle d'un membre (admin uniquement ; le créateur n'est pas modifiable).
+export async function setMemberRole(
+  workspaceId: string,
+  targetUserId: string,
+  role: "ADMIN" | "MEMBER",
+): Promise<void> {
+  const user = await requireUser();
+  if (await ensureAdmin(user.id, workspaceId)) return;
+
+  const target = await prisma.membership.findFirst({
+    where: { userId: targetUserId, workspaceId },
+  });
+  if (!target || target.role === "OWNER") return;
+
+  await prisma.membership.update({ where: { id: target.id }, data: { role } });
+  revalidatePath(`/app/workspaces/${workspaceId}`);
+}
+
+// Active / désactive un membre (admin uniquement ; ni soi-même, ni le créateur).
+export async function setMemberActive(
+  workspaceId: string,
+  targetUserId: string,
+  active: boolean,
+): Promise<void> {
+  const user = await requireUser();
+  if (await ensureAdmin(user.id, workspaceId)) return;
+  if (targetUserId === user.id) return;
+
+  const target = await prisma.membership.findFirst({
+    where: { userId: targetUserId, workspaceId },
+  });
+  if (!target || target.role === "OWNER") return;
+
+  await prisma.membership.update({
+    where: { id: target.id },
+    data: { deactivatedAt: active ? null : new Date() },
+  });
+  revalidatePath(`/app/workspaces/${workspaceId}`);
+}
+
 export async function archiveWorkspace(formData: FormData): Promise<void> {
   const user = await requireUser();
   const workspaceId = String(formData.get("workspaceId") ?? "");
@@ -116,6 +166,7 @@ export async function deleteWorkspace(_prev: FormState, formData: FormData): Pro
 const inviteSchema = z.object({
   workspaceId: z.string().min(1),
   email: z.email("Adresse email invalide."),
+  role: z.enum(["ADMIN", "MEMBER"]).default("MEMBER"),
 });
 
 export async function inviteMember(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -123,18 +174,17 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   const parsed = inviteSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     email: String(formData.get("email") ?? "").trim().toLowerCase(),
+    role: formData.get("role") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
   }
 
-  const { workspaceId, email } = parsed.data;
+  const { workspaceId, email, role } = parsed.data;
 
-  // L'utilisateur courant doit être membre du workspace pour y inviter.
-  const membership = await getMembership(user.id, workspaceId);
-  if (!membership) {
-    return { error: "Vous n'avez pas accès à cet espace de travail." };
-  }
+  // Seul un administrateur peut inviter.
+  const adminError = await ensureAdmin(user.id, workspaceId);
+  if (adminError) return { error: adminError };
 
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
@@ -149,7 +199,7 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
     if (already) return { error: "Cette personne est déjà membre de l'espace." };
 
     await prisma.membership.create({
-      data: { userId: existingUser.id, workspaceId, role: "MEMBER" },
+      data: { userId: existingUser.id, workspaceId, role },
     });
     revalidatePath(`/app/workspaces/${workspaceId}/members`);
     redirect(`/app/workspaces/${workspaceId}/members`);
@@ -167,7 +217,7 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
       where: { email, workspaceId, acceptedAt: null },
     }),
     prisma.invitation.create({
-      data: { email, tokenHash, workspaceId, invitedById: user.id, expiresAt },
+      data: { email, tokenHash, workspaceId, invitedById: user.id, expiresAt, role },
     }),
   ]);
 
@@ -195,8 +245,7 @@ export async function cancelInvitation(formData: FormData): Promise<void> {
   });
   if (!invitation || invitation.acceptedAt) return;
 
-  const membership = await getMembership(user.id, invitation.workspaceId);
-  if (!membership) return;
+  if (await ensureAdmin(user.id, invitation.workspaceId)) return;
 
   await prisma.invitation.delete({ where: { id: invitation.id } });
   revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);

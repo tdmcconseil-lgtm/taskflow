@@ -33,9 +33,10 @@ export async function requireUser() {
   return user;
 }
 
-// Vérifie que l'utilisateur est membre du workspace ; sinon 404-like (null).
+// Vérifie que l'utilisateur est membre ACTIF du workspace ; sinon null.
+// Un membre désactivé n'a plus accès à l'espace.
 export async function getMembership(userId: string, workspaceId: string) {
-  return prisma.membership.findUnique({
-    where: { userId_workspaceId: { userId, workspaceId } },
+  return prisma.membership.findFirst({
+    where: { userId, workspaceId, deactivatedAt: null },
   });
 }

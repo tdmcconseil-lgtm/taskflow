@@ -18,8 +18,9 @@ datasource db {
 
 // Rôle d'un utilisateur au sein d'un workspace.
 enum WorkspaceRole {
-  OWNER // créateur / administrateur du workspace
-  MEMBER // membre pouvant créer des projets et des tâches
+  OWNER // créateur de l'espace — administrateur protégé (non modifiable/désactivable)
+  ADMIN // administrateur : peut inviter, désactiver et gérer les rôles
+  MEMBER // utilisateur : accès aux projets et tâches
 }
 
 // Statut d'avancement d'une tâche.
@@ -125,6 +126,8 @@ model Invitation {
 model Membership {
   id          String        @id @default(cuid())
   role        WorkspaceRole @default(MEMBER)
+  // non null = membre désactivé : il n'a plus accès à l'espace (réactivable).
+  deactivatedAt DateTime?
   createdAt   DateTime      @default(now())
 
   userId      String

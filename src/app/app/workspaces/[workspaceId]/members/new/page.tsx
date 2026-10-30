@@ -13,6 +13,8 @@ export default async function NewMemberPage({
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
+  // Réservé aux administrateurs.
+  if (membership.role !== "OWNER" && membership.role !== "ADMIN") notFound();
 
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
