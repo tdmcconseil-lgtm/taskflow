@@ -147,6 +147,22 @@ const en: Dictionary = {
     reactivate: "Reactivate",
     deactivate: "Deactivate",
   },
+  workspace: {
+    prefix: "Workspace:",
+    archive: "Archive",
+    archivedBanner: "This workspace is archived — hidden from your active list.",
+    unarchive: "Unarchive",
+    deletePermanently: "Delete permanently",
+    followedDesc: "Tasks in this workspace that you follow (👁).",
+    followedEmpty: "You don't follow any task in this workspace.",
+    eventsDesc:
+      "Recent changes to the tasks you follow in this workspace, newest first.",
+    eventsEmpty: "No events in this workspace.",
+    discussionsDesc:
+      "Discussions on this workspace's tasks with a message received while you were following.",
+    discussionsEmpty: "No discussion in this workspace.",
+    notFollowing: "(no longer followed)",
+  },
 };
 
 export default en;

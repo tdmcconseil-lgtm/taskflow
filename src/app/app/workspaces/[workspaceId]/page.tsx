@@ -246,12 +246,10 @@ export default async function WorkspacePage({
 
   const suiviesPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500">
-        Les tâches de cet espace auxquelles vous êtes abonné (👁).
-      </p>
+      <p className="text-sm text-zinc-500">{t.workspace.followedDesc}</p>
       {followedTasks.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
-          Vous ne suivez aucune tâche dans cet espace.
+          {t.workspace.followedEmpty}
         </p>
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
@@ -266,7 +264,8 @@ export default async function WorkspacePage({
                     f.task.status === "DONE" ? "text-zinc-400 line-through" : ""
                   }`}
                 >
-                  {prefixedTitle(f.task.title, f.task.parentId === null)}
+                  {f.task.parentId === null ? t.task.prefixProject : t.task.prefixTask} :{" "}
+                  {f.task.title}
                 </span>
                 <div className="flex shrink-0 items-center gap-2">
                   <PriorityBadge priority={f.task.priority} />
@@ -283,22 +282,21 @@ export default async function WorkspacePage({
   const evenementsPanel = (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">
-          Les changements récents survenus sur les tâches de cet espace auxquelles vous êtes
-          abonné, du plus récent au plus ancien.
-        </p>
+        <p className="text-sm text-zinc-500">{t.workspace.eventsDesc}</p>
         <EventFilter hideMine={!includeOwn} />
       </div>
-      <EventList groups={eventGroups} emptyLabel="Aucun événement dans cet espace." />
+      <EventList groups={eventGroups} emptyLabel={t.workspace.eventsEmpty} />
     </div>
   );
 
   const discussionsPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500">
-        Les discussions des tâches de cet espace avec un message reçu alors que vous êtes abonné.
-      </p>
-      <DiscussionList rows={discussionRows} emptyLabel="Aucune discussion dans cet espace." />
+      <p className="text-sm text-zinc-500">{t.workspace.discussionsDesc}</p>
+      <DiscussionList
+        rows={discussionRows}
+        emptyLabel={t.workspace.discussionsEmpty}
+        notFollowingLabel={t.workspace.notFollowing}
+      />
     </div>
   );
 
@@ -307,7 +305,7 @@ export default async function WorkspacePage({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            <span className="text-zinc-400">Espace : </span>
+            <span className="text-zinc-400">{t.workspace.prefix} </span>
             {workspace.name}
           </h1>
         </div>
@@ -318,7 +316,7 @@ export default async function WorkspacePage({
               type="submit"
               className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
-              Archiver
+              {t.workspace.archive}
             </button>
           </form>
         )}
@@ -326,9 +324,7 @@ export default async function WorkspacePage({
 
       {isArchived && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-900 dark:bg-amber-950/40">
-          <p className="text-amber-800 dark:text-amber-300">
-            Cet espace est archivé — masqué de votre liste active.
-          </p>
+          <p className="text-amber-800 dark:text-amber-300">{t.workspace.archivedBanner}</p>
           {isOwner && (
             <div className="flex items-center gap-2">
               <form action={unarchiveWorkspace}>
@@ -337,14 +333,14 @@ export default async function WorkspacePage({
                   type="submit"
                   className="rounded-md border border-amber-400 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:text-amber-300 dark:hover:bg-amber-900/50"
                 >
-                  Désarchiver
+                  {t.workspace.unarchive}
                 </button>
               </form>
               <Link
                 href={`/app/workspaces/${workspace.id}/delete`}
                 className="rounded-md border border-red-400 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
               >
-                Supprimer définitivement
+                {t.workspace.deletePermanently}
               </Link>
             </div>
           )}

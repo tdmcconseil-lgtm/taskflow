@@ -147,6 +147,22 @@ const es: Dictionary = {
     reactivate: "Reactivar",
     deactivate: "Desactivar",
   },
+  workspace: {
+    prefix: "Espacio:",
+    archive: "Archivar",
+    archivedBanner: "Este espacio está archivado — oculto de tu lista activa.",
+    unarchive: "Desarchivar",
+    deletePermanently: "Eliminar definitivamente",
+    followedDesc: "Las tareas de este espacio que sigues (👁).",
+    followedEmpty: "No sigues ninguna tarea en este espacio.",
+    eventsDesc:
+      "Los cambios recientes en las tareas que sigues en este espacio, del más reciente al más antiguo.",
+    eventsEmpty: "Ningún evento en este espacio.",
+    discussionsDesc:
+      "Las discusiones de las tareas de este espacio con un mensaje recibido mientras seguías.",
+    discussionsEmpty: "Ninguna discusión en este espacio.",
+    notFollowing: "(ya no seguida)",
+  },
 };
 
 export default es;

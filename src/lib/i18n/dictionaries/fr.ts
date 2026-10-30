@@ -146,6 +146,22 @@ const fr = {
     reactivate: "Réactiver",
     deactivate: "Désactiver",
   },
+  workspace: {
+    prefix: "Espace :",
+    archive: "Archiver",
+    archivedBanner: "Cet espace est archivé — masqué de votre liste active.",
+    unarchive: "Désarchiver",
+    deletePermanently: "Supprimer définitivement",
+    followedDesc: "Les tâches de cet espace auxquelles vous êtes abonné (👁).",
+    followedEmpty: "Vous ne suivez aucune tâche dans cet espace.",
+    eventsDesc:
+      "Les changements récents survenus sur les tâches de cet espace auxquelles vous êtes abonné, du plus récent au plus ancien.",
+    eventsEmpty: "Aucun événement dans cet espace.",
+    discussionsDesc:
+      "Les discussions des tâches de cet espace avec un message reçu alors que vous êtes abonné.",
+    discussionsEmpty: "Aucune discussion dans cet espace.",
+    notFollowing: "(plus suivie)",
+  },
 };
 
 export type Dictionary = typeof fr;

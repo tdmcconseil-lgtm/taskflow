@@ -5,9 +5,11 @@ import type { DiscussionRow } from "@/lib/discussions";
 export function DiscussionList({
   rows,
   emptyLabel,
+  notFollowingLabel = "(plus suivie)",
 }: {
   rows: DiscussionRow[];
   emptyLabel: string;
+  notFollowingLabel?: string;
 }) {
   if (rows.length === 0) {
     return (
@@ -35,7 +37,7 @@ export function DiscussionList({
                 <p className={`truncate ${r.unread ? "font-semibold" : "font-medium"}`}>
                   {r.title}
                   {!r.following && (
-                    <span className="ml-2 text-xs font-normal text-zinc-400">(plus suivie)</span>
+                    <span className="ml-2 text-xs font-normal text-zinc-400">{notFollowingLabel}</span>
                   )}
                 </p>
                 <span className="shrink-0 text-xs text-zinc-400">
