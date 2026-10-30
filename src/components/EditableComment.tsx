@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CommentBody } from "@/components/CommentBody";
 import { CommentBox } from "@/components/CommentBox";
 import { formatDateTime } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 
 type Opt = { id: string; name: string };
 
@@ -35,6 +36,7 @@ export function EditableComment({
   taskDocuments: Opt[];
   projectDocuments: Opt[];
 }) {
+  const t = useT();
   const [editing, setEditing] = useState(false);
   const mine = comment.authorId === currentUserId;
 
@@ -48,8 +50,11 @@ export function EditableComment({
           <span>·</span>
           <span>{formatDateTime(comment.createdAt)}</span>
           {comment.editedAt && (
-            <span className="italic text-zinc-400" title={`Modifié le ${formatDateTime(comment.editedAt)}`}>
-              (modifié)
+            <span
+              className="italic text-zinc-400"
+              title={`${t.comments.editedOn} ${formatDateTime(comment.editedAt)}`}
+            >
+              {t.comments.edited}
             </span>
           )}
         </div>
@@ -59,7 +64,7 @@ export function EditableComment({
             onClick={() => setEditing(true)}
             className="rounded px-2 py-0.5 text-xs text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
           >
-            Modifier
+            {t.comments.edit}
           </button>
         )}
       </div>

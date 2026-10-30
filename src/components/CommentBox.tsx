@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { addComment, editComment } from "@/lib/actions/discussion";
+import { useT } from "@/lib/i18n/context";
 
 type Opt = { id: string; name: string };
 type TriggerType = "user" | "docTask" | "docProject";
@@ -48,6 +49,7 @@ export function CommentBox({
   initialBody?: string;
   onDone?: () => void;
 }) {
+  const t = useT();
   const editing = !!commentId;
   const editorRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -257,7 +259,7 @@ export function CommentBox({
           />
           {empty && (
             <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400">
-              Écrire un message… @ mention, $ document.
+              {t.comments.placeholder}
             </span>
           )}
         </div>
@@ -268,7 +270,7 @@ export function CommentBox({
             disabled={empty || pending}
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {pending ? "…" : editing ? "Enregistrer" : "Commenter"}
+            {pending ? "…" : editing ? t.comments.save : t.comments.send}
           </button>
           {editing && onDone && (
             <button
@@ -276,7 +278,7 @@ export function CommentBox({
               onClick={onDone}
               className="rounded-lg border border-zinc-300 px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
-              Annuler
+              {t.comments.cancel}
             </button>
           )}
         </div>

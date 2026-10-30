@@ -190,6 +190,23 @@ const en: Dictionary = {
     deleteTitle: "Delete this decision",
     delete: "Delete",
   },
+  comments: {
+    placeholder: "Write a message… @ mention, $ document.",
+    save: "Save",
+    send: "Comment",
+    cancel: "Cancel",
+    edit: "Edit",
+    edited: "(edited)",
+    editedOn: "Edited on",
+  },
+  followers: {
+    none: "No one is following this task yet.",
+    countOne: "1 person is following this task.",
+    countMany: "{n} people are following this task.",
+    addPerson: "Add a person…",
+    add: "Add",
+    you: "you",
+  },
 };
 
 export default en;

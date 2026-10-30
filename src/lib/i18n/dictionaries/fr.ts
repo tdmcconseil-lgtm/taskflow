@@ -189,6 +189,23 @@ const fr = {
     deleteTitle: "Supprimer cette décision",
     delete: "Supprimer",
   },
+  comments: {
+    placeholder: "Écrire un message… @ mention, $ document.",
+    save: "Enregistrer",
+    send: "Commenter",
+    cancel: "Annuler",
+    edit: "Modifier",
+    edited: "(modifié)",
+    editedOn: "Modifié le",
+  },
+  followers: {
+    none: "Personne ne suit cette tâche pour le moment.",
+    countOne: "1 personne suit cette tâche.",
+    countMany: "{n} personnes suivent cette tâche.",
+    addPerson: "Ajouter une personne…",
+    add: "Ajouter",
+    you: "vous",
+  },
 };
 
 export type Dictionary = typeof fr;
