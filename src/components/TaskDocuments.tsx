@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { detachDocument } from "@/lib/actions/documents";
+import { useT } from "@/lib/i18n/context";
 
 export type DocItem = { id: string; name: string; fileName: string };
 
@@ -16,11 +19,10 @@ export function TaskDocuments({
   linked: DocItem[];
   pool: DocItem[];
 }) {
+  const t = useT();
   const items = isTopLevel ? pool : linked;
-  const heading = isTopLevel ? "Documents du projet" : "Documents";
-  const empty = isTopLevel
-    ? "Aucun document dans ce projet."
-    : "Aucun document lié à cette tâche.";
+  const heading = isTopLevel ? t.documents.projectDocuments : t.documents.taskDocuments;
+  const empty = isTopLevel ? t.documents.emptyProject : t.documents.emptyTask;
 
   return (
     <section className="space-y-3">
@@ -31,14 +33,14 @@ export function TaskDocuments({
             href={`/app/tasks/${taskId}/documents/new`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Téléverser
+            {t.documents.upload}
           </Link>
           {!isTopLevel && (
             <Link
               href={`/app/tasks/${taskId}/documents/attach`}
               className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
-              Joindre un document du projet
+              {t.documents.attachFromProject}
             </Link>
           )}
         </div>
@@ -67,10 +69,10 @@ export function TaskDocuments({
                   <input type="hidden" name="documentId" value={d.id} />
                   <button
                     type="submit"
-                    title="Détacher de cette tâche"
+                    title={t.documents.detachTitle}
                     className="shrink-0 rounded-md px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                   >
-                    Détacher
+                    {t.documents.detach}
                   </button>
                 </form>
               )}

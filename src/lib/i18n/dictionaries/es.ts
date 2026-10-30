@@ -163,6 +163,33 @@ const es: Dictionary = {
     discussionsEmpty: "Ninguna discusión en este espacio.",
     notFollowing: "(ya no seguida)",
   },
+  documents: {
+    projectDocuments: "Documentos del proyecto",
+    taskDocuments: "Documentos",
+    emptyProject: "Ningún documento en este proyecto.",
+    emptyTask: "Ningún documento vinculado a esta tarea.",
+    upload: "Subir",
+    attachFromProject: "Adjuntar un documento del proyecto",
+    detach: "Desvincular",
+    detachTitle: "Desvincular de esta tarea",
+  },
+  decisions: {
+    projectDecisions: "Decisiones del proyecto",
+    projectDecisionsDesc:
+      "Las decisiones marcadas como «decisión de proyecto» en todas las tareas de este proyecto.",
+    noProjectDecisions: "Ninguna decisión de proyecto por ahora.",
+    inTask: "en",
+    taskDecisionsTop: "Decisiones de esta tarea",
+    taskDecisions: "Decisiones",
+    add: "Añadir",
+    noDecisions: "Ninguna decisión para esta tarea.",
+    unmarkTitle: "Quitar del nivel de proyecto",
+    markTitle: "Elevar esta decisión al nivel de proyecto",
+    projectDecision: "Decisión de proyecto",
+    markProjectDecision: "Marcar como decisión de proyecto",
+    deleteTitle: "Eliminar esta decisión",
+    delete: "Eliminar",
+  },
 };
 
 export default es;

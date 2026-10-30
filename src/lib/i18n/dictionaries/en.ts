@@ -163,6 +163,33 @@ const en: Dictionary = {
     discussionsEmpty: "No discussion in this workspace.",
     notFollowing: "(no longer followed)",
   },
+  documents: {
+    projectDocuments: "Project documents",
+    taskDocuments: "Documents",
+    emptyProject: "No document in this project.",
+    emptyTask: "No document linked to this task.",
+    upload: "Upload",
+    attachFromProject: "Attach a project document",
+    detach: "Detach",
+    detachTitle: "Detach from this task",
+  },
+  decisions: {
+    projectDecisions: "Project decisions",
+    projectDecisionsDesc:
+      "Decisions marked “project decision” across all tasks of this project.",
+    noProjectDecisions: "No project decision yet.",
+    inTask: "in",
+    taskDecisionsTop: "This task's decisions",
+    taskDecisions: "Decisions",
+    add: "Add",
+    noDecisions: "No decision for this task.",
+    unmarkTitle: "Remove from project level",
+    markTitle: "Raise this decision to project level",
+    projectDecision: "Project decision",
+    markProjectDecision: "Mark as project decision",
+    deleteTitle: "Delete this decision",
+    delete: "Delete",
+  },
 };
 
 export default en;

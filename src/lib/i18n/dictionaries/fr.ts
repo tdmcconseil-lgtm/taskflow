@@ -162,6 +162,33 @@ const fr = {
     discussionsEmpty: "Aucune discussion dans cet espace.",
     notFollowing: "(plus suivie)",
   },
+  documents: {
+    projectDocuments: "Documents du projet",
+    taskDocuments: "Documents",
+    emptyProject: "Aucun document dans ce projet.",
+    emptyTask: "Aucun document lié à cette tâche.",
+    upload: "Téléverser",
+    attachFromProject: "Joindre un document du projet",
+    detach: "Détacher",
+    detachTitle: "Détacher de cette tâche",
+  },
+  decisions: {
+    projectDecisions: "Décisions du projet",
+    projectDecisionsDesc:
+      "Les décisions marquées « décision projet » dans l’ensemble des tâches de ce projet.",
+    noProjectDecisions: "Aucune décision projet pour l’instant.",
+    inTask: "dans",
+    taskDecisionsTop: "Décisions de cette tâche",
+    taskDecisions: "Décisions",
+    add: "Ajouter",
+    noDecisions: "Aucune décision pour cette tâche.",
+    unmarkTitle: "Retirer la remontée au niveau du projet",
+    markTitle: "Faire remonter cette décision au niveau du projet",
+    projectDecision: "Décision projet",
+    markProjectDecision: "Marquer décision projet",
+    deleteTitle: "Supprimer cette décision",
+    delete: "Supprimer",
+  },
 };
 
 export type Dictionary = typeof fr;

@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { setDecisionProject, deleteDecision } from "@/lib/actions/decisions";
 import { formatDate } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 
 export type DecisionItem = {
   id: string;
@@ -30,21 +33,18 @@ export function TaskDecisions({
   decisions: DecisionItem[];
   projectDecisions: ProjectDecisionItem[];
 }) {
+  const t = useT();
   return (
     <div className="space-y-8">
       {isTopLevel && (
         <section className="space-y-3">
           <div>
-            <h2 className="text-lg font-semibold">Décisions du projet</h2>
-            <p className="text-sm text-zinc-500">
-              Les décisions marquées « décision projet » dans l’ensemble des tâches de ce projet.
-            </p>
+            <h2 className="text-lg font-semibold">{t.decisions.projectDecisions}</h2>
+            <p className="text-sm text-zinc-500">{t.decisions.projectDecisionsDesc}</p>
           </div>
 
           {projectDecisions.length === 0 ? (
-            <p className="text-sm italic text-zinc-400">
-              Aucune décision projet pour l’instant.
-            </p>
+            <p className="text-sm italic text-zinc-400">{t.decisions.noProjectDecisions}</p>
           ) : (
             <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
               {projectDecisions.map((d) => (
@@ -54,7 +54,7 @@ export function TaskDecisions({
                   </p>
                   <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400">
                     <span>
-                      {d.authorName} · {formatDate(d.createdAt)} · dans{" "}
+                      {d.authorName} · {formatDate(d.createdAt)} · {t.decisions.inTask}{" "}
                       <Link href={`/app/tasks/${d.taskId}`} className="hover:underline">
                         {d.taskTitle}
                       </Link>
@@ -79,18 +79,18 @@ export function TaskDecisions({
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">
-            {isTopLevel ? "Décisions de cette tâche" : "Décisions"}
+            {isTopLevel ? t.decisions.taskDecisionsTop : t.decisions.taskDecisions}
           </h2>
           <Link
             href={`/app/tasks/${taskId}/decisions/new`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Ajouter
+            {t.decisions.add}
           </Link>
         </div>
 
         {decisions.length === 0 ? (
-          <p className="text-sm italic text-zinc-400">Aucune décision pour cette tâche.</p>
+          <p className="text-sm italic text-zinc-400">{t.decisions.noDecisions}</p>
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {decisions.map((d) => (
@@ -118,11 +118,7 @@ export function TaskDecisions({
                     <input type="hidden" name="value" value={d.isProjectDecision ? "0" : "1"} />
                     <button
                       type="submit"
-                      title={
-                        d.isProjectDecision
-                          ? "Retirer la remontée au niveau du projet"
-                          : "Faire remonter cette décision au niveau du projet"
-                      }
+                      title={d.isProjectDecision ? t.decisions.unmarkTitle : t.decisions.markTitle}
                       className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition ${
                         d.isProjectDecision
                           ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300"
@@ -131,7 +127,9 @@ export function TaskDecisions({
                     >
                       <span aria-hidden>🏷️</span>
                       <span>
-                        {d.isProjectDecision ? "Décision projet" : "Marquer décision projet"}
+                        {d.isProjectDecision
+                          ? t.decisions.projectDecision
+                          : t.decisions.markProjectDecision}
                       </span>
                     </button>
                   </form>
@@ -139,10 +137,10 @@ export function TaskDecisions({
                     <input type="hidden" name="decisionId" value={d.id} />
                     <button
                       type="submit"
-                      title="Supprimer cette décision"
+                      title={t.decisions.deleteTitle}
                       className="rounded-md px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                     >
-                      Supprimer
+                      {t.decisions.delete}
                     </button>
                   </form>
                 </div>
