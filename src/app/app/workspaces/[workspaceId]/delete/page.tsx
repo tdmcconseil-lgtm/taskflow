@@ -3,11 +3,13 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { DeleteWorkspaceForm } from "@/components/DeleteWorkspaceForm";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function DeleteWorkspacePage({
   params,
 }: PageProps<"/app/workspaces/[workspaceId]/delete">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { workspaceId } = await params;
 
   const membership = await getMembership(user.id, workspaceId);
@@ -32,10 +34,10 @@ export default async function DeleteWorkspacePage({
   ]);
 
   const rows = [
-    { label: "Projets", value: projects },
-    { label: "Sous-tâches", value: subtasks },
-    { label: "Membres", value: members },
-    { label: "Invitations en attente", value: invitations },
+    { label: t.deleteWorkspace.projects, value: projects },
+    { label: t.deleteWorkspace.subtasks, value: subtasks },
+    { label: t.deleteWorkspace.members, value: members },
+    { label: t.deleteWorkspace.pendingInvitations, value: invitations },
   ];
 
   return (
@@ -48,14 +50,13 @@ export default async function DeleteWorkspacePage({
           ← {workspace.name}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-red-700 dark:text-red-400">
-          Supprimer l&apos;espace
+          {t.deleteWorkspace.title}
         </h1>
       </div>
 
       <div className="rounded-2xl border border-red-300 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/30">
         <p className="text-sm font-medium text-red-800 dark:text-red-300">
-          Cette action est irréversible. La suppression de «&nbsp;{workspace.name}&nbsp;»
-          entraînera la suppression définitive de tout son contenu :
+          {t.deleteWorkspace.warning.replace("{name}", workspace.name)}
         </p>
 
         <dl className="mt-4 grid grid-cols-2 gap-3">
@@ -71,8 +72,7 @@ export default async function DeleteWorkspacePage({
         </dl>
 
         <p className="mt-4 text-xs text-red-700 dark:text-red-400">
-          Toutes les tâches et tous les projets ci-dessus seront perdus, sans
-          possibilité de récupération.
+          {t.deleteWorkspace.lossWarning}
         </p>
       </div>
 

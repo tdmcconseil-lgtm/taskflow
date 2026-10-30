@@ -250,6 +250,31 @@ const es: Dictionary = {
     empty:
       "Ninguna discusión. Sigue una tarea o escribe un mensaje para verlas aparecer aquí.",
   },
+  descriptionReveal: {
+    show: "Mostrar la descripción",
+    hide: "Ocultar la descripción",
+  },
+  newWorkspace: {
+    back: "Inicio",
+    title: "Nuevo espacio de trabajo",
+    nameLabel: "Nombre del espacio",
+    namePlaceholder: "Ej. Equipo de Marketing",
+    create: "Crear el espacio",
+  },
+  deleteWorkspace: {
+    title: "Eliminar el espacio",
+    warning:
+      "Esta acción es irreversible. Eliminar «{name}» borrará definitivamente todo su contenido:",
+    projects: "Proyectos",
+    subtasks: "Subtareas",
+    members: "Miembros",
+    pendingInvitations: "Invitaciones pendientes",
+    lossWarning:
+      "Todas las tareas y proyectos anteriores se perderán, sin posibilidad de recuperación.",
+    confirmPrompt: "Para confirmar, escribe el nombre del espacio:",
+    deleting: "Eliminando…",
+    deleteButton: "Eliminar definitivamente este espacio",
+  },
 };
 
 export default es;

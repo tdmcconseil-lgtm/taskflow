@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useT } from "@/lib/i18n/context";
 
 // Bandeau de données (assigné / échéance / priorité) avec une flèche à droite
 // qui révèle la description en dessous. Aucun intitulé « Description ».
@@ -11,6 +12,7 @@ export function DescriptionReveal({
   banner: ReactNode;
   description: ReactNode;
 }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,8 +23,8 @@ export function DescriptionReveal({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          title={open ? "Masquer la description" : "Afficher la description"}
-          aria-label={open ? "Masquer la description" : "Afficher la description"}
+          title={open ? t.descriptionReveal.hide : t.descriptionReveal.show}
+          aria-label={open ? t.descriptionReveal.hide : t.descriptionReveal.show}
           className="shrink-0 rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
         >
           <span className={`inline-block text-sm transition ${open ? "rotate-90" : ""}`}>▸</span>

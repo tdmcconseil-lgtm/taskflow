@@ -249,6 +249,31 @@ const fr = {
     empty:
       "Aucune discussion. Suivez une tâche ou écrivez un message pour en voir apparaître ici.",
   },
+  descriptionReveal: {
+    show: "Afficher la description",
+    hide: "Masquer la description",
+  },
+  newWorkspace: {
+    back: "Accueil",
+    title: "Nouvel espace de travail",
+    nameLabel: "Nom de l'espace",
+    namePlaceholder: "Ex. Équipe Marketing",
+    create: "Créer l'espace",
+  },
+  deleteWorkspace: {
+    title: "Supprimer l'espace",
+    warning:
+      "Cette action est irréversible. La suppression de « {name} » entraînera la suppression définitive de tout son contenu :",
+    projects: "Projets",
+    subtasks: "Sous-tâches",
+    members: "Membres",
+    pendingInvitations: "Invitations en attente",
+    lossWarning:
+      "Toutes les tâches et tous les projets ci-dessus seront perdus, sans possibilité de récupération.",
+    confirmPrompt: "Pour confirmer, tapez le nom de l'espace :",
+    deleting: "Suppression…",
+    deleteButton: "Supprimer définitivement cet espace",
+  },
 };
 
 export type Dictionary = typeof fr;

@@ -250,6 +250,31 @@ const en: Dictionary = {
     empty:
       "No discussion. Follow a task or write a message to see them appear here.",
   },
+  descriptionReveal: {
+    show: "Show description",
+    hide: "Hide description",
+  },
+  newWorkspace: {
+    back: "Home",
+    title: "New workspace",
+    nameLabel: "Workspace name",
+    namePlaceholder: "e.g. Marketing Team",
+    create: "Create workspace",
+  },
+  deleteWorkspace: {
+    title: "Delete workspace",
+    warning:
+      "This action is irreversible. Deleting “{name}” will permanently delete all its content:",
+    projects: "Projects",
+    subtasks: "Subtasks",
+    members: "Members",
+    pendingInvitations: "Pending invitations",
+    lossWarning:
+      "All the tasks and projects above will be lost, with no way to recover them.",
+    confirmPrompt: "To confirm, type the workspace name:",
+    deleting: "Deleting…",
+    deleteButton: "Permanently delete this workspace",
+  },
 };
 
 export default en;

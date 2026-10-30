@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { inputClass, errorClass } from "@/components/ui";
 import { deleteWorkspace, type FormState } from "@/lib/actions/workspaces";
+import { useT } from "@/lib/i18n/context";
 
 export function DeleteWorkspaceForm({
   workspaceId,
@@ -11,6 +12,7 @@ export function DeleteWorkspaceForm({
   workspaceId: string;
   workspaceName: string;
 }) {
+  const t = useT();
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     deleteWorkspace,
     undefined,
@@ -24,7 +26,7 @@ export function DeleteWorkspaceForm({
 
       <div className="space-y-1">
         <label htmlFor="confirmName" className="text-sm font-medium">
-          Pour confirmer, tapez le nom de l&apos;espace :{" "}
+          {t.deleteWorkspace.confirmPrompt}{" "}
           <span className="font-semibold">{workspaceName}</span>
         </label>
         <input
@@ -45,7 +47,7 @@ export function DeleteWorkspaceForm({
         disabled={!matches || pending}
         className="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-zinc-950"
       >
-        {pending ? "Suppression…" : "Supprimer définitivement cet espace"}
+        {pending ? t.deleteWorkspace.deleting : t.deleteWorkspace.deleteButton}
       </button>
     </form>
   );
