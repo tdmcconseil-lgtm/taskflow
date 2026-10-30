@@ -42,7 +42,7 @@ export function WorkspaceTabs({
     <div>
       <div
         role="tablist"
-        className="no-scrollbar flex gap-5 overflow-x-auto border-b border-zinc-200 dark:border-zinc-800"
+        className="flex flex-wrap gap-x-5 gap-y-0.5 border-b border-zinc-200 dark:border-zinc-800"
       >
         {TABS.map((t) => (
           <button
