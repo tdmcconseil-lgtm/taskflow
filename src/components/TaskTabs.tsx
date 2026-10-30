@@ -4,12 +4,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { markRead } from "@/lib/actions/discussion";
 
-type TabKey = "sous" | "docs" | "chat" | "followers" | "activite";
+type TabKey = "sous" | "docs" | "decisions" | "chat" | "followers" | "activite";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "sous", label: "Sous-tâches" },
-  { key: "docs", label: "Documents" },
   { key: "chat", label: "Conversation" },
+  { key: "decisions", label: "Décisions" },
+  { key: "docs", label: "Documents" },
   { key: "followers", label: "Abonnés" },
   { key: "activite", label: "Activité" },
 ];
@@ -32,6 +33,7 @@ export function TaskTabs({
   followerCount,
   subtasks,
   documents,
+  decisions,
   chat,
   followers,
   activity,
@@ -42,6 +44,7 @@ export function TaskTabs({
   followerCount: number;
   subtasks: ReactNode;
   documents: ReactNode;
+  decisions: ReactNode;
   chat: ReactNode;
   followers: ReactNode;
   activity: ReactNode;
@@ -100,8 +103,9 @@ export function TaskTabs({
 
       <div className="pt-6">
         <div hidden={active !== "sous"}>{subtasks}</div>
-        <div hidden={active !== "docs"}>{documents}</div>
         <div hidden={active !== "chat"}>{chat}</div>
+        <div hidden={active !== "decisions"}>{decisions}</div>
+        <div hidden={active !== "docs"}>{documents}</div>
         <div hidden={active !== "followers"}>{followers}</div>
         <div hidden={active !== "activite"}>{activity}</div>
       </div>

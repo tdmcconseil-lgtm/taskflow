@@ -84,6 +84,7 @@ model User {
   activities    TaskActivity[] @relation("ActivityActor")
   targetedActivities TaskActivity[] @relation("ActivityTarget")
   uploadedDocuments Document[]   @relation("DocumentUploader")
+  decisions     Decision[]   @relation("DecisionAuthor")
 
   @@index([email])
 }
@@ -175,6 +176,8 @@ model Task {
   documentLinks DocumentLink[] @relation("TaskDocuments")
   // Documents dont cette tâche est le projet (tâche racine).
   projectDocuments Document[]  @relation("ProjectDocuments")
+  // Décisions prises dans le cadre de cette tâche.
+  decisions  Decision[]
 
   @@index([workspaceId])
   @@index([assigneeId])
@@ -201,9 +204,33 @@ model Document {
   uploadedBy   User   @relation("DocumentUploader", fields: [uploadedById], references: [id])
 
   links DocumentLink[]
+  decisions Decision[]
 
   @@index([projectTaskId])
   @@index([workspaceId])
+}
+
+// --- Décision prise dans le cadre d'une tâche ---
+// Chaque tâche porte sa liste de décisions. Une décision peut référencer un
+// document (du projet ou de la tâche) et être marquée « décision projet » :
+// elle remonte alors dans l'onglet Décisions du projet (la tâche racine).
+model Decision {
+  id        String   @id @default(cuid())
+  content   String
+  // true = « décision projet » : remonte au niveau du projet (tâche racine).
+  isProjectDecision Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User      @relation("DecisionAuthor", fields: [createdById], references: [id])
+  // Document éventuellement associé (facultatif ; conservée si le document part).
+  documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([taskId])
+  @@index([documentId])
 }
 
 // --- Lien entre un document et une tâche (« action ») ---

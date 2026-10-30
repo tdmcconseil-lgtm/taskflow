@@ -15,6 +15,7 @@ import { CommentBox } from "@/components/CommentBox";
 import { EditableComment } from "@/components/EditableComment";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { TaskDocuments } from "@/components/TaskDocuments";
+import { TaskDecisions } from "@/components/TaskDecisions";
 import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
@@ -71,7 +72,7 @@ export default async function TaskDetailPage({
     ? task.comments.filter((c) => !lastReadAt || c.createdAt > lastReadAt).length
     : 0;
 
-  const [workspace, allTasks, followerRows, activities, docLinks, poolDocs] = await Promise.all([
+  const [workspace, allTasks, followerRows, activities, docLinks, poolDocs, ownDecisions] = await Promise.all([
     prisma.workspace.findUnique({
       where: { id: task.workspaceId },
       select: {
@@ -128,6 +129,18 @@ export default async function TaskDetailPage({
           select: { id: true, name: true, fileName: true },
         })
       : Promise.resolve([] as { id: string; name: string; fileName: string }[]),
+    prisma.decision.findMany({
+      where: { taskId: task.id },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        content: true,
+        isProjectDecision: true,
+        createdAt: true,
+        createdBy: { select: { name: true } },
+        document: { select: { id: true, name: true } },
+      },
+    }),
   ]);
   if (!workspace) notFound();
 
@@ -240,6 +253,55 @@ export default async function TaskDetailPage({
   // --- Mode lecture ---
   const overdue = isOverdue(task.dueDate) && task.status !== "DONE";
   const isTopLevel = task.parentId === null;
+
+  // Décisions propres à la tâche.
+  const decisionItems = ownDecisions.map((d) => ({
+    id: d.id,
+    content: d.content,
+    isProjectDecision: d.isProjectDecision,
+    createdAt: d.createdAt,
+    authorName: d.createdBy.name,
+    document: d.document,
+  }));
+
+  // Remontée « décision projet » : sur la tâche racine, les décisions marquées
+  // de tout le projet (racine + descendants).
+  let projectDecisionItems: ((typeof decisionItems)[number] & {
+    taskId: string;
+    taskTitle: string;
+  })[] = [];
+  if (isTopLevel) {
+    const projectTaskIds: string[] = [];
+    const collect = (id: string) => {
+      projectTaskIds.push(id);
+      for (const c of byId.get(id)?.children ?? []) collect(c.id);
+    };
+    collect(task.id);
+    const rows = await prisma.decision.findMany({
+      where: { taskId: { in: projectTaskIds }, isProjectDecision: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        content: true,
+        isProjectDecision: true,
+        createdAt: true,
+        taskId: true,
+        task: { select: { title: true } },
+        createdBy: { select: { name: true } },
+        document: { select: { id: true, name: true } },
+      },
+    });
+    projectDecisionItems = rows.map((d) => ({
+      id: d.id,
+      content: d.content,
+      isProjectDecision: d.isProjectDecision,
+      createdAt: d.createdAt,
+      authorName: d.createdBy.name,
+      document: d.document,
+      taskId: d.taskId,
+      taskTitle: d.task.title,
+    }));
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -358,6 +420,14 @@ export default async function TaskDetailPage({
             isTopLevel={isTopLevel}
             linked={linkedDocs}
             pool={poolDocs}
+          />
+        }
+        decisions={
+          <TaskDecisions
+            taskId={task.id}
+            isTopLevel={isTopLevel}
+            decisions={decisionItems}
+            projectDecisions={projectDecisionItems}
           />
         }
         chat={

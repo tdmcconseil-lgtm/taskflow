@@ -10,9 +10,9 @@ export async function getTaskView(): Promise<TaskView> {
   return v === "liste" ? "liste" : "tableau";
 }
 
-export type TaskTab = "sous" | "docs" | "chat" | "followers" | "activite";
+export type TaskTab = "sous" | "docs" | "decisions" | "chat" | "followers" | "activite";
 
-const TABS: TaskTab[] = ["sous", "docs", "chat", "followers", "activite"];
+const TABS: TaskTab[] = ["sous", "chat", "decisions", "docs", "followers", "activite"];
 
 // Onglet actif de la fiche de tâche, conservé d'une tâche à l'autre (cookie).
 // Par défaut : sous-tâches.
