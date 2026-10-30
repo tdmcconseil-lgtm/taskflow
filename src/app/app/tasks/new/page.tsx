@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { canAccessTask } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 import { TaskForm } from "@/components/TaskForm";
 import { createTask } from "@/lib/actions/tasks";
@@ -26,6 +27,7 @@ export default async function NewTaskPage({
     });
     if (!parent) notFound();
     if (!(await getMembership(user.id, parent.workspaceId))) notFound();
+    if (!(await canAccessTask(user.id, parent.id))) notFound();
     workspaceId = parent.workspaceId;
     backHref = `/app/tasks/${parent.id}`;
 
@@ -96,6 +98,7 @@ export default async function NewTaskPage({
           hidden={hidden}
           submitLabel={isSubtask ? "Créer la sous-tâche" : "Créer le projet"}
           cancelHref={backHref}
+          showAccess={!isSubtask}
         />
       </div>
     </div>

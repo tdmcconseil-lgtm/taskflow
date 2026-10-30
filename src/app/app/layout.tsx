@@ -11,6 +11,15 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
 
+  // Espaces où l'utilisateur est administrateur (il y voit tous les projets).
+  const memberships = await prisma.membership.findMany({
+    where: { userId: user.id, deactivatedAt: null },
+    select: { workspaceId: true, role: true },
+  });
+  const adminWorkspaceIds = memberships
+    .filter((m) => m.role === "OWNER" || m.role === "ADMIN")
+    .map((m) => m.workspaceId);
+
   const workspaces = await prisma.workspace.findMany({
     where: {
       members: { some: { userId: user.id, deactivatedAt: null } },
@@ -18,9 +27,19 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     },
     orderBy: { createdAt: "asc" },
     include: {
-      // Les « projets » sont les tâches de 1er niveau (sans parent).
+      // Les « projets » sont les tâches de 1er niveau (sans parent), filtrés
+      // selon l'accès : visibles par tout l'espace, créés par l'utilisateur,
+      // partagés avec lui, ou tous s'il est administrateur de l'espace.
       tasks: {
-        where: { parentId: null },
+        where: {
+          parentId: null,
+          OR: [
+            { visibility: "WORKSPACE" },
+            { createdById: user.id },
+            { access: { some: { userId: user.id } } },
+            { workspaceId: { in: adminWorkspaceIds } },
+          ],
+        },
         orderBy: { createdAt: "asc" },
         select: { id: true, title: true },
       },

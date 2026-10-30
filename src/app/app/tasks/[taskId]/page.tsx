@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { canAccessTask } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
@@ -63,6 +64,7 @@ export default async function TaskDetailPage({
   });
   if (!task) notFound();
   if (!(await getMembership(user.id, task.workspaceId))) notFound();
+  if (!(await canAccessTask(user.id, task.id))) notFound();
 
   const isFollowing = task.followers[0]?.following === true;
   // Messages non lus du chat (seulement si l'on suit la tâche) — affichés sur

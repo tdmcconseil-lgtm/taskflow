@@ -86,6 +86,26 @@ export default async function WorkspacePage({
   const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
   const isArchived = workspace.archivedAt !== null;
 
+  // Filtrage d'accès : un non-administrateur ne voit que les projets auxquels il
+  // a accès (visibles par tout l'espace, créés par lui, ou partagés avec lui).
+  let visibleRoots = roots;
+  if (!isAdmin) {
+    const allowed = await prisma.task.findMany({
+      where: {
+        workspaceId,
+        parentId: null,
+        OR: [
+          { visibility: "WORKSPACE" },
+          { createdById: user.id },
+          { access: { some: { userId: user.id } } },
+        ],
+      },
+      select: { id: true },
+    });
+    const allowedIds = new Set(allowed.map((t) => t.id));
+    visibleRoots = roots.filter((r) => allowedIds.has(r.id));
+  }
+
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
     r === "MEMBER" ? "Utilisateur" : "Administrateur";
 
@@ -105,13 +125,13 @@ export default async function WorkspacePage({
           </Link>
         )}
       </div>
-      {roots.length === 0 ? (
+      {visibleRoots.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
           Aucun projet. Créez-en un pour commencer.
         </p>
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-          {roots.map((node) => (
+          {visibleRoots.map((node) => (
             <TaskRow key={node.id} node={node} followed={followedIds.has(node.id)} />
           ))}
         </ul>

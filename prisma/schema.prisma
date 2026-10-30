@@ -23,6 +23,13 @@ enum WorkspaceRole {
   MEMBER // utilisateur : accès aux projets et tâches
 }
 
+// Visibilité d'un projet (tâche racine). Seules les tâches de 1er niveau la
+// portent ; les sous-tâches héritent de celle de leur projet.
+enum ProjectVisibility {
+  WORKSPACE // accessible à tous les membres de l'espace
+  RESTRICTED // accessible au créateur, aux administrateurs et aux membres listés
+}
+
 // Statut d'avancement d'une tâche.
 enum TaskStatus {
   TODO
@@ -87,6 +94,7 @@ model User {
   targetedActivities TaskActivity[] @relation("ActivityTarget")
   uploadedDocuments Document[]   @relation("DocumentUploader")
   decisions     Decision[]   @relation("DecisionAuthor")
+  projectAccess ProjectAccess[] @relation("ProjectAccessUser")
 
   @@index([email])
 }
@@ -151,6 +159,9 @@ model Task {
   description String?
   status      TaskStatus   @default(TODO)
   priority    TaskPriority @default(MEDIUM)
+  // Visibilité du projet (tâche racine) ; par défaut restreinte au créateur et
+  // aux administrateurs, qui ajoutent ensuite les membres autorisés (ProjectAccess).
+  visibility  ProjectVisibility @default(RESTRICTED)
   dueDate     DateTime?
   completedAt DateTime?
   // Ordre manuel au sein d'une même fratrie (réordonnable par glisser-déposer).
@@ -180,10 +191,27 @@ model Task {
   projectDocuments Document[]  @relation("ProjectDocuments")
   // Décisions prises dans le cadre de cette tâche.
   decisions  Decision[]
+  // Membres explicitement autorisés (projet restreint ; tâche racine uniquement).
+  access     ProjectAccess[] @relation("ProjectAccess")
 
   @@index([workspaceId])
   @@index([assigneeId])
   @@index([parentId])
+}
+
+// --- Accès à un projet restreint ---
+// Lie un projet (tâche racine) à un membre de l'espace autorisé à y accéder.
+model ProjectAccess {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  taskId String
+  task   Task   @relation("ProjectAccess", fields: [taskId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("ProjectAccessUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@index([taskId])
 }
 
 // --- Document joint (stocké en base, servi par /api/documents/[id]) ---

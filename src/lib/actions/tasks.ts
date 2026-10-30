@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { canAccessTask } from "@/lib/access";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
 import { formatDate } from "@/lib/labels";
@@ -23,6 +24,7 @@ async function loadTaskForUser(userId: string, taskId: string) {
   if (!task) return null;
   const membership = await getMembership(userId, task.workspaceId);
   if (!membership) return null;
+  if (!(await canAccessTask(userId, task.id))) return null;
   return task;
 }
 
@@ -33,6 +35,8 @@ const createSchema = z.object({
   description: z.string().trim().max(5000).optional(),
   assigneeId: z.string().optional(),
   priority: z.enum(PRIORITIES).default("MEDIUM"),
+  // Visibilité : utile uniquement pour un projet (tâche de 1er niveau).
+  visibility: z.enum(["WORKSPACE", "RESTRICTED"]).optional(),
   dueDate: z.string().optional(),
 });
 
@@ -45,6 +49,7 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     description: formData.get("description") || undefined,
     assigneeId: formData.get("assigneeId") || undefined,
     priority: formData.get("priority") || undefined,
+    visibility: formData.get("visibility") || undefined,
     dueDate: formData.get("dueDate") || undefined,
   });
   if (!parsed.success) {
@@ -64,6 +69,9 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     if (!parent) return { error: "Tâche parente introuvable." };
     if (!(await getMembership(user.id, parent.workspaceId))) {
       return { error: "Accès refusé." };
+    }
+    if (!(await canAccessTask(user.id, parent.id))) {
+      return { error: "Accès refusé à ce projet." };
     }
     workspaceId = parent.workspaceId;
     parentId = parent.id;
@@ -95,6 +103,11 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     where: parentId ? { parentId } : { workspaceId, parentId: null },
   });
 
+  // Visibilité : seulement pour un projet (tâche racine). Par défaut « restreint ».
+  const isProject = parentId === null;
+  const visibility =
+    isProject && parsed.data.visibility === "WORKSPACE" ? "WORKSPACE" : "RESTRICTED";
+
   const task = await prisma.task.create({
     data: {
       title: parsed.data.title,
@@ -106,8 +119,32 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
       dueDate,
       parentId,
       position,
+      ...(isProject ? { visibility } : {}),
     },
   });
+
+  // Projet restreint : accorder l'accès aux membres choisis (membres actifs de
+  // l'espace, hors le créateur qui a toujours accès) et les faire suivre.
+  if (isProject && visibility === "RESTRICTED") {
+    const memberIds = formData
+      .getAll("members")
+      .map((v) => String(v))
+      .filter(Boolean);
+    if (memberIds.length > 0) {
+      const valid = await prisma.membership.findMany({
+        where: { workspaceId, deactivatedAt: null, userId: { in: memberIds } },
+        select: { userId: true },
+      });
+      const grantIds = valid.map((m) => m.userId).filter((id) => id !== user.id);
+      if (grantIds.length > 0) {
+        await prisma.projectAccess.createMany({
+          data: grantIds.map((userId) => ({ taskId: task.id, userId })),
+          skipDuplicates: true,
+        });
+        for (const id of grantIds) await ensureFollow(id, task.id);
+      }
+    }
+  }
 
   // Suivi automatique : le créateur et l'assigné suivent la tâche.
   await ensureFollow(user.id, task.id);
@@ -165,6 +202,7 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
   });
   if (!old) return { error: "Tâche introuvable." };
   if (!(await getMembership(user.id, old.workspaceId))) return { error: "Accès refusé." };
+  if (!(await canAccessTask(user.id, old.id))) return { error: "Accès refusé." };
 
   // Champs facultatifs : une valeur vide efface le champ.
   const description = String(formData.get("description") ?? "").trim() || null;
@@ -295,6 +333,7 @@ export async function reorderTasks(parentId: string, orderedIds: string[]): Prom
   });
   if (!parent) return;
   if (!(await getMembership(user.id, parent.workspaceId))) return;
+  if (!(await canAccessTask(user.id, parentId))) return;
 
   const children = await prisma.task.findMany({
     where: { parentId },
