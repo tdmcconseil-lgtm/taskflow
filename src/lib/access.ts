@@ -31,6 +31,14 @@ const PROJECT_ACCESS_SELECT = {
   visibility: true,
 } as const;
 
+type ProjectRow = {
+  id: string;
+  parentId: string | null;
+  workspaceId: string;
+  createdById: string;
+  visibility: "WORKSPACE" | "RESTRICTED";
+};
+
 // Filtre Prisma des projets (tâches racine) visibles par un membre NON-admin.
 // Pour un admin, renvoyer {} (tout visible). À combiner avec { parentId: null }.
 export function nonAdminProjectVisibility(userId: string): Prisma.TaskWhereInput {
@@ -45,22 +53,29 @@ export function nonAdminProjectVisibility(userId: string): Prisma.TaskWhereInput
 
 // Projet racine d'une tâche (remonte la hiérarchie des parents).
 export async function getRootProject(taskId: string): Promise<ProjectAccessFields | null> {
-  let current = await prisma.task.findUnique({
+  const first: ProjectRow | null = await prisma.task.findUnique({
     where: { id: taskId },
     select: PROJECT_ACCESS_SELECT,
   });
-  if (!current) return null;
+  if (!first) return null;
+
+  let current: ProjectRow = first;
   let guard = 0;
   while (current.parentId && guard++ < 20) {
-    const parent = await prisma.task.findUnique({
+    const parent: ProjectRow | null = await prisma.task.findUnique({
       where: { id: current.parentId },
       select: PROJECT_ACCESS_SELECT,
     });
     if (!parent) break;
     current = parent;
   }
-  const { id, workspaceId, createdById, visibility } = current;
-  return { id, workspaceId, createdById, visibility };
+
+  return {
+    id: current.id,
+    workspaceId: current.workspaceId,
+    createdById: current.createdById,
+    visibility: current.visibility,
+  };
 }
 
 // Un membre peut-il accéder à ce projet (tâche racine) ?
