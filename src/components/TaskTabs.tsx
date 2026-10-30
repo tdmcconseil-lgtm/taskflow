@@ -3,16 +3,24 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { markRead } from "@/lib/actions/discussion";
+import { useT } from "@/lib/i18n/context";
 
 type TabKey = "sous" | "docs" | "decisions" | "chat" | "followers" | "activite";
+type TaskLabelKey =
+  | "subtasks"
+  | "conversation"
+  | "decisions"
+  | "documents"
+  | "subscribers"
+  | "activity";
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "sous", label: "Sous-tâches" },
-  { key: "chat", label: "Conversation" },
-  { key: "decisions", label: "Décisions" },
-  { key: "docs", label: "Documents" },
-  { key: "followers", label: "Abonnés" },
-  { key: "activite", label: "Activité" },
+const TABS: { key: TabKey; labelKey: TaskLabelKey }[] = [
+  { key: "sous", labelKey: "subtasks" },
+  { key: "chat", labelKey: "conversation" },
+  { key: "decisions", labelKey: "decisions" },
+  { key: "docs", labelKey: "documents" },
+  { key: "followers", labelKey: "subscribers" },
+  { key: "activite", labelKey: "activity" },
 ];
 
 // Mémorise l'onglet choisi (cookie) pour le conserver d'une tâche à l'autre.
@@ -53,6 +61,7 @@ export function TaskTabs({
   const [unread, setUnread] = useState(chatUnread);
   const marked = useRef(false);
   const router = useRouter();
+  const dict = useT();
 
   function markChat() {
     if (marked.current) return;
@@ -94,7 +103,9 @@ export function TaskTabs({
             }`}
           >
             {t.key === "followers" && <span aria-hidden>👁</span>}
-            {t.key === "followers" ? `${t.label} (${followerCount})` : t.label}
+            {t.key === "followers"
+              ? `${dict.taskTabs.subscribers} (${followerCount})`
+              : dict.taskTabs[t.labelKey]}
             {t.key === "chat" && unread > 0 && (
               <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                 {unread}

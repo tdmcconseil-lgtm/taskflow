@@ -21,6 +21,27 @@ const en: Dictionary = {
     signUp: "Sign up",
     haveAccount: "Already have an account?",
   },
+  nav: {
+    home: "Home",
+    discussions: "Discussions",
+    events: "Events",
+    logout: "Log out",
+  },
+  wsTabs: {
+    projects: "Projects",
+    members: "Members",
+    followed: "My followed tasks",
+    events: "Events",
+    discussions: "Discussions",
+  },
+  taskTabs: {
+    subtasks: "Subtasks",
+    conversation: "Conversation",
+    decisions: "Decisions",
+    documents: "Documents",
+    subscribers: "Subscribers",
+    activity: "Activity",
+  },
 };
 
 export default en;

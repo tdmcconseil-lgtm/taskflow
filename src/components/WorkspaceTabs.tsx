@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useT } from "@/lib/i18n/context";
 
 type WsTab = "projets" | "membres" | "suivies" | "evenements" | "discussions";
+type WsLabelKey = "projects" | "members" | "followed" | "events" | "discussions";
 
-const TABS: { key: WsTab; label: string }[] = [
-  { key: "projets", label: "Projets" },
-  { key: "membres", label: "Membres" },
-  { key: "suivies", label: "Mes tâches suivies" },
-  { key: "evenements", label: "Événements" },
-  { key: "discussions", label: "Discussions" },
+const TABS: { key: WsTab; labelKey: WsLabelKey }[] = [
+  { key: "projets", labelKey: "projects" },
+  { key: "membres", labelKey: "members" },
+  { key: "suivies", labelKey: "followed" },
+  { key: "evenements", labelKey: "events" },
+  { key: "discussions", labelKey: "discussions" },
 ];
 
 export function WorkspaceTabs({
@@ -30,6 +32,7 @@ export function WorkspaceTabs({
   discussions: ReactNode;
 }) {
   const [active, setActive] = useState<WsTab>(initialTab);
+  const dict = useT();
 
   function open(tab: WsTab) {
     setActive(tab);
@@ -54,7 +57,9 @@ export function WorkspaceTabs({
                 : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
-            {t.key === "membres" ? `${t.label} (${memberCount})` : t.label}
+            {t.key === "membres"
+              ? `${dict.wsTabs.members} (${memberCount})`
+              : dict.wsTabs[t.labelKey]}
           </button>
         ))}
       </div>

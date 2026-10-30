@@ -7,12 +7,13 @@ import { countNewEventGroups } from "@/lib/events";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
-import { getLocale } from "@/lib/i18n/server";
+import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { localeFlags, localeNames } from "@/lib/i18n/config";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
   const locale = await getLocale();
+  const t = await getDictionary(locale);
 
   // Espaces où l'utilisateur est administrateur (il y voit tous les projets).
   const memberships = await prisma.membership.findMany({
@@ -108,13 +109,13 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             href="/app"
             className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            🏠 Accueil
+            🏠 {t.nav.home}
           </Link>
           <Link
             href="/app/discussions"
             className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <span>💬 Discussions</span>
+            <span>💬 {t.nav.discussions}</span>
             {unreadCount > 0 && (
               <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                 {unreadCount}
@@ -125,7 +126,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             href="/app/evenements"
             className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <span>🔔 Événements</span>
+            <span>🔔 {t.nav.events}</span>
             {eventsCount > 0 && (
               <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
                 {eventsCount > 99 ? "99+" : eventsCount}
@@ -188,7 +189,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
                 type="submit"
                 className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
               >
-                Déconnexion
+                {t.nav.logout}
               </button>
             </form>
           </div>
