@@ -8,7 +8,8 @@ import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
-import { localeFlags, localeNames } from "@/lib/i18n/config";
+import { localeNames } from "@/lib/i18n/config";
+import { Flag } from "@/components/Flag";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -144,9 +145,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         title="Langue — cliquez pour la modifier dans votre profil"
         className="mt-4 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
       >
-        <span aria-hidden className="text-base">
-          {localeFlags[locale]}
-        </span>
+        <Flag locale={locale} className="h-3.5 w-5" />
         <span>{localeNames[locale]}</span>
       </Link>
     </>
