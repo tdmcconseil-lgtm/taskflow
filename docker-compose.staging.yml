@@ -1,0 +1,43 @@
+# Préproduction (staging) — copie du site pour prévisualiser avant publication.
+#   docker compose -f docker-compose.staging.yml up -d --build
+# Tourne en parallèle de la prod, avec sa PROPRE base de données. L'app est
+# atteinte par le Caddy de la prod via le réseau partagé "edge" (alias
+# "staging-app"). Nécessite un fichier .env à côté (voir .env.staging.example)
+# et le réseau : docker network create edge
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD dans .env}
+      POSTGRES_DB: taskflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow -d taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3001"
+    networks:
+      default: {}
+      edge:
+        aliases:
+          - staging-app
+
+volumes:
+  pgdata:
+
+networks:
+  edge:
+    external: true

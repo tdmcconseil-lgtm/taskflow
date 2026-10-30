@@ -3,7 +3,18 @@ www.{$DOMAIN} {
 	redir https://{$DOMAIN}{uri} permanent
 }
 
-# Application, derrière HTTPS automatique (certificat Let's Encrypt).
+# Application en production, HTTPS automatique (certificat Let's Encrypt).
 {$DOMAIN} {
 	reverse_proxy app:3001
+}
+
+# Préproduction : copie du site pour prévisualiser une modification avant de la
+# publier. Protégée par mot de passe (basic auth). L'app de préprod tourne dans
+# une stack séparée (docker-compose.staging.yml), jointe au réseau "edge" sous
+# l'alias "staging-app".
+staging.{$DOMAIN} {
+	basic_auth {
+		{$STAGING_USER} {$STAGING_HASH}
+	}
+	reverse_proxy staging-app:3001
 }

@@ -37,10 +37,17 @@ services:
       - "443:443"
     environment:
       DOMAIN: ${DOMAIN:?Definir DOMAIN dans .env}
+      # Identifiants d'accès à la préprod (basic auth). Hash non versionné,
+      # défini dans .env (STAGING_HASH = sortie de `caddy hash-password`).
+      STAGING_USER: ${STAGING_USER:-preview}
+      STAGING_HASH: ${STAGING_HASH:?Definir STAGING_HASH dans .env}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - default
+      - edge
     depends_on:
       - app
 
@@ -48,3 +55,9 @@ volumes:
   pgdata:
   caddy_data:
   caddy_config:
+
+# Réseau partagé avec la préproduction (docker-compose.staging.yml), pour que
+# Caddy atteigne l'app de préprod. À créer une fois : docker network create edge
+networks:
+  edge:
+    external: true
