@@ -9,12 +9,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl \
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npx prisma generate
-# Valeurs factices : le build Next est entièrement dynamique (aucune connexion
-# à la base n'est requise à la compilation).
-ENV DATABASE_URL="postgresql://u:p@localhost:5432/db?schema=public"
-ENV AUTH_SECRET="build-placeholder"
-RUN npm run build
+# Valeurs factices passées en ligne : prisma.config.ts exige DATABASE_URL, et le
+# build Next est entièrement dynamique (aucune connexion réelle à la base). Elles
+# ne sont pas conservées dans l'image (fournies uniquement à ces commandes).
+RUN DATABASE_URL="postgresql://u:p@localhost:5432/db?schema=public" npx prisma generate
+RUN DATABASE_URL="postgresql://u:p@localhost:5432/db?schema=public" \
+    AUTH_SECRET="build-placeholder" \
+    npm run build
 
 # --- Étape d'exécution ---
 FROM node:22-bookworm-slim AS runtime
