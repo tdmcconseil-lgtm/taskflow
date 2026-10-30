@@ -8,24 +8,25 @@ import { requireUser } from "@/lib/auth/dal";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, emailChangeEmail } from "@/lib/mail";
-import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
 
 const nameSchema = z.object({
-  firstName: z.string().trim().min(2, "Le prénom doit faire au moins 2 caractères."),
+  firstName: z.string().trim().min(2, "firstNameMin"),
   lastName: z.string().trim().optional().default(""),
 });
 
 export async function updateProfileName(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = nameSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName") || "",
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   await prisma.user.update({
@@ -81,16 +82,17 @@ export async function savePhoto(
   const x = clampInt(formData.get("x"), 0, 100, 50);
   const y = clampInt(formData.get("y"), 0, 100, 50);
   const zoom = clampInt(formData.get("zoom"), 100, 300, 100);
+  const t = await getDictionary();
 
   const file = formData.get("photo");
   const hasFile = file instanceof File && file.size > 0;
 
   if (hasFile) {
     if (!ALLOWED_MIME.has(file.type)) {
-      return { error: "Format non supporté (JPEG, PNG ou WebP)." };
+      return { error: t.errors.imageFormat };
     }
     if (file.size > MAX_PHOTO_BYTES) {
-      return { error: "Image trop lourde (2 Mo maximum)." };
+      return { error: t.errors.imageTooLarge };
     }
     const buffer = Buffer.from(await file.arrayBuffer());
     await prisma.user.update({
@@ -110,7 +112,7 @@ export async function savePhoto(
       select: { photoMime: true },
     });
     if (!existing?.photoMime) {
-      return { error: "Aucune photo à recadrer. Choisissez d'abord une image." };
+      return { error: t.errors.noPhotoToCrop };
     }
     await prisma.user.update({
       where: { id: user.id },
@@ -125,31 +127,32 @@ export async function savePhoto(
 
 const passwordSchema = z
   .object({
-    current: z.string().min(1, "Mot de passe actuel requis."),
-    password: z.string().min(8, "Le nouveau mot de passe doit faire au moins 8 caractères."),
+    current: z.string().min(1, "currentPasswordRequired"),
+    password: z.string().min(8, "newPasswordMin8"),
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {
-    message: "Les deux mots de passe ne correspondent pas.",
+    message: "passwordsMismatch",
     path: ["confirm"],
   });
 
 export async function changePassword(_prev: FormState, formData: FormData): Promise<FormState> {
   const sessionUser = await requireUser();
+  const t = await getDictionary();
   const parsed = passwordSchema.safeParse({
     current: formData.get("current"),
     password: formData.get("password"),
     confirm: formData.get("confirm"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
-  if (!user) return { error: "Utilisateur introuvable." };
+  if (!user) return { error: t.errors.userNotFound };
 
   const ok = await verifyPassword(user.passwordHash, parsed.data.current);
-  if (!ok) return { error: "Mot de passe actuel incorrect." };
+  if (!ok) return { error: t.errors.currentPasswordIncorrect };
 
   await prisma.user.update({
     where: { id: user.id },
@@ -160,31 +163,32 @@ export async function changePassword(_prev: FormState, formData: FormData): Prom
 }
 
 const emailSchema = z.object({
-  newEmail: z.email("Adresse email invalide."),
-  password: z.string().min(1, "Mot de passe requis."),
+  newEmail: z.email("emailInvalid"),
+  password: z.string().min(1, "passwordRequired"),
 });
 
 export async function requestEmailChange(_prev: FormState, formData: FormData): Promise<FormState> {
   const sessionUser = await requireUser();
+  const t = await getDictionary();
   const parsed = emailSchema.safeParse({
     newEmail: String(formData.get("newEmail") ?? "").trim().toLowerCase(),
     password: formData.get("password"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
-  if (!user) return { error: "Utilisateur introuvable." };
+  if (!user) return { error: t.errors.userNotFound };
 
   if (parsed.data.newEmail === user.email) {
-    return { error: "C'est déjà votre adresse actuelle." };
+    return { error: t.errors.sameEmail };
   }
   const ok = await verifyPassword(user.passwordHash, parsed.data.password);
-  if (!ok) return { error: "Mot de passe incorrect." };
+  if (!ok) return { error: t.errors.passwordIncorrect };
 
   const taken = await prisma.user.findUnique({ where: { email: parsed.data.newEmail } });
-  if (taken) return { error: "Cette adresse email est déjà utilisée." };
+  if (taken) return { error: t.errors.emailTaken };
 
   const token = generateInvitationToken();
   const tokenHash = hashToken(token);
@@ -198,7 +202,6 @@ export async function requestEmailChange(_prev: FormState, formData: FormData): 
   ]);
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3001";
-  const t = await getDictionary();
   const locale = await getLocale();
   const mail = emailChangeEmail(
     {
@@ -216,20 +219,21 @@ export async function requestEmailChange(_prev: FormState, formData: FormData): 
 }
 
 export async function confirmEmailChange(_prev: FormState, formData: FormData): Promise<FormState> {
+  const t = await getDictionary();
   const token = String(formData.get("token") ?? "");
-  if (!token) return { error: "Lien invalide." };
+  if (!token) return { error: t.errors.linkInvalid };
 
   const request = await prisma.emailChangeRequest.findUnique({
     where: { tokenHash: hashToken(token) },
   });
-  if (!request) return { error: "Lien invalide ou déjà utilisé." };
+  if (!request) return { error: t.errors.linkInvalidOrUsed };
   if (request.expiresAt.getTime() < Date.now()) {
-    return { error: "Ce lien a expiré." };
+    return { error: t.errors.linkExpired };
   }
 
   const taken = await prisma.user.findUnique({ where: { email: request.newEmail } });
   if (taken && taken.id !== request.userId) {
-    return { error: "Cette adresse email est désormais utilisée par un autre compte." };
+    return { error: t.errors.emailNowUsed };
   }
 
   await prisma.$transaction([

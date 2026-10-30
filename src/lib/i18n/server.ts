@@ -30,3 +30,9 @@ export async function getLocale(): Promise<Locale> {
 export async function getDictionary(locale?: Locale): Promise<Dictionary> {
   return dictionaries[locale ?? (await getLocale())]();
 }
+
+// Traduit une clé d'erreur (message Zod devenu clé, ou clé directe) en message
+// localisé ; repli sur « données invalides » si la clé est inconnue.
+export function zodError(t: Dictionary, key: string | undefined): string {
+  return (t.errors as Record<string, string>)[key ?? ""] ?? t.errors.invalidData;
+}

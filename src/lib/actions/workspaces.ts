@@ -9,20 +9,21 @@ import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail } from "@/lib/mail";
-import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 
 export type FormState = { error?: string } | undefined;
 
 const workspaceSchema = z.object({
-  name: z.string().trim().min(2, "Le nom doit faire au moins 2 caractères."),
+  name: z.string().trim().min(2, "nameMin2"),
 });
 
 export async function createWorkspace(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = workspaceSchema.safeParse({ name: formData.get("name") });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   await prisma.workspace.create({
@@ -40,9 +41,9 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
 // éventuelle, ou null si l'utilisateur est bien OWNER.
 async function ensureOwner(userId: string, workspaceId: string): Promise<string | null> {
   const membership = await getMembership(userId, workspaceId);
-  if (!membership) return "Vous n'avez pas accès à cet espace de travail.";
+  if (!membership) return (await getDictionary()).errors.noWorkspaceAccess;
   if (membership.role !== "OWNER") {
-    return "Seul le propriétaire peut effectuer cette action.";
+    return (await getDictionary()).errors.ownerOnly;
   }
   return null;
 }
@@ -50,9 +51,9 @@ async function ensureOwner(userId: string, workspaceId: string): Promise<string 
 // Administrateur = créateur (OWNER) ou administrateur (ADMIN).
 async function ensureAdmin(userId: string, workspaceId: string): Promise<string | null> {
   const membership = await getMembership(userId, workspaceId);
-  if (!membership) return "Vous n'avez pas accès à cet espace de travail.";
+  if (!membership) return (await getDictionary()).errors.noWorkspaceAccess;
   if (membership.role !== "OWNER" && membership.role !== "ADMIN") {
-    return "Seul un administrateur peut effectuer cette action.";
+    return (await getDictionary()).errors.adminOnly;
   }
   return null;
 }
@@ -132,11 +133,12 @@ const deleteSchema = z.object({
 
 export async function deleteWorkspace(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = deleteSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     confirmName: formData.get("confirmName"),
   });
-  if (!parsed.success) return { error: "Données invalides." };
+  if (!parsed.success) return { error: t.errors.invalidData };
 
   const ownerError = await ensureOwner(user.id, parsed.data.workspaceId);
   if (ownerError) return { error: ownerError };
@@ -145,16 +147,16 @@ export async function deleteWorkspace(_prev: FormState, formData: FormData): Pro
     where: { id: parsed.data.workspaceId },
     select: { name: true, archivedAt: true },
   });
-  if (!workspace) return { error: "Espace de travail introuvable." };
+  if (!workspace) return { error: t.errors.workspaceNotFound };
 
   // Garde-fou : la suppression n'est possible que sur un espace archivé.
   if (!workspace.archivedAt) {
-    return { error: "Archivez d'abord l'espace avant de le supprimer." };
+    return { error: t.errors.archiveFirst };
   }
 
   // Confirmation forte : le nom saisi doit correspondre exactement.
   if (parsed.data.confirmName.trim() !== workspace.name) {
-    return { error: "Le nom saisi ne correspond pas. Suppression annulée." };
+    return { error: t.errors.nameMismatch };
   }
 
   // La suppression en cascade retire projets, tâches, membres et invitations.
@@ -166,19 +168,20 @@ export async function deleteWorkspace(_prev: FormState, formData: FormData): Pro
 
 const inviteSchema = z.object({
   workspaceId: z.string().min(1),
-  email: z.email("Adresse email invalide."),
+  email: z.email("emailInvalid"),
   role: z.enum(["ADMIN", "MEMBER"]).default("MEMBER"),
 });
 
 export async function inviteMember(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = inviteSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     email: String(formData.get("email") ?? "").trim().toLowerCase(),
     role: formData.get("role") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const { workspaceId, email, role } = parsed.data;
@@ -191,13 +194,13 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
     where: { id: workspaceId },
     select: { name: true },
   });
-  if (!workspace) return { error: "Espace de travail introuvable." };
+  if (!workspace) return { error: t.errors.workspaceNotFound };
 
   // Si la personne a déjà un compte, on l'ajoute directement.
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     const already = await getMembership(existingUser.id, workspaceId);
-    if (already) return { error: "Cette personne est déjà membre de l'espace." };
+    if (already) return { error: t.errors.alreadyMember };
 
     await prisma.membership.create({
       data: { userId: existingUser.id, workspaceId, role },
@@ -223,7 +226,6 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   ]);
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3001";
-  const t = await getDictionary();
   const locale = await getLocale();
   const mail = invitationEmail(
     {
@@ -314,17 +316,18 @@ export async function cancelInvitation(formData: FormData): Promise<void> {
 const acceptSchema = z
   .object({
     token: z.string().min(1),
-    firstName: z.string().trim().min(2, "Le prénom doit faire au moins 2 caractères."),
+    firstName: z.string().trim().min(2, "firstNameMin"),
     lastName: z.string().trim().optional().default(""),
-    password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères."),
+    password: z.string().min(8, "passwordMin8"),
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {
-    message: "Les deux mots de passe ne correspondent pas.",
+    message: "passwordsMismatch",
     path: ["confirm"],
   });
 
 export async function acceptInvitation(_prev: FormState, formData: FormData): Promise<FormState> {
+  const t = await getDictionary();
   const parsed = acceptSchema.safeParse({
     token: formData.get("token"),
     firstName: formData.get("firstName"),
@@ -333,17 +336,17 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
     confirm: formData.get("confirm"),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const tokenHash = hashToken(parsed.data.token);
   const invitation = await prisma.invitation.findUnique({ where: { tokenHash } });
 
   if (!invitation || invitation.acceptedAt) {
-    return { error: "Invitation invalide ou déjà utilisée." };
+    return { error: t.errors.invitationInvalid };
   }
   if (invitation.expiresAt.getTime() < Date.now()) {
-    return { error: "Cette invitation a expiré." };
+    return { error: t.errors.invitationExpired };
   }
 
   // Cas limite : un compte avec cet email a été créé entre-temps.

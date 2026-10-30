@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { canAccessTask } from "@/lib/access";
+import { getDictionary, zodError } from "@/lib/i18n/server";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
 import { formatDate } from "@/lib/labels";
@@ -31,7 +32,7 @@ async function loadTaskForUser(userId: string, taskId: string) {
 const createSchema = z.object({
   workspaceId: z.string().optional(),
   parentId: z.string().optional(),
-  title: z.string().trim().min(1, "Le titre est requis."),
+  title: z.string().trim().min(1, "titleRequired"),
   description: z.string().trim().max(5000).optional(),
   assigneeId: z.string().optional(),
   priority: z.enum(PRIORITIES).default("MEDIUM"),
@@ -42,6 +43,7 @@ const createSchema = z.object({
 
 export async function createTask(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = createSchema.safeParse({
     workspaceId: formData.get("workspaceId") || undefined,
     parentId: formData.get("parentId") || undefined,
@@ -53,7 +55,7 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     dueDate: formData.get("dueDate") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   // Une tâche est soit rattachée à une tâche parente (sous-tâche), soit
@@ -66,19 +68,19 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
       where: { id: parsed.data.parentId },
       select: { id: true, workspaceId: true },
     });
-    if (!parent) return { error: "Tâche parente introuvable." };
+    if (!parent) return { error: t.errors.parentNotFound };
     if (!(await getMembership(user.id, parent.workspaceId))) {
-      return { error: "Accès refusé." };
+      return { error: t.errors.accessDenied };
     }
     if (!(await canAccessTask(user.id, parent.id))) {
-      return { error: "Accès refusé à ce projet." };
+      return { error: t.errors.accessDeniedProject };
     }
     workspaceId = parent.workspaceId;
     parentId = parent.id;
   } else {
-    if (!parsed.data.workspaceId) return { error: "Espace de travail manquant." };
+    if (!parsed.data.workspaceId) return { error: t.errors.workspaceMissing };
     if (!(await getMembership(user.id, parsed.data.workspaceId))) {
-      return { error: "Vous n'avez pas accès à cet espace de travail." };
+      return { error: t.errors.noWorkspaceAccess };
     }
     workspaceId = parsed.data.workspaceId;
   }
@@ -87,7 +89,7 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
   let assigneeId: string | null = null;
   if (parsed.data.assigneeId) {
     if (!(await getMembership(parsed.data.assigneeId, workspaceId))) {
-      return { error: "La personne assignée doit être membre de l'espace de travail." };
+      return { error: t.errors.assigneeMustBeMember };
     }
     assigneeId = parsed.data.assigneeId;
   }
@@ -172,19 +174,20 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
 
 const updateSchema = z.object({
   taskId: z.string().min(1),
-  title: z.string().trim().min(1, "Le titre est requis."),
+  title: z.string().trim().min(1, "titleRequired"),
   priority: z.enum(PRIORITIES),
 });
 
 export async function updateTask(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = updateSchema.safeParse({
     taskId: formData.get("taskId"),
     title: formData.get("title"),
     priority: formData.get("priority") || undefined,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const old = await prisma.task.findUnique({
@@ -200,9 +203,9 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
       assignee: { select: { name: true } },
     },
   });
-  if (!old) return { error: "Tâche introuvable." };
-  if (!(await getMembership(user.id, old.workspaceId))) return { error: "Accès refusé." };
-  if (!(await canAccessTask(user.id, old.id))) return { error: "Accès refusé." };
+  if (!old) return { error: t.errors.taskNotFound };
+  if (!(await getMembership(user.id, old.workspaceId))) return { error: t.errors.accessDenied };
+  if (!(await canAccessTask(user.id, old.id))) return { error: t.errors.accessDenied };
 
   // Champs facultatifs : une valeur vide efface le champ.
   const description = String(formData.get("description") ?? "").trim() || null;
@@ -212,7 +215,7 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
   const rawAssignee = String(formData.get("assigneeId") ?? "").trim();
   if (rawAssignee) {
     if (!(await getMembership(rawAssignee, old.workspaceId))) {
-      return { error: "La personne assignée doit être membre de l'espace de travail." };
+      return { error: t.errors.assigneeMustBeMember };
     }
     assigneeId = rawAssignee;
     const a = await prisma.user.findUnique({ where: { id: assigneeId }, select: { name: true } });
@@ -270,14 +273,15 @@ export async function setTaskStatus(
   formData: FormData,
 ): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const parsed = statusSchema.safeParse({
     taskId: formData.get("taskId"),
     status: formData.get("status"),
   });
-  if (!parsed.success) return { error: "Données invalides." };
+  if (!parsed.success) return { error: t.errors.invalidData };
 
   const task = await loadTaskForUser(user.id, parsed.data.taskId);
-  if (!task) return { error: "Tâche introuvable ou accès refusé." };
+  if (!task) return { error: t.errors.taskNotFoundOrDenied };
 
   const current = await prisma.task.findUnique({
     where: { id: task.id },
@@ -291,9 +295,10 @@ export async function setTaskStatus(
     });
     if (unfinished > 0) {
       return {
-        error: `Impossible de clôturer : ${unfinished} sous-tâche${
-          unfinished > 1 ? "s" : ""
-        } non terminée${unfinished > 1 ? "s" : ""}.`,
+        error:
+          unfinished === 1
+            ? t.errors.cannotCloseOne
+            : t.errors.cannotCloseMany.replace("{n}", String(unfinished)),
       };
     }
   }
@@ -354,19 +359,21 @@ export async function deleteTask(
   formData: FormData,
 ): Promise<FormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const taskId = String(formData.get("taskId") ?? "");
-  if (!taskId) return { error: "Tâche introuvable." };
+  if (!taskId) return { error: t.errors.taskNotFound };
 
   const task = await loadTaskForUser(user.id, taskId);
-  if (!task) return { error: "Tâche introuvable ou accès refusé." };
+  if (!task) return { error: t.errors.taskNotFoundOrDenied };
 
   // On ne peut pas supprimer une tâche qui a encore des sous-tâches.
   const childCount = await prisma.task.count({ where: { parentId: task.id } });
   if (childCount > 0) {
     return {
-      error: `Impossible de supprimer : cette tâche a ${childCount} sous-tâche${
-        childCount > 1 ? "s" : ""
-      }. Supprimez-les d'abord.`,
+      error:
+        childCount === 1
+          ? t.errors.cannotDeleteOne
+          : t.errors.cannotDeleteMany.replace("{n}", String(childCount)),
     };
   }
 

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { rootTaskId } from "@/lib/actions/documents";
+import { getDictionary } from "@/lib/i18n/server";
 
 export type DecisionFormState = { error?: string } | undefined;
 
@@ -40,12 +41,13 @@ export async function createDecision(
   formData: FormData,
 ): Promise<DecisionFormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const taskId = String(formData.get("taskId") ?? "");
   const task = await loadTask(user.id, taskId);
-  if (!task) return { error: "Tâche introuvable ou accès refusé." };
+  if (!task) return { error: t.errors.taskNotFoundOrDenied };
 
   const content = String(formData.get("content") ?? "").trim();
-  if (!content) return { error: "La décision ne peut pas être vide." };
+  if (!content) return { error: t.errors.decisionEmpty };
 
   const isProjectDecision = formData.get("isProjectDecision") === "on";
   const rawDocId = String(formData.get("documentId") ?? "").trim();
@@ -58,7 +60,7 @@ export async function createDecision(
       select: { id: true, projectTaskId: true },
     });
     if (!doc || doc.projectTaskId !== projectTaskId) {
-      return { error: "Document introuvable dans ce projet." };
+      return { error: t.errors.documentNotInProject };
     }
     documentId = doc.id;
   }

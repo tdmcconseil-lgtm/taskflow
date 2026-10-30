@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { getDictionary } from "@/lib/i18n/server";
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
 
@@ -45,16 +46,17 @@ export async function uploadDocument(
   formData: FormData,
 ): Promise<DocFormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const taskId = String(formData.get("taskId") ?? "");
   const task = await loadTask(user.id, taskId);
-  if (!task) return { error: "Tâche introuvable ou accès refusé." };
+  if (!task) return { error: t.errors.taskNotFoundOrDenied };
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Veuillez choisir un fichier." };
+    return { error: t.errors.chooseFile };
   }
   if (file.size > MAX_SIZE) {
-    return { error: "Fichier trop volumineux (10 Mo maximum)." };
+    return { error: t.errors.fileTooLarge };
   }
 
   const providedName = String(formData.get("name") ?? "").trim();
@@ -125,16 +127,17 @@ export async function renameDocument(
   formData: FormData,
 ): Promise<DocFormState> {
   const user = await requireUser();
+  const t = await getDictionary();
   const documentId = String(formData.get("documentId") ?? "");
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { error: "Le nom est requis." };
+  if (!name) return { error: t.errors.nameRequired };
 
   const doc = await prisma.document.findUnique({
     where: { id: documentId },
     select: { workspaceId: true },
   });
-  if (!doc) return { error: "Document introuvable." };
-  if (!(await getMembership(user.id, doc.workspaceId))) return { error: "Accès refusé." };
+  if (!doc) return { error: t.errors.documentNotFound };
+  if (!(await getMembership(user.id, doc.workspaceId))) return { error: t.errors.accessDenied };
 
   await prisma.document.update({ where: { id: documentId }, data: { name } });
   revalidatePath(`/app/documents/${documentId}`);
