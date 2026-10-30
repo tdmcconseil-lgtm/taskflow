@@ -171,7 +171,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
                 fy={user.photoY}
                 zoom={user.photoZoom}
                 fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
-                className="h-7 w-7 shrink-0 rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+                className="h-7 w-7 shrink-0 rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700"
               />
               <span className="hidden sm:inline">{user.name}</span>
             </Link>

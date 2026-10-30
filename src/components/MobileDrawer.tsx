@@ -54,7 +54,7 @@ export function MobileDrawer({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Fermer le menu"
-              className="mb-2 self-end rounded-lg p-2 text-sm text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              className="mb-2 self-end rounded-lg p-2 text-sm text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
               ✕
             </button>

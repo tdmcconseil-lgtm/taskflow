@@ -40,7 +40,7 @@ export function DecisionForm({
       {(taskDocuments.length > 0 || projectDocuments.length > 0) && (
         <div className="space-y-1">
           <label className={labelClass} htmlFor="documentId">
-            Document associé <span className="font-normal text-zinc-400">(facultatif)</span>
+            Document associé <span className="font-normal text-zinc-400 dark:text-zinc-300">(facultatif)</span>
           </label>
           <select id="documentId" name="documentId" defaultValue="" className={inputClass}>
             <option value="">Aucun</option>
@@ -74,7 +74,7 @@ export function DecisionForm({
         />
         <span>
           Décision projet
-          <span className="block text-xs text-zinc-400">
+          <span className="block text-xs text-zinc-400 dark:text-zinc-300">
             La décision remonte dans l’onglet Décisions du projet.
           </span>
         </span>

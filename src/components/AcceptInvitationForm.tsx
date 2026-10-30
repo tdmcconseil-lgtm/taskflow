@@ -51,7 +51,7 @@ export function AcceptInvitationForm({
         </div>
         <div className="space-y-1">
           <label htmlFor="lastName" className={labelClass}>
-            {t.auth.lastName} <span className="text-zinc-400">{t.auth.optional}</span>
+            {t.auth.lastName} <span className="text-zinc-400 dark:text-zinc-300">{t.auth.optional}</span>
           </label>
           <input
             id="lastName"
@@ -73,7 +73,7 @@ export function AcceptInvitationForm({
           autoComplete="new-password"
           className={inputClass}
         />
-        <p className="text-xs text-zinc-500">{t.auth.passwordHint}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.auth.passwordHint}</p>
       </div>
 
       <div className="space-y-1">

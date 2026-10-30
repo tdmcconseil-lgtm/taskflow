@@ -51,7 +51,7 @@ export function WorkspaceNav({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between px-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-300">
           Espaces
         </span>
         <Link
@@ -82,14 +82,14 @@ export function WorkspaceNav({
                     <li key={t.id}>
                       <Link
                         href={`/app/tasks/${t.id}`}
-                        className="block truncate rounded px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        className="block truncate rounded px-2 py-1 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                       >
                         {t.title}
                       </Link>
                     </li>
                   ))}
                   {ws.tasks.length === 0 && (
-                    <li className="px-2 py-1 text-xs italic text-zinc-400">Aucun projet</li>
+                    <li className="px-2 py-1 text-xs italic text-zinc-400 dark:text-zinc-300">Aucun projet</li>
                   )}
                 </ul>
               )}

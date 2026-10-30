@@ -126,7 +126,7 @@ export default async function WorkspacePage({
   const projetsPanel = (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">{t.task.projectsList}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.task.projectsList}</p>
         {!isArchived && (
           <Link
             href={`/app/tasks/new?workspace=${workspace.id}`}
@@ -137,7 +137,7 @@ export default async function WorkspacePage({
         )}
       </div>
       {visibleRoots.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
           {t.task.noProjects}
         </p>
       ) : (
@@ -153,7 +153,7 @@ export default async function WorkspacePage({
   const membresPanel = (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">{t.members.list}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.members.list}</p>
         {isAdmin && (
           <Link
             href={`/app/workspaces/${workspace.id}/members/new`}
@@ -185,19 +185,19 @@ export default async function WorkspacePage({
                   <p className="font-medium">
                     {m.user.name}
                     {m.user.id === user.id && (
-                      <span className="ml-2 text-xs text-zinc-400">{t.members.you}</span>
+                      <span className="ml-2 text-xs text-zinc-400 dark:text-zinc-300">{t.members.you}</span>
                     )}
                     {deactivated && (
-                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700">
                         {t.members.deactivated}
                       </span>
                     )}
                   </p>
-                  <p className="truncate text-sm text-zinc-500">{m.user.email}</p>
+                  <p className="truncate text-sm text-zinc-500 dark:text-zinc-300">{m.user.email}</p>
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-3">
-                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-300">
                   {roleLabel(m.role)}
                   {m.role === "OWNER" && ` ${t.members.creator}`}
                 </span>
@@ -217,7 +217,7 @@ export default async function WorkspacePage({
 
       {workspace.invitations.length > 0 && (
         <section className="space-y-2">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
             {t.members.pendingInvitations}
           </h3>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
@@ -230,7 +230,7 @@ export default async function WorkspacePage({
                 >
                   <div className="min-w-0">
                     <p className="truncate font-medium">{inv.email}</p>
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-300">
                       {expired ? (
                         <span className="text-red-600 dark:text-red-400">{t.members.expired}</span>
                       ) : (
@@ -254,7 +254,7 @@ export default async function WorkspacePage({
                       <input type="hidden" name="invitationId" value={inv.id} />
                       <button
                         type="submit"
-                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 dark:text-zinc-300 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
                       >
                         {t.members.cancel}
                       </button>
@@ -271,9 +271,9 @@ export default async function WorkspacePage({
 
   const suiviesPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500">{t.workspace.followedDesc}</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.workspace.followedDesc}</p>
       {followedTasks.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
           {t.workspace.followedEmpty}
         </p>
       ) : (
@@ -286,7 +286,7 @@ export default async function WorkspacePage({
               >
                 <span
                   className={`truncate text-sm font-medium ${
-                    f.task.status === "DONE" ? "text-zinc-400 line-through" : ""
+                    f.task.status === "DONE" ? "text-zinc-400 dark:text-zinc-300 line-through" : ""
                   }`}
                 >
                   {f.task.parentId === null ? t.task.prefixProject : t.task.prefixTask} :{" "}
@@ -307,7 +307,7 @@ export default async function WorkspacePage({
   const evenementsPanel = (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500">{t.workspace.eventsDesc}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.workspace.eventsDesc}</p>
         <EventFilter hideMine={!includeOwn} />
       </div>
       <EventList groups={eventGroups} emptyLabel={t.workspace.eventsEmpty} locale={locale} />
@@ -316,7 +316,7 @@ export default async function WorkspacePage({
 
   const discussionsPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500">{t.workspace.discussionsDesc}</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.workspace.discussionsDesc}</p>
       <DiscussionList
         rows={discussionRows}
         emptyLabel={t.workspace.discussionsEmpty}
@@ -331,7 +331,7 @@ export default async function WorkspacePage({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            <span className="text-zinc-400">{t.workspace.prefix} </span>
+            <span className="text-zinc-400 dark:text-zinc-300">{t.workspace.prefix} </span>
             {workspace.name}
           </h1>
         </div>

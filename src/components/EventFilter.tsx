@@ -11,7 +11,7 @@ export function EventFilter({ hideMine }: { hideMine: boolean }) {
   const pathname = usePathname();
 
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+    <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
       <input
         type="checkbox"
         checked={hideMine}

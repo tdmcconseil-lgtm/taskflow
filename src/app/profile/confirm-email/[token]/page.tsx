@@ -34,7 +34,7 @@ export default async function ConfirmEmailPage({
     return (
       <Card>
         <h1 className="text-xl font-semibold tracking-tight">{t.confirmEmail.unavailable}</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-300">
           {expired ? t.confirmEmail.expired : t.confirmEmail.invalid}
         </p>
         <Link
@@ -51,7 +51,7 @@ export default async function ConfirmEmailPage({
     <Card>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Taskflow</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-300">
           {t.confirmEmail.prompt}{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">{request.newEmail}</span>.
         </p>

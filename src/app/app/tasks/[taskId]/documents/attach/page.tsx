@@ -39,16 +39,16 @@ export default async function AttachDocumentPage({
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">{t.documentPage.attachTitle}</h1>
-        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 hover:underline">
+        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
           {t.documentPage.cancel}
         </Link>
       </div>
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-zinc-500 dark:text-zinc-300">
         {t.documentPage.attachDesc.replace("{title}", task.title)}
       </p>
 
       {docs.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
           {t.documentPage.attachEmpty}
         </p>
       ) : (
@@ -63,7 +63,7 @@ export default async function AttachDocumentPage({
                   <span aria-hidden>📄</span>
                   <span className="truncate">{d.name}</span>
                 </p>
-                <p className="mt-0.5 truncate text-xs text-zinc-400">
+                <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-zinc-300">
                   {d.fileName} · {d.uploadedBy.name} · {formatDate(d.createdAt, locale)}
                 </p>
               </div>

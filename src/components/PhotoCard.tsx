@@ -236,7 +236,7 @@ export function PhotoCard(props: Props) {
             <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-white/40" />
           </div>
           {src && (
-            <p className="text-center text-xs text-zinc-500">
+            <p className="text-center text-xs text-zinc-500 dark:text-zinc-300">
               Glissez la photo pour la recentrer.
             </p>
           )}
@@ -297,7 +297,7 @@ export function PhotoCard(props: Props) {
             )}
           </div>
 
-          <p className="text-xs text-zinc-500">JPEG, PNG ou WebP. 2 Mo maximum.</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-300">JPEG, PNG ou WebP. 2 Mo maximum.</p>
         </div>
       </div>
     </div>

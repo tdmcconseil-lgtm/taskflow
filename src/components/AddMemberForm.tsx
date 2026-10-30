@@ -25,7 +25,7 @@ export function AddMemberForm({ workspaceId }: { workspaceId: string }) {
           className={inputClass}
           placeholder={t.members.emailPlaceholder}
         />
-        <p className="text-xs text-zinc-500">{t.members.emailHint}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.members.emailHint}</p>
       </div>
 
       <div className="space-y-1">
@@ -36,7 +36,7 @@ export function AddMemberForm({ workspaceId }: { workspaceId: string }) {
           <option value="MEMBER">{t.members.roleUser}</option>
           <option value="ADMIN">{t.members.roleAdmin}</option>
         </select>
-        <p className="text-xs text-zinc-500">{t.members.roleHint}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.members.roleHint}</p>
       </div>
 
       {state?.error && <p className={errorClass}>{state.error}</p>}

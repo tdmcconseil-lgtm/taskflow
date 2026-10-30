@@ -76,7 +76,7 @@ export default async function NewTaskPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500">
+        <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
           <Link href={`/app/workspaces/${workspaceId}`} className="hover:underline">
             {workspace.name}
           </Link>

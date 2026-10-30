@@ -23,7 +23,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
             <Link
               href={`/app/tasks/${node.id}`}
               className={`hover:underline ${
-                node.status === "DONE" ? "text-zinc-400 line-through" : ""
+                node.status === "DONE" ? "text-zinc-400 dark:text-zinc-300 line-through" : ""
               }`}
             >
               {prefix} : {node.title}
@@ -35,9 +35,9 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
             )}
           </p>
           {node.description && (
-            <p className="mt-0.5 line-clamp-1 text-sm text-zinc-500">{node.description}</p>
+            <p className="mt-0.5 line-clamp-1 text-sm text-zinc-500 dark:text-zinc-300">{node.description}</p>
           )}
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-300">
             {node.assignee ? (
               <span className="inline-flex items-center gap-1">
                 <UserAvatar user={node.assignee} className="h-4 w-4" />
@@ -58,7 +58,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
               </span>
             )}
             {node.children.length > 0 && (
-              <span className="text-zinc-400">
+              <span className="text-zinc-400 dark:text-zinc-300">
                 {node.children.length}{" "}
                 {node.children.length > 1 ? t.task.subtasksWord : t.task.subtaskWord}
               </span>
@@ -70,7 +70,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
           <Link
             href={`/app/tasks/new?parent=${node.id}`}
             title={t.task.addSubtask}
-            className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
+            className="rounded-md px-2 py-1 text-sm text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
           >
             +
           </Link>

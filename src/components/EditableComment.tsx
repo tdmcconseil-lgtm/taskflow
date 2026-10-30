@@ -43,7 +43,7 @@ export function EditableComment({
 
   return (
     <li className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="mb-1 flex items-center justify-between gap-2 text-xs text-zinc-500">
+      <div className="mb-1 flex items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-300">
         <div className="flex items-center gap-2">
           <span className="font-medium text-zinc-700 dark:text-zinc-300">
             {comment.authorName}
@@ -52,7 +52,7 @@ export function EditableComment({
           <span>{formatDateTime(comment.createdAt, locale)}</span>
           {comment.editedAt && (
             <span
-              className="italic text-zinc-400"
+              className="italic text-zinc-400 dark:text-zinc-300"
               title={`${t.comments.editedOn} ${formatDateTime(comment.editedAt, locale)}`}
             >
               {t.comments.edited}
@@ -63,7 +63,7 @@ export function EditableComment({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="rounded px-2 py-0.5 text-xs text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
+            className="rounded px-2 py-0.5 text-xs text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
           >
             {t.comments.edit}
           </button>

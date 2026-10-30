@@ -99,7 +99,7 @@ export function TaskTabs({
             className={`-mb-px flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-1 py-2.5 text-sm font-medium transition ${
               active === t.key
                 ? "border-indigo-600 text-zinc-900 dark:text-white"
-                : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                : "border-transparent text-zinc-500 dark:text-zinc-300 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
             {t.key === "followers" && <span aria-hidden>👁</span>}

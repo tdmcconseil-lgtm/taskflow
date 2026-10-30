@@ -38,7 +38,7 @@ export default async function AcceptInvitationPage({
     return (
       <Card>
         <h1 className="text-xl font-semibold tracking-tight">{t.invitePage.unavailable}</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-300">
           {expired ? t.invitePage.expired : t.invitePage.invalid}
         </p>
         <Link
@@ -55,7 +55,7 @@ export default async function AcceptInvitationPage({
     <Card>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Taskflow</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-300">
           {invitation.invitedBy.name} {t.invitePage.invitesYou}{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">
             « {invitation.workspace.name} »

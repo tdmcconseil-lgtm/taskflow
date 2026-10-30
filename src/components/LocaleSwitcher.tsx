@@ -42,7 +42,7 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
             className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition disabled:opacity-60 ${
               selected
                 ? "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-300 dark:bg-indigo-950/40 dark:text-indigo-300 dark:ring-indigo-700"
-                : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                : "text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             }`}
           >
             <Flag locale={l} className="h-3.5 w-5" />

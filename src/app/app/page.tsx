@@ -42,14 +42,14 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           {t.dashboard.greeting} {user.name} 👋
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">{t.dashboard.overview}</p>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">{t.dashboard.overview}</p>
       </div>
 
       {/* Mes tâches */}
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">{t.dashboard.myTasks}</h2>
         {myTasks.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
+          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
             {t.dashboard.noMyTasks}
           </p>
         ) : (
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
                     </Link>
                     <Link
                       href={`/app/workspaces/${task.workspace.id}`}
-                      className="text-xs text-zinc-500 hover:underline"
+                      className="text-xs text-zinc-500 dark:text-zinc-300 hover:underline"
                     >
                       {task.workspace.name}
                     </Link>
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
                         className={`text-xs ${
                           isOverdue(task.dueDate)
                             ? "font-medium text-red-600 dark:text-red-400"
-                            : "text-zinc-500"
+                            : "text-zinc-500 dark:text-zinc-300"
                         }`}
                       >
                         {formatDate(task.dueDate, locale)}
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {workspaces.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700">
+          <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
             {t.dashboard.noWorkspaces}
           </p>
         ) : (
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                 className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
               >
                 <p className="font-medium">{ws.name}</p>
-                <p className="mt-2 text-sm text-zinc-500">
+                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-300">
                   {ws.tasks.length}{" "}
                   {ws.tasks.length > 1 ? t.dashboard.projectsWord : t.dashboard.projectWord} ·{" "}
                   {ws._count.members}{" "}
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
       {/* Espaces archivés */}
       {archivedWorkspaces.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-500">{t.dashboard.archivedWorkspaces}</h2>
+          <h2 className="text-lg font-semibold text-zinc-500 dark:text-zinc-300">{t.dashboard.archivedWorkspaces}</h2>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
             {archivedWorkspaces.map((ws) => {
               const isOwner = ws.members[0]?.role === "OWNER";
@@ -142,10 +142,10 @@ export default async function DashboardPage() {
                   className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-zinc-600 dark:text-zinc-400">
+                    <p className="truncate font-medium text-zinc-600 dark:text-zinc-300">
                       {ws.name}
                     </p>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-400 dark:text-zinc-300">
                       {t.dashboard.archivedOn} {formatDate(ws.archivedAt, locale)} · {ws.tasks.length}{" "}
                       {ws.tasks.length > 1 ? t.dashboard.projectsWord : t.dashboard.projectWord}
                     </p>

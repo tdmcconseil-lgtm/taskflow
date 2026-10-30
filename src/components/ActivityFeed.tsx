@@ -23,20 +23,20 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
   const t = useT();
   const locale = useLocale();
   if (activities.length === 0) {
-    return <p className="text-sm italic text-zinc-400">{t.activity.none}</p>;
+    return <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.activity.none}</p>;
   }
   return (
     <ul className="space-y-3">
       {activities.map((a) => (
         <li
           key={a.id}
-          className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400"
+          className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300"
         >
           <UserAvatar user={toAssigneeInfo(a.actor)!} className="mt-0.5 h-5 w-5" />
           <p>
             <span className="font-medium text-zinc-700 dark:text-zinc-300">{a.actor.name}</span>{" "}
             {describeActivity(a, t)}
-            <span className="ml-1 text-xs text-zinc-400">· {formatDateTime(a.createdAt, locale)}</span>
+            <span className="ml-1 text-xs text-zinc-400 dark:text-zinc-300">· {formatDateTime(a.createdAt, locale)}</span>
           </p>
         </li>
       ))}

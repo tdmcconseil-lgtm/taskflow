@@ -18,7 +18,7 @@ export function UserAvatar({
       fy={user.photoY}
       zoom={user.photoZoom}
       fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
-      className={`shrink-0 rounded-full bg-zinc-200 text-[10px] font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300 ${className}`}
+      className={`shrink-0 rounded-full bg-zinc-200 text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700 ${className}`}
     />
   );
 }

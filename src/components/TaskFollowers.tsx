@@ -29,7 +29,7 @@ export function TaskFollowers({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-500">{countText}</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-300">{countText}</p>
 
       {followers.length > 0 && (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">

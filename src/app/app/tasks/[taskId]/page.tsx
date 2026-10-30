@@ -203,7 +203,7 @@ export default async function TaskDetailPage({
   const followerCandidates = members.filter((m) => !followerIds.has(m.id));
 
   const breadcrumb = (
-    <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500">
+    <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
       <Link href={`/app/workspaces/${workspace.id}`} className="hover:underline">
         {workspace.name}
       </Link>
@@ -227,7 +227,7 @@ export default async function TaskDetailPage({
         {breadcrumb}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">Modifier</h1>
-          <Link href={detailHref} className="text-sm text-zinc-500 hover:underline">
+          <Link href={detailHref} className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
             Annuler
           </Link>
         </div>
@@ -248,7 +248,7 @@ export default async function TaskDetailPage({
         </div>
 
         <div className="flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <span className="text-sm text-zinc-500">Supprimer définitivement cette tâche.</span>
+          <span className="text-sm text-zinc-500 dark:text-zinc-300">Supprimer définitivement cette tâche.</span>
           <DeleteTaskButton taskId={task.id} />
         </div>
       </div>
@@ -318,7 +318,7 @@ export default async function TaskDetailPage({
         <div className="min-w-0">
           <h1
             className={`text-2xl font-semibold tracking-tight ${
-              task.status === "DONE" ? "text-zinc-400 line-through" : ""
+              task.status === "DONE" ? "text-zinc-400 dark:text-zinc-300 line-through" : ""
             }`}
           >
             {prefixedTitle(task.title, task.parentId === null)}
@@ -333,7 +333,7 @@ export default async function TaskDetailPage({
               className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 isFollowing
                   ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
-                  : "border-zinc-300 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                  : "border-zinc-300 text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
               }`}
             >
               <span aria-hidden>👁</span>
@@ -354,7 +354,7 @@ export default async function TaskDetailPage({
           banner={
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.assignee}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.task.assignee}</dt>
                 <dd className="mt-1 text-sm">
                   {task.assignee ? (
                     <span className="inline-flex items-center gap-2">
@@ -367,7 +367,7 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.dueDate}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.task.dueDate}</dt>
                 <dd
                   className={`mt-1 text-sm ${
                     overdue ? "font-medium text-red-600 dark:text-red-400" : ""
@@ -377,7 +377,7 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.priority}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.task.priority}</dt>
                 <dd className="mt-1">
                   <PriorityBadge priority={task.priority} />
                 </dd>
@@ -390,7 +390,7 @@ export default async function TaskDetailPage({
                 {task.description}
               </p>
             ) : (
-              <p className="text-sm italic text-zinc-400">{t.task.noDescription}</p>
+              <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.task.noDescription}</p>
             )
           }
         />
@@ -444,7 +444,7 @@ export default async function TaskDetailPage({
               projectDocuments={projectDocs}
             />
             {task.comments.length === 0 ? (
-              <p className="text-sm italic text-zinc-400">
+              <p className="text-sm italic text-zinc-400 dark:text-zinc-300">
                 Aucun message. Lancez la conversation.
               </p>
             ) : (

@@ -23,7 +23,7 @@ export function TaskControls({ taskId, status }: { taskId: string; status: TaskS
         <button
           type="submit"
           title="Supprimer la tâche"
-          className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
+          className="rounded-md px-2 py-1 text-sm text-zinc-400 dark:text-zinc-300 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
         >
           ✕
         </button>

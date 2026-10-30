@@ -46,7 +46,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <Link href="/app" className="text-sm text-zinc-500 hover:underline">
+        <Link href="/app" className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
           ← {t.profile.back}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.profile.title}</h1>
@@ -60,7 +60,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
       {/* Photo */}
       <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
           {t.profile.photo}
         </h2>
         <PhotoCard
@@ -76,7 +76,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
       {/* Identité */}
       <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
           {t.profile.identity}
         </h2>
         <NameForm firstName={user.firstName} lastName={user.lastName} />
@@ -84,7 +84,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
       {/* Langue */}
       <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
           {t.profile.language}
         </h2>
         <LocaleSwitcher />
@@ -92,7 +92,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
       {/* Email */}
       <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
           {t.profile.email}
         </h2>
         <EmailForm currentEmail={user.email} />
@@ -100,7 +100,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
       {/* Mot de passe */}
       <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
           {t.profile.password}
         </h2>
         <PasswordForm />

@@ -258,7 +258,7 @@ export function CommentBox({
             className="min-h-[2.75rem] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
           />
           {empty && (
-            <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400">
+            <span className="pointer-events-none absolute left-3 top-2 text-sm text-zinc-400 dark:text-zinc-300">
               {t.comments.placeholder}
             </span>
           )}
@@ -276,7 +276,7 @@ export function CommentBox({
             <button
               type="button"
               onClick={onDone}
-              className="rounded-lg border border-zinc-300 px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-lg border border-zinc-300 px-4 py-1.5 text-xs text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
               {t.comments.cancel}
             </button>

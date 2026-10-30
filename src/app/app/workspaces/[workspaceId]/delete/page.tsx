@@ -45,7 +45,7 @@ export default async function DeleteWorkspacePage({
       <div>
         <Link
           href={`/app/workspaces/${workspace.id}`}
-          className="text-sm text-zinc-500 hover:underline"
+          className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline"
         >
           ← {workspace.name}
         </Link>
@@ -65,7 +65,7 @@ export default async function DeleteWorkspacePage({
               key={r.label}
               className="rounded-lg border border-red-200 bg-white p-3 text-center dark:border-red-900 dark:bg-zinc-900"
             >
-              <dt className="text-xs text-zinc-500">{r.label}</dt>
+              <dt className="text-xs text-zinc-500 dark:text-zinc-300">{r.label}</dt>
               <dd className="text-xl font-semibold text-red-700 dark:text-red-400">{r.value}</dd>
             </div>
           ))}

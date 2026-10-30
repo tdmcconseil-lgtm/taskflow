@@ -25,7 +25,7 @@ export function DescriptionReveal({
           aria-expanded={open}
           title={open ? t.descriptionReveal.hide : t.descriptionReveal.show}
           aria-label={open ? t.descriptionReveal.hide : t.descriptionReveal.show}
-          className="shrink-0 rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+          className="shrink-0 rounded-md p-1 text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
         >
           <span className={`inline-block text-sm transition ${open ? "rotate-90" : ""}`}>▸</span>
         </button>

@@ -57,7 +57,7 @@ export function MenuLocaleSwitcher({ locale, label }: { locale: Locale; label: s
                 className={`flex w-full items-center gap-2 px-2 py-1.5 text-sm transition ${
                   l === locale
                     ? "bg-indigo-50 font-medium text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300"
-                    : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <Flag locale={l} className="h-3.5 w-5" />
@@ -75,11 +75,11 @@ export function MenuLocaleSwitcher({ locale, label }: { locale: Locale; label: s
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={label}
-        className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 disabled:opacity-60 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 disabled:opacity-60 dark:hover:bg-zinc-800"
       >
         <Flag locale={locale} className="h-3.5 w-5" />
         <span className="flex-1 text-left">{localeNames[locale]}</span>
-        <span aria-hidden className="text-xs text-zinc-400">
+        <span aria-hidden className="text-xs text-zinc-400 dark:text-zinc-300">
           {open ? "▴" : "▾"}
         </span>
       </button>
