@@ -67,6 +67,21 @@ const es: Dictionary = {
     allowedMembers: "Miembros autorizados (si restringido):",
     projectsList: "Proyectos de este espacio.",
     noProjects: "Ningún proyecto. Crea uno para empezar.",
+    subscribe: "Suscribirse",
+    subscribed: "Suscrito",
+    edit: "Editar",
+    unassigned: "Sin asignar",
+    noDescription: "Sin descripción.",
+  },
+  status: {
+    TODO: "Por hacer",
+    IN_PROGRESS: "En curso",
+    DONE: "Terminada",
+  },
+  priority: {
+    LOW: "Baja",
+    MEDIUM: "Media",
+    HIGH: "Alta",
   },
 };
 

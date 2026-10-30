@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { setTaskStatus, type FormState } from "@/lib/actions/tasks";
-import { STATUS_LABELS, STATUS_ORDER } from "@/lib/labels";
+import { STATUS_ORDER } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 import type { TaskStatus } from "@/generated/prisma/client";
 
 export function StatusSelect({
@@ -12,6 +13,7 @@ export function StatusSelect({
   taskId: string;
   status: TaskStatus;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(setTaskStatus, undefined);
   const [value, setValue] = useState<TaskStatus>(status);
 
@@ -40,7 +42,7 @@ export function StatusSelect({
         >
           {STATUS_ORDER.map((s) => (
             <option key={s} value={s}>
-              {STATUS_LABELS[s]}
+              {t.status[s]}
             </option>
           ))}
         </select>

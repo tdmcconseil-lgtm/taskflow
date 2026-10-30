@@ -66,6 +66,21 @@ const fr = {
     allowedMembers: "Membres autorisés (si restreint) :",
     projectsList: "Liste des projets associés à cet espace.",
     noProjects: "Aucun projet. Créez-en un pour commencer.",
+    subscribe: "S'abonner",
+    subscribed: "Abonné",
+    edit: "Modifier",
+    unassigned: "Non assignée",
+    noDescription: "Aucune description.",
+  },
+  status: {
+    TODO: "À faire",
+    IN_PROGRESS: "En cours",
+    DONE: "Terminé",
+  },
+  priority: {
+    LOW: "Basse",
+    MEDIUM: "Moyenne",
+    HIGH: "Haute",
   },
 };
 

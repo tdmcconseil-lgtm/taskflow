@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { canAccessTask } from "@/lib/access";
+import { getDictionary } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
@@ -29,6 +30,7 @@ export default async function TaskDetailPage({
   searchParams,
 }: PageProps<"/app/tasks/[taskId]">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { taskId } = await params;
   const sp = await searchParams;
   const editing = sp.edit === "1";
@@ -334,7 +336,7 @@ export default async function TaskDetailPage({
               }`}
             >
               <span aria-hidden>👁</span>
-              <span>{isFollowing ? "Abonné" : "S'abonner"}</span>
+              <span>{isFollowing ? t.task.subscribed : t.task.subscribe}</span>
             </button>
           </form>
           <StatusSelect taskId={task.id} status={task.status} />
@@ -342,7 +344,7 @@ export default async function TaskDetailPage({
             href={`${detailHref}?edit=1`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Modifier
+            {t.task.edit}
           </Link>
         </div>
       </div>
@@ -351,7 +353,7 @@ export default async function TaskDetailPage({
           banner={
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">Assigné à</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.assignee}</dt>
                 <dd className="mt-1 text-sm">
                   {task.assignee ? (
                     <span className="inline-flex items-center gap-2">
@@ -359,12 +361,12 @@ export default async function TaskDetailPage({
                       {task.assignee.name}
                     </span>
                   ) : (
-                    "Non assignée"
+                    t.task.unassigned
                   )}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">Échéance</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.dueDate}</dt>
                 <dd
                   className={`mt-1 text-sm ${
                     overdue ? "font-medium text-red-600 dark:text-red-400" : ""
@@ -374,7 +376,7 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400">Priorité</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.task.priority}</dt>
                 <dd className="mt-1">
                   <PriorityBadge priority={task.priority} />
                 </dd>
@@ -387,7 +389,7 @@ export default async function TaskDetailPage({
                 {task.description}
               </p>
             ) : (
-              <p className="text-sm italic text-zinc-400">Aucune description.</p>
+              <p className="text-sm italic text-zinc-400">{t.task.noDescription}</p>
             )
           }
         />
