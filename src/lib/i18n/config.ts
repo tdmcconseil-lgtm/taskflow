@@ -14,3 +14,10 @@ export const localeNames: Record<Locale, string> = {
   en: "English",
   es: "Español",
 };
+
+// Drapeaux associés à chaque langue (repère visuel).
+export const localeFlags: Record<Locale, string> = {
+  fr: "🇫🇷",
+  en: "🇬🇧",
+  es: "🇪🇸",
+};

@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
-import { locales, localeNames, type Locale } from "@/lib/i18n/config";
+import { locales, localeNames, localeFlags, type Locale } from "@/lib/i18n/config";
 import { setLocale } from "@/lib/actions/locale";
 
 // Sélecteur de langue (FR / EN / ES). Mémorise le choix (cookie) et rafraîchit
@@ -29,7 +29,7 @@ export function LocaleSwitcher({ className = "" }: { className?: string }) {
     >
       {locales.map((l) => (
         <option key={l} value={l}>
-          {localeNames[l]}
+          {localeFlags[l]} {localeNames[l]}
         </option>
       ))}
     </select>
