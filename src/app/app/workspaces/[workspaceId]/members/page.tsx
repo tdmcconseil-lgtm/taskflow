@@ -2,14 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
-import { cancelInvitation } from "@/lib/actions/workspaces";
+import { cancelInvitation, resendInvitation } from "@/lib/actions/workspaces";
 import { formatDate } from "@/lib/labels";
 
 export default async function MembersPage({
   params,
+  searchParams,
 }: PageProps<"/app/workspaces/[workspaceId]/members">) {
   const user = await requireUser();
   const { workspaceId } = await params;
+  const sp = await searchParams;
+  const sentTo = typeof sp.sent === "string" ? sp.sent : null;
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -48,6 +51,12 @@ export default async function MembersPage({
           Inviter un membre
         </Link>
       </div>
+
+      {sentTo && (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+          Un email d&apos;invitation a été renvoyé à {sentTo}.
+        </p>
+      )}
 
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
         {workspace.members.map((m) => (
@@ -94,15 +103,26 @@ export default async function MembersPage({
                       )}
                     </p>
                   </div>
-                  <form action={cancelInvitation}>
-                    <input type="hidden" name="invitationId" value={inv.id} />
-                    <button
-                      type="submit"
-                      className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
-                    >
-                      Annuler
-                    </button>
-                  </form>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <form action={resendInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40"
+                      >
+                        Renvoyer
+                      </button>
+                    </form>
+                    <form action={cancelInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
+                      >
+                        Annuler
+                      </button>
+                    </form>
+                  </div>
                 </li>
               );
             })}

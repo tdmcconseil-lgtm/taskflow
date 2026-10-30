@@ -234,6 +234,53 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   redirect(`/app/workspaces/${workspaceId}/members`);
 }
 
+// Renvoie l'email d'invitation (admin uniquement). Un nouveau jeton et une
+// nouvelle échéance sont générés : l'ancien lien devient caduc. Redirige vers la
+// liste avec un indicateur de confirmation.
+export async function resendInvitation(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const invitationId = String(formData.get("invitationId") ?? "");
+  if (!invitationId) return;
+
+  const invitation = await prisma.invitation.findUnique({
+    where: { id: invitationId },
+    select: { id: true, email: true, workspaceId: true, acceptedAt: true },
+  });
+  if (!invitation || invitation.acceptedAt) return;
+
+  if (await ensureAdmin(user.id, invitation.workspaceId)) return;
+
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: invitation.workspaceId },
+    select: { name: true },
+  });
+  if (!workspace) return;
+
+  const token = generateInvitationToken();
+  const tokenHash = hashToken(token);
+  const ttlDays = Number.parseInt(process.env.INVITATION_TTL_DAYS ?? "7", 10);
+  const expiresAt = new Date(Date.now() + ttlDays * 24 * 60 * 60 * 1000);
+
+  await prisma.invitation.update({
+    where: { id: invitation.id },
+    data: { tokenHash, expiresAt },
+  });
+
+  const appUrl = process.env.APP_URL ?? "http://localhost:3001";
+  const mail = invitationEmail({
+    inviterName: user.name,
+    workspaceName: workspace.name,
+    acceptUrl: `${appUrl}/invitations/${token}`,
+    expiresAt,
+  });
+  await sendMail({ to: invitation.email, subject: mail.subject, body: mail.body });
+
+  revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);
+  redirect(
+    `/app/workspaces/${invitation.workspaceId}/members?sent=${encodeURIComponent(invitation.email)}`,
+  );
+}
+
 export async function cancelInvitation(formData: FormData): Promise<void> {
   const user = await requireUser();
   const invitationId = String(formData.get("invitationId") ?? "");
