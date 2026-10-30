@@ -4,11 +4,13 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { SubmitButton } from "@/components/SubmitButton";
 import { login, signup, type FormState } from "@/lib/actions/auth";
+import { useT } from "@/lib/i18n/context";
 
 const inputClass =
   "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
+  const t = useT();
   const action = mode === "login" ? login : signup;
   const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
 
@@ -18,7 +20,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <label htmlFor="firstName" className="text-sm font-medium">
-              Prénom
+              {t.auth.firstName}
             </label>
             <input
               id="firstName"
@@ -29,7 +31,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           </div>
           <div className="space-y-1">
             <label htmlFor="lastName" className="text-sm font-medium">
-              Nom <span className="text-zinc-400">(facultatif)</span>
+              {t.auth.lastName} <span className="text-zinc-400">{t.auth.optional}</span>
             </label>
             <input
               id="lastName"
@@ -43,7 +45,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
       <div className="space-y-1">
         <label htmlFor="email" className="text-sm font-medium">
-          Email
+          {t.auth.email}
         </label>
         <input
           id="email"
@@ -56,7 +58,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
       <div className="space-y-1">
         <label htmlFor="password" className="text-sm font-medium">
-          Mot de passe
+          {t.auth.password}
         </label>
         <input
           id="password"
@@ -65,9 +67,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           className={inputClass}
         />
-        {mode === "signup" && (
-          <p className="text-xs text-zinc-500">8 caractères minimum.</p>
-        )}
+        {mode === "signup" && <p className="text-xs text-zinc-500">{t.auth.passwordHint}</p>}
       </div>
 
       {state?.error && (
@@ -77,22 +77,22 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       )}
 
       <SubmitButton className="w-full">
-        {mode === "login" ? "Se connecter" : "Créer mon compte"}
+        {mode === "login" ? t.auth.signIn : t.auth.createAccount}
       </SubmitButton>
 
       <p className="text-center text-sm text-zinc-500">
         {mode === "login" ? (
           <>
-            Pas encore de compte ?{" "}
+            {t.auth.noAccount}{" "}
             <Link href="/signup" className="font-medium text-indigo-600 hover:underline">
-              S&apos;inscrire
+              {t.auth.signUp}
             </Link>
           </>
         ) : (
           <>
-            Déjà un compte ?{" "}
+            {t.auth.haveAccount}{" "}
             <Link href="/login" className="font-medium text-indigo-600 hover:underline">
-              Se connecter
+              {t.auth.signIn}
             </Link>
           </>
         )}
