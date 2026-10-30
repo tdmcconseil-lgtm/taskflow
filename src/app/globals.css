@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Mode sombre piloté par la classe `dark` sur <html> (bascule manuelle depuis le
+   menu). La classe est posée avant le rendu par un petit script dans le layout,
+   selon le cookie `tf_theme` ou, à défaut, la préférence système. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

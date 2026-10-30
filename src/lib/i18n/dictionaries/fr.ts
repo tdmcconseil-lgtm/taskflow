@@ -353,6 +353,9 @@ const fr = {
     inviteBody:
       "Bonjour,\n\n{inviter} vous invite à collaborer dans l'espace de travail « {workspace} » sur Taskflow. Pour créer votre compte et le rejoindre, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe Taskflow",
   },
+  theme: {
+    darkMode: "Mode sombre",
+  },
   errors: {
     invalidData: "Données invalides.",
     firstNameMin: "Le prénom doit faire au moins 2 caractères.",

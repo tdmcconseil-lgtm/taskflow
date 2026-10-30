@@ -354,6 +354,9 @@ const es: Dictionary = {
     inviteBody:
       "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en Taskflow. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de Taskflow",
   },
+  theme: {
+    darkMode: "Modo oscuro",
+  },
   errors: {
     invalidData: "Datos no válidos.",
     firstNameMin: "El nombre debe tener al menos 2 caracteres.",

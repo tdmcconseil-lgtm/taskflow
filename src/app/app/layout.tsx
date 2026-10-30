@@ -9,11 +9,17 @@ import { WorkspaceNav } from "@/components/WorkspaceNav";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { MenuLocaleSwitcher } from "@/components/MenuLocaleSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
   const locale = await getLocale();
   const t = await getDictionary(locale);
+
+  // Thème choisi (cookie par appareil) : utilisé pour afficher l'interrupteur dans
+  // le bon état dès le rendu serveur. Absent = choix jamais fait (préférence système).
+  const themeCookie = (await cookies()).get("tf_theme")?.value;
+  const initialDark = themeCookie === "dark" ? true : themeCookie === "light" ? false : undefined;
 
   // Espaces où l'utilisateur est administrateur (il y voit tous les projets).
   const memberships = await prisma.membership.findMany({
@@ -140,6 +146,9 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
       {/* Langue : sélecteur déroulant (ouverture vers le haut) tout en bas du menu. */}
       <MenuLocaleSwitcher locale={locale} label={t.common.language} />
+
+      {/* Thème clair / sombre : interrupteur tout en bas du menu (vert = sombre). */}
+      <ThemeToggle label={t.theme.darkMode} initialDark={initialDark} />
     </>
   );
 

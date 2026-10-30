@@ -354,6 +354,9 @@ const en: Dictionary = {
     inviteBody:
       "Hello,\n\n{inviter} invites you to collaborate in the workspace “{workspace}” on Taskflow. To create your account and join, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf this does not concern you, simply ignore this email.\n\n— The Taskflow team",
   },
+  theme: {
+    darkMode: "Dark mode",
+  },
   errors: {
     invalidData: "Invalid data.",
     firstNameMin: "First name must be at least 2 characters.",
