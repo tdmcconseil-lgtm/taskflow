@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
-import { archiveWorkspace, unarchiveWorkspace, cancelInvitation } from "@/lib/actions/workspaces";
+import {
+  archiveWorkspace,
+  unarchiveWorkspace,
+  cancelInvitation,
+  resendInvitation,
+} from "@/lib/actions/workspaces";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
@@ -15,7 +20,7 @@ import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
 import { EventFilter } from "@/components/EventFilter";
 import { DiscussionList } from "@/components/DiscussionList";
-import { formatDate, prefixedTitle } from "@/lib/labels";
+import { formatDate } from "@/lib/labels";
 
 export default async function WorkspacePage({
   params,
@@ -27,6 +32,9 @@ export default async function WorkspacePage({
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
+  // Confirmation d'envoi d'invitation + ouverture de l'onglet Membres.
+  const sentTo = typeof sp.sent === "string" ? sp.sent : null;
+  const initialTab = sentTo || sp.tab === "membres" ? "membres" : "projets";
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -155,6 +163,11 @@ export default async function WorkspacePage({
           </Link>
         )}
       </div>
+      {sentTo && (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+          {t.members.invitationSent} {sentTo}.
+        </p>
+      )}
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
         {workspace.members.map((m) => {
           const deactivated = m.deactivatedAt !== null;
@@ -227,15 +240,26 @@ export default async function WorkspacePage({
                       )}
                     </p>
                   </div>
-                  <form action={cancelInvitation}>
-                    <input type="hidden" name="invitationId" value={inv.id} />
-                    <button
-                      type="submit"
-                      className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
-                    >
-                      {t.members.cancel}
-                    </button>
-                  </form>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <form action={resendInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40"
+                      >
+                        {t.members.resend}
+                      </button>
+                    </form>
+                    <form action={cancelInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
+                      >
+                        {t.members.cancel}
+                      </button>
+                    </form>
+                  </div>
                 </li>
               );
             })}
@@ -351,6 +375,7 @@ export default async function WorkspacePage({
 
       <WorkspaceTabs
         key={workspace.id}
+        initialTab={initialTab}
         memberCount={workspace._count.members}
         projets={projetsPanel}
         membres={membresPanel}

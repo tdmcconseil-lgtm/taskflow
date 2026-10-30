@@ -26,7 +26,7 @@ export default async function NewMemberPage({
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <Link
-          href={`/app/workspaces/${workspace.id}/members`}
+          href={`/app/workspaces/${workspace.id}?tab=membres`}
           className="text-sm text-zinc-500 hover:underline"
         >
           ← Membres

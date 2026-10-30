@@ -205,8 +205,8 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
     await prisma.membership.create({
       data: { userId: existingUser.id, workspaceId, role },
     });
-    revalidatePath(`/app/workspaces/${workspaceId}/members`);
-    redirect(`/app/workspaces/${workspaceId}/members`);
+    revalidatePath(`/app/workspaces/${workspaceId}`);
+    redirect(`/app/workspaces/${workspaceId}?tab=membres`);
   }
 
   // Sinon, on crée (ou on renouvelle) une invitation et on envoie l'email.
@@ -239,8 +239,8 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   );
   await sendMail({ to: email, subject: mail.subject, body: mail.body });
 
-  revalidatePath(`/app/workspaces/${workspaceId}/members`);
-  redirect(`/app/workspaces/${workspaceId}/members`);
+  revalidatePath(`/app/workspaces/${workspaceId}`);
+  redirect(`/app/workspaces/${workspaceId}?sent=${encodeURIComponent(email)}`);
 }
 
 // Renvoie l'email d'invitation (admin uniquement). Un nouveau jeton et une
@@ -290,9 +290,9 @@ export async function resendInvitation(formData: FormData): Promise<void> {
   );
   await sendMail({ to: invitation.email, subject: mail.subject, body: mail.body });
 
-  revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);
+  revalidatePath(`/app/workspaces/${invitation.workspaceId}`);
   redirect(
-    `/app/workspaces/${invitation.workspaceId}/members?sent=${encodeURIComponent(invitation.email)}`,
+    `/app/workspaces/${invitation.workspaceId}?sent=${encodeURIComponent(invitation.email)}`,
   );
 }
 
@@ -310,7 +310,7 @@ export async function cancelInvitation(formData: FormData): Promise<void> {
   if (await ensureAdmin(user.id, invitation.workspaceId)) return;
 
   await prisma.invitation.delete({ where: { id: invitation.id } });
-  revalidatePath(`/app/workspaces/${invitation.workspaceId}/members`);
+  revalidatePath(`/app/workspaces/${invitation.workspaceId}`);
 }
 
 const acceptSchema = z

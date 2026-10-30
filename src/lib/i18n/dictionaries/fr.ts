@@ -136,6 +136,8 @@ const fr = {
     expired: "Expirée",
     pendingExpires: "En attente · expire le",
     cancel: "Annuler",
+    resend: "Renvoyer",
+    invitationSent: "Un email d'invitation a été envoyé à",
     emailLabel: "Email de la personne",
     emailPlaceholder: "personne@exemple.fr",
     emailHint:

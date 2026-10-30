@@ -137,6 +137,8 @@ const es: Dictionary = {
     expired: "Caducada",
     pendingExpires: "Pendiente · caduca el",
     cancel: "Cancelar",
+    resend: "Reenviar",
+    invitationSent: "Se ha enviado un correo de invitación a",
     emailLabel: "Correo de la persona",
     emailPlaceholder: "persona@ejemplo.com",
     emailHint:
