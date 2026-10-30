@@ -19,21 +19,34 @@ export function WorkspaceNav({
   const pathname = usePathname();
   const [active, setActive] = useState<string | null>(initialActiveId);
 
-  useEffect(() => {
-    const wsMatch = pathname.match(/^\/app\/workspaces\/([^/]+)/);
-    if (wsMatch) {
-      setActive(wsMatch[1]);
-      return;
-    }
+  // Espace actif = celui de la page visitée, résolu pendant le rendu (motif
+  // React d'ajustement d'état sur changement de props, sans effet). Les pages
+  // hors-espace (Accueil, Discussions…) et les sous-tâches non listées
+  // conservent l'espace courant, pour ne pas vider la liste des projets.
+  let nextActive = active;
+  const wsMatch = pathname.match(/^\/app\/workspaces\/([^/]+)/);
+  if (wsMatch) {
+    nextActive = wsMatch[1];
+  } else {
     const taskMatch = pathname.match(/^\/app\/tasks\/([^/]+)/);
     if (taskMatch) {
       // Projet de 1er niveau connu → on bascule sur son espace.
       const ws = workspaces.find((w) => w.tasks.some((t) => t.id === taskMatch[1]));
-      if (ws) setActive(ws.id);
-      // Sous-tâche non listée : on garde l'espace actif courant.
+      if (ws) nextActive = ws.id;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }
+  if (nextActive !== active) setActive(nextActive);
+
+  // Mémorise le dernier espace actif (cookie), relu côté serveur pour garder ses
+  // projets affichés sur les pages hors-espace et après un rechargement.
+  useEffect(() => {
+    if (!active) return;
+    try {
+      document.cookie = `tf_ws=${active}; path=/; max-age=31536000; samesite=lax`;
+    } catch {
+      // Cookie indisponible : simple perte de la préférence, sans incidence.
+    }
+  }, [active]);
 
   return (
     <div>

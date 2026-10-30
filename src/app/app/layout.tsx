@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
@@ -62,6 +62,15 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         select: { workspaceId: true },
       });
       activeWorkspaceId = t?.workspaceId ?? null;
+    }
+  }
+  // Hors d'un espace/tâche (Accueil, Discussions, Événements…) ou après un
+  // rechargement : on conserve le dernier espace visité (cookie) afin de ne pas
+  // vider la liste des projets dans le menu.
+  if (!activeWorkspaceId) {
+    const remembered = (await cookies()).get("tf_ws")?.value;
+    if (remembered && workspaces.some((w) => w.id === remembered)) {
+      activeWorkspaceId = remembered;
     }
   }
 
