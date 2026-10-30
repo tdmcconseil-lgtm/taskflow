@@ -7,17 +7,20 @@ import { RenameDocumentForm } from "@/components/RenameDocumentForm";
 import { DeleteDocumentButton } from "@/components/DeleteDocumentButton";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDateTime } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
+import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
-function formatBytes(n: number): string {
-  if (n < 1024) return `${n} o`;
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} Ko`;
-  return `${(n / (1024 * 1024)).toFixed(1)} Mo`;
+function formatBytes(n: number, t: Dictionary): string {
+  if (n < 1024) return `${n} ${t.documentPage.unitBytes}`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} ${t.documentPage.unitKb}`;
+  return `${(n / (1024 * 1024)).toFixed(1)} ${t.documentPage.unitMb}`;
 }
 
 export default async function DocumentPage({
   params,
 }: PageProps<"/app/documents/[documentId]">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { documentId } = await params;
 
   const doc = await prisma.document.findUnique({
@@ -66,7 +69,7 @@ export default async function DocumentPage({
             href={`/api/documents/${doc.id}?dl=1`}
             className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Télécharger
+            {t.documentPage.download}
           </a>
           <DeleteDocumentButton documentId={doc.id} />
         </div>
@@ -74,7 +77,7 @@ export default async function DocumentPage({
 
       <dl className="grid grid-cols-1 gap-4 rounded-xl border border-zinc-200 bg-white p-5 sm:grid-cols-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Chargé par</dt>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.documentPage.uploadedBy}</dt>
           <dd className="mt-1 text-sm">
             {uploader ? (
               <span className="inline-flex items-center gap-2">
@@ -87,29 +90,29 @@ export default async function DocumentPage({
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Date de chargement</dt>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.documentPage.uploadedOn}</dt>
           <dd className="mt-1 text-sm">{formatDateTime(doc.createdAt)}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400">Taille</dt>
-          <dd className="mt-1 text-sm">{formatBytes(doc.size)}</dd>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400">{t.documentPage.size}</dt>
+          <dd className="mt-1 text-sm">{formatBytes(doc.size, t)}</dd>
         </div>
       </dl>
 
       <div>
         <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Nom simplifié
+          {t.documentPage.simpleName}
         </h2>
         <RenameDocumentForm documentId={doc.id} name={doc.name} />
       </div>
 
       <section className="space-y-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
         <h2 className="text-lg font-semibold">
-          Actions liées{" "}
+          {t.documentPage.linkedTasks}{" "}
           <span className="text-sm font-normal text-zinc-400">({doc.links.length})</span>
         </h2>
         {doc.links.length === 0 ? (
-          <p className="text-sm italic text-zinc-400">Ce document n'est lié à aucune tâche.</p>
+          <p className="text-sm italic text-zinc-400">{t.documentPage.noLinks}</p>
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {doc.links.map((l) => (

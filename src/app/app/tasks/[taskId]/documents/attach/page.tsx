@@ -4,11 +4,13 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { rootTaskId, attachDocument } from "@/lib/actions/documents";
 import { formatDate } from "@/lib/labels";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function AttachDocumentPage({
   params,
 }: PageProps<"/app/tasks/[taskId]/documents/attach">) {
   const user = await requireUser();
+  const t = await getDictionary();
   const { taskId } = await params;
 
   const task = await prisma.task.findUnique({
@@ -35,18 +37,18 @@ export default async function AttachDocumentPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Joindre un document</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t.documentPage.attachTitle}</h1>
         <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 hover:underline">
-          Annuler
+          {t.documentPage.cancel}
         </Link>
       </div>
       <p className="text-sm text-zinc-500">
-        Documents du projet à lier à « {task.title} ».
+        {t.documentPage.attachDesc.replace("{title}", task.title)}
       </p>
 
       {docs.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
-          Aucun document disponible dans ce projet. Téléversez-en un depuis la tâche.
+          {t.documentPage.attachEmpty}
         </p>
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
@@ -71,7 +73,7 @@ export default async function AttachDocumentPage({
                   type="submit"
                   className="shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
                 >
-                  Joindre
+                  {t.documentPage.attach}
                 </button>
               </form>
             </li>
