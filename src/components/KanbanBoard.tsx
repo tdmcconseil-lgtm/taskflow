@@ -5,7 +5,8 @@ import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { AssigneeInfo } from "@/lib/task-tree";
-import { STATUS_LABELS, STATUS_ORDER } from "@/lib/labels";
+import { STATUS_ORDER } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 import { setTaskStatus } from "@/lib/actions/tasks";
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 
@@ -28,6 +29,7 @@ const COLUMN_ACCENT: Record<TaskStatus, string> = {
 };
 
 export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
+  const t = useT();
   const [tasks, setTasks] = useState<BoardTask[]>(initial);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
@@ -102,7 +104,7 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
           >
             <div className="mb-3 flex items-center gap-2 px-1">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-                {STATUS_LABELS[status]}
+                {t.status[status]}
               </h3>
               <span className="rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800">
                 {columnTasks.length}
@@ -143,7 +145,7 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                     <PriorityBadge priority={task.priority} />
                     {task.subtaskCount > 0 && (
-                      <span title="Sous-tâches">↳ {task.subtaskCount}</span>
+                      <span title={t.taskTabs.subtasks}>↳ {task.subtaskCount}</span>
                     )}
                     {task.assignee && (
                       <span className="inline-flex items-center gap-1">
@@ -168,7 +170,7 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
 
               {columnTasks.length === 0 && (
                 <p className="rounded-lg border border-dashed border-zinc-300 p-3 text-center text-xs italic text-zinc-400 dark:border-zinc-700">
-                  Déposez une tâche ici
+                  {t.task.dropHere}
                 </p>
               )}
             </div>

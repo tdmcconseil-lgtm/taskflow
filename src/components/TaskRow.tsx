@@ -1,14 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
 import { TaskControls } from "@/components/TaskControls";
 import { UserAvatar } from "@/components/UserAvatar";
-import { formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
+import { formatDate, isOverdue } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 import type { TaskNode } from "@/lib/task-tree";
 
 // Une ligne de tâche. On n'affiche que les tâches de même niveau : les
 // sous-tâches ne sont pas dépliées ici (on indique seulement leur nombre),
 // elles s'affichent sur la page de détail de la tâche.
 export function TaskRow({ node, followed = false }: { node: TaskNode; followed?: boolean }) {
+  const t = useT();
+  const prefix = node.parentId === null ? t.task.prefixProject : t.task.prefixTask;
   return (
     <li className="bg-white dark:bg-zinc-900">
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
@@ -20,10 +25,10 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
                 node.status === "DONE" ? "text-zinc-400 line-through" : ""
               }`}
             >
-              {prefixedTitle(node.title, node.parentId === null)}
+              {prefix} : {node.title}
             </Link>
             {followed && (
-              <span className="ml-1" title="Vous êtes abonné" aria-label="Abonné">
+              <span className="ml-1" title={t.task.subscribed} aria-label={t.task.subscribed}>
                 👁
               </span>
             )}
@@ -38,7 +43,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
                 {node.assignee.name}
               </span>
             ) : (
-              <span>Non assignée</span>
+              <span>{t.task.unassigned}</span>
             )}
             {node.dueDate && (
               <span
@@ -53,7 +58,8 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
             )}
             {node.children.length > 0 && (
               <span className="text-zinc-400">
-                {node.children.length} sous-tâche{node.children.length > 1 ? "s" : ""}
+                {node.children.length}{" "}
+                {node.children.length > 1 ? t.task.subtasksWord : t.task.subtaskWord}
               </span>
             )}
           </div>
@@ -62,7 +68,7 @@ export function TaskRow({ node, followed = false }: { node: TaskNode; followed?:
           <PriorityBadge priority={node.priority} />
           <Link
             href={`/app/tasks/new?parent=${node.id}`}
-            title="Ajouter une sous-tâche"
+            title={t.task.addSubtask}
             className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
           >
             +

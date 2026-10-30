@@ -6,7 +6,7 @@ import { PriorityBadge } from "@/components/badges";
 import { UserAvatar } from "@/components/UserAvatar";
 import { TaskControls } from "@/components/TaskControls";
 import { reorderTasks } from "@/lib/actions/tasks";
-import { prefixedTitle } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 import type { AssigneeInfo } from "@/lib/task-tree";
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 
@@ -31,6 +31,7 @@ export function ReorderableSubtasks({
   parentId: string;
   items: SubtaskItem[];
 }) {
+  const dict = useT();
   const [order, setOrder] = useState<SubtaskItem[]>(items);
   const [dragId, setDragId] = useState<string | null>(null);
   const orderRef = useRef<string[]>(items.map((i) => i.id));
@@ -82,7 +83,7 @@ export function ReorderableSubtasks({
               draggable
               onDragStart={() => setDragId(t.id)}
               onDragEnd={onDrop}
-              title="Glisser pour réordonner"
+              title={dict.task.dragToReorder}
               className="shrink-0 cursor-grab select-none px-1 text-zinc-300 active:cursor-grabbing dark:text-zinc-600"
             >
               ⠿
@@ -95,10 +96,10 @@ export function ReorderableSubtasks({
                   draggable={false}
                   className={`hover:underline ${done ? "text-zinc-400 dark:text-zinc-500" : ""}`}
                 >
-                  {prefixedTitle(t.title, false)}
+                  {dict.task.prefixTask} : {t.title}
                 </Link>
                 {t.followed && (
-                  <span className="ml-1" title="Vous êtes abonné" aria-label="Abonné">
+                  <span className="ml-1" title={dict.task.subscribed} aria-label={dict.task.subscribed}>
                     👁
                   </span>
                 )}
@@ -123,7 +124,7 @@ export function ReorderableSubtasks({
                     {t.assignee.name}
                   </span>
                 ) : (
-                  <span>Non assignée</span>
+                  <span>{dict.task.unassigned}</span>
                 )}
                 {t.due && (
                   <span className={t.overdue ? "font-medium text-red-600 dark:text-red-400" : ""}>
@@ -131,11 +132,12 @@ export function ReorderableSubtasks({
                   </span>
                 )}
                 {t.attachmentCount > 0 && (
-                  <span title="Pièces jointes">📎 {t.attachmentCount}</span>
+                  <span title={dict.task.attachments}>📎 {t.attachmentCount}</span>
                 )}
                 {t.childCount > 0 && (
                   <span>
-                    {t.childCount} sous-tâche{t.childCount > 1 ? "s" : ""}
+                    {t.childCount}{" "}
+                    {t.childCount > 1 ? dict.task.subtasksWord : dict.task.subtaskWord}
                   </span>
                 )}
               </div>
@@ -146,7 +148,7 @@ export function ReorderableSubtasks({
               <Link
                 href={`/app/tasks/new?parent=${t.id}`}
                 draggable={false}
-                title="Ajouter une sous-tâche"
+                title={dict.task.addSubtask}
                 className="rounded-md px-2 py-1 text-sm text-zinc-400 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
               >
                 +

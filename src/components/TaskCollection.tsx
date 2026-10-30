@@ -1,10 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { KanbanBoard, type BoardTask } from "@/components/KanbanBoard";
 import { TaskRow } from "@/components/TaskRow";
 import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
 import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
-import { STATUS_LABELS, STATUS_ORDER, formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
+import { STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
+import { useT } from "@/lib/i18n/context";
 
 // Présentation d'une collection de tâches (les « projets » d'un espace, ou les
 // sous-tâches d'une tâche) avec bascule Liste / Tableau — comme l'ancienne page
@@ -30,9 +33,10 @@ export function TaskCollection({
   // Identifiants des tâches auxquelles l'utilisateur est abonné (œil 👁).
   followedIds?: Set<string>;
 }) {
+  const t = useT();
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
-    title: prefixedTitle(n.title, n.parentId === null),
+    title: `${n.parentId === null ? t.task.prefixProject : t.task.prefixTask} : ${n.title}`,
     description: n.description,
     priority: n.priority,
     status: n.status,
@@ -58,10 +62,10 @@ export function TaskCollection({
         >
           <input type="hidden" name="back" value={toggleBase} />
           <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
-            Tableau
+            {t.task.viewBoard}
           </button>
           <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
-            Liste
+            {t.task.viewList}
           </button>
         </form>
         {newTaskHref && (
@@ -106,13 +110,13 @@ export function TaskCollection({
             return (
               <section key={status} className="space-y-2">
                 <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-                  {STATUS_LABELS[status]}
+                  {t.status[status]}
                   <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-normal text-zinc-500 dark:bg-zinc-800">
                     {rootsOfStatus.length}
                   </span>
                 </h3>
                 {rootsOfStatus.length === 0 ? (
-                  <p className="px-1 text-xs italic text-zinc-400">Aucune tâche</p>
+                  <p className="px-1 text-xs italic text-zinc-400">{t.task.noTasks}</p>
                 ) : (
                   <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
                     {rootsOfStatus.map((node) => (
