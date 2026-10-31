@@ -3,7 +3,7 @@ import type { Dictionary } from "./fr";
 // Dictionnaire ANGLAIS. Doit couvrir toutes les clés de `fr` (vérifié par le type).
 const en: Dictionary = {
   common: {
-    appName: "Taskflow",
+    appName: "getRIDA",
     language: "Language",
     yes: "Yes",
     no: "No",
@@ -382,7 +382,7 @@ const en: Dictionary = {
     goToLogin: "Go to login",
     invitesYou: "invites you to join the workspace",
     createToAccept: "Create your account to accept.",
-    alreadyAccount: "You already have a Taskflow account — join the workspace, then sign in.",
+    alreadyAccount: "You already have a getRIDA account — join the workspace, then sign in.",
     join: "Join workspace",
   },
   confirmEmail: {
@@ -406,12 +406,12 @@ const en: Dictionary = {
     cancel: "Cancel",
   },
   email: {
-    changeSubject: "Confirm your new Taskflow email address",
+    changeSubject: "Confirm your new getRIDA email address",
     changeBody:
-      "Hello {name},\n\nA request to change your email address to “{newEmail}” was made on your Taskflow account. To confirm it, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf you did not make this request, ignore this email: your current address stays unchanged.\n\n— The Taskflow team",
-    inviteSubject: "{inviter} invites you to join “{workspace}” on Taskflow",
+      "Hello {name},\n\nA request to change your email address to “{newEmail}” was made on your getRIDA account. To confirm it, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf you did not make this request, ignore this email: your current address stays unchanged.\n\n— The getRIDA team",
+    inviteSubject: "{inviter} invites you to join “{workspace}” on getRIDA",
     inviteBody:
-      "Hello,\n\n{inviter} invites you to collaborate in the workspace “{workspace}” on Taskflow. To create your account and join, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf this does not concern you, simply ignore this email.\n\n— The Taskflow team",
+      "Hello,\n\n{inviter} invites you to collaborate in the workspace “{workspace}” on getRIDA. To create your account and join, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf this does not concern you, simply ignore this email.\n\n— The getRIDA team",
   },
   theme: {
     darkMode: "Dark mode",

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Taskflow",
+  title: "getRIDA",
   description: "Gestion de projets et de tâches en équipe.",
 };
 

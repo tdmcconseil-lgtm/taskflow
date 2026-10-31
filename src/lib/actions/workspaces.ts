@@ -182,7 +182,7 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   if (!workspace) return { error: t.errors.workspaceNotFound };
 
   // On s'assure seulement que la personne n'est pas déjà membre. Dans tous les
-  // autres cas — y compris si elle a déjà un compte Taskflow — on envoie une
+  // autres cas — y compris si elle a déjà un compte getRIDA — on envoie une
   // invitation par email : son appartenance reste « en attente » tant qu'elle
   // n'a pas validé l'invitation (elle n'est donc pas ajoutée silencieusement).
   const existingUser = await prisma.user.findUnique({ where: { email } });

@@ -8,7 +8,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Mon profil — Taskflow" };
+export const metadata: Metadata = { title: "Mon profil — getRIDA" };
 
 export default async function ProfilePage({ searchParams }: PageProps<"/app/profile">) {
   const sessionUser = await requireUser();

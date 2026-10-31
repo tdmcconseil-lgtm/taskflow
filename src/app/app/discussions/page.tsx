@@ -4,7 +4,7 @@ import { getDiscussionRows } from "@/lib/discussions";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { DiscussionList } from "@/components/DiscussionList";
 
-export const metadata: Metadata = { title: "Discussions — Taskflow" };
+export const metadata: Metadata = { title: "Discussions — getRIDA" };
 
 export default async function DiscussionsPage() {
   const user = await requireUser();

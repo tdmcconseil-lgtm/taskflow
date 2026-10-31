@@ -101,7 +101,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const nav = (
     <>
       <Link href="/app" className="mb-6 block text-lg font-semibold tracking-tight">
-        Taskflow
+        {t.common.appName}
       </Link>
 
       <nav className="flex-1 space-y-6 overflow-y-auto">
@@ -136,7 +136,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             {/* Menu en tiroir (mobile) : reprend la même navigation */}
             <MobileDrawer>{nav}</MobileDrawer>
             <Link href="/app" className="text-sm font-semibold md:hidden">
-              Taskflow
+              {t.common.appName}
             </Link>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">

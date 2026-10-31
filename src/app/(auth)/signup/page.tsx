@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/AuthForm";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { getDictionary } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Inscription — Taskflow" };
+export const metadata: Metadata = { title: "Inscription — getRIDA" };
 
 export default async function SignupPage() {
   const t = await getDictionary();

@@ -3,7 +3,7 @@ import type { Dictionary } from "./fr";
 // Dictionnaire ESPAGNOL. Doit couvrir toutes les clés de `fr` (vérifié par le type).
 const es: Dictionary = {
   common: {
-    appName: "Taskflow",
+    appName: "getRIDA",
     language: "Idioma",
     yes: "Sí",
     no: "No",
@@ -382,7 +382,7 @@ const es: Dictionary = {
     goToLogin: "Ir al inicio de sesión",
     invitesYou: "te invita a unirte al espacio",
     createToAccept: "Crea tu cuenta para aceptar.",
-    alreadyAccount: "Ya tienes una cuenta de Taskflow: únete al espacio y luego inicia sesión.",
+    alreadyAccount: "Ya tienes una cuenta de getRIDA: únete al espacio y luego inicia sesión.",
     join: "Unirse al espacio",
   },
   confirmEmail: {
@@ -406,12 +406,12 @@ const es: Dictionary = {
     cancel: "Cancelar",
   },
   email: {
-    changeSubject: "Confirma tu nueva dirección de correo de Taskflow",
+    changeSubject: "Confirma tu nueva dirección de correo de getRIDA",
     changeBody:
-      "Hola {name},\n\nSe ha solicitado cambiar la dirección de correo a «{newEmail}» en tu cuenta de Taskflow. Para confirmarlo, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no has solicitado este cambio, ignora este correo: tu dirección actual no cambia.\n\n— El equipo de Taskflow",
-    inviteSubject: "{inviter} te invita a unirte a «{workspace}» en Taskflow",
+      "Hola {name},\n\nSe ha solicitado cambiar la dirección de correo a «{newEmail}» en tu cuenta de getRIDA. Para confirmarlo, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no has solicitado este cambio, ignora este correo: tu dirección actual no cambia.\n\n— El equipo de getRIDA",
+    inviteSubject: "{inviter} te invita a unirte a «{workspace}» en getRIDA",
     inviteBody:
-      "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en Taskflow. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de Taskflow",
+      "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en getRIDA. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de getRIDA",
   },
   theme: {
     darkMode: "Modo oscuro",

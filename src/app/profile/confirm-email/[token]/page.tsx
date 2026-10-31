@@ -5,7 +5,7 @@ import { hashToken } from "@/lib/auth/tokens";
 import { ConfirmEmailForm } from "@/components/ConfirmEmailForm";
 import { getDictionary } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Changement d'email — Taskflow" };
+export const metadata: Metadata = { title: "Changement d'email — getRIDA" };
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -50,7 +50,7 @@ export default async function ConfirmEmailPage({
   return (
     <Card>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Taskflow</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t.common.appName}</h1>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           {t.confirmEmail.prompt}{" "}
           <span className="font-medium text-zinc-700 dark:text-zinc-300">{request.newEmail}</span>.

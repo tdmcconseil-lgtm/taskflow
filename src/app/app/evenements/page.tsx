@@ -6,7 +6,7 @@ import { MarkEventsRead } from "@/components/MarkEventsRead";
 import { EventFilter } from "@/components/EventFilter";
 import { EventList } from "@/components/EventList";
 
-export const metadata: Metadata = { title: "Événements — Taskflow" };
+export const metadata: Metadata = { title: "Événements — getRIDA" };
 
 export default async function EvenementsPage({
   searchParams,
