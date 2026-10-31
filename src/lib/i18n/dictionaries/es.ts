@@ -170,6 +170,13 @@ const es: Dictionary = {
     archive: "Archivar",
     administration: "Administración",
     administrationDesc: "Gestiona este espacio de trabajo.",
+    adminEnoughAdmins:
+      "Mantén varios administradores en este espacio para que siga siendo gestionable aunque uno deje de estar disponible.",
+    tabIdentity: "Identidad",
+    tabUsage: "Consumo",
+    tabBilling: "Facturación",
+    adminMode: "Modo administración",
+    comingSoon: "Próximamente.",
     archiveSectionTitle: "Archivado",
     archiveSectionDesc:
       "Archivar oculta el espacio sin borrar sus datos. Una vez archivado, se puede restaurar o eliminar definitivamente.",

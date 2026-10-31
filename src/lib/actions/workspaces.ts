@@ -206,7 +206,7 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
       data: { userId: existingUser.id, workspaceId, role },
     });
     revalidatePath(`/app/workspaces/${workspaceId}`);
-    redirect(`/app/workspaces/${workspaceId}?tab=membres`);
+    redirect(`/app/workspaces/${workspaceId}/administration`);
   }
 
   // Sinon, on crée (ou on renouvelle) une invitation et on envoie l'email.
@@ -240,7 +240,7 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   await sendMail({ to: email, subject: mail.subject, body: mail.body });
 
   revalidatePath(`/app/workspaces/${workspaceId}`);
-  redirect(`/app/workspaces/${workspaceId}?sent=${encodeURIComponent(email)}`);
+  redirect(`/app/workspaces/${workspaceId}/administration?sent=${encodeURIComponent(email)}`);
 }
 
 // Renvoie l'email d'invitation (admin uniquement). Un nouveau jeton et une
@@ -292,7 +292,7 @@ export async function resendInvitation(formData: FormData): Promise<void> {
 
   revalidatePath(`/app/workspaces/${invitation.workspaceId}`);
   redirect(
-    `/app/workspaces/${invitation.workspaceId}?sent=${encodeURIComponent(invitation.email)}`,
+    `/app/workspaces/${invitation.workspaceId}/administration?sent=${encodeURIComponent(invitation.email)}`,
   );
 }
 

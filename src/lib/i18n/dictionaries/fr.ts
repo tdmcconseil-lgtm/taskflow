@@ -169,6 +169,13 @@ const fr = {
     archive: "Archiver",
     administration: "Administration",
     administrationDesc: "Gérer cet espace de travail.",
+    adminEnoughAdmins:
+      "Pensez à garder plusieurs administrateurs sur cet espace : il reste ainsi gérable même si l'un d'eux devient indisponible.",
+    tabIdentity: "Identité",
+    tabUsage: "Consommation",
+    tabBilling: "Facturation",
+    adminMode: "Mode administration",
+    comingSoon: "Bientôt disponible.",
     archiveSectionTitle: "Archivage",
     archiveSectionDesc:
       "Archiver masque l'espace sans supprimer ses données. Une fois archivé, il peut être restauré ou supprimé définitivement.",

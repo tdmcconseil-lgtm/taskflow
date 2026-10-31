@@ -170,6 +170,13 @@ const en: Dictionary = {
     archive: "Archive",
     administration: "Administration",
     administrationDesc: "Manage this workspace.",
+    adminEnoughAdmins:
+      "Keep several administrators on this workspace so it stays manageable even if one becomes unavailable.",
+    tabIdentity: "Identity",
+    tabUsage: "Usage",
+    tabBilling: "Billing",
+    adminMode: "Administration mode",
+    comingSoon: "Coming soon.",
     archiveSectionTitle: "Archiving",
     archiveSectionDesc:
       "Archiving hides the workspace without deleting its data. Once archived, it can be restored or permanently deleted.",

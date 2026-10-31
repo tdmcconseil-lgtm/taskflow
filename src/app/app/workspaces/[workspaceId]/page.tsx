@@ -5,10 +5,8 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { getTaskView } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
-import { cancelInvitation, resendInvitation } from "@/lib/actions/workspaces";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { UserAvatar } from "@/components/UserAvatar";
-import { MemberControls } from "@/components/MemberControls";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
 import { TaskCollection } from "@/components/TaskCollection";
@@ -18,7 +16,6 @@ import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
 import { EventFilter } from "@/components/EventFilter";
 import { DiscussionList } from "@/components/DiscussionList";
-import { formatDate } from "@/lib/labels";
 
 export default async function WorkspacePage({
   params,
@@ -31,9 +28,7 @@ export default async function WorkspacePage({
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
-  // Confirmation d'envoi d'invitation + ouverture de l'onglet Membres.
-  const sentTo = typeof sp.sent === "string" ? sp.sent : null;
-  const initialTab = sentTo || sp.tab === "membres" ? "membres" : "projets";
+  const initialTab = sp.tab === "membres" ? "membres" : "projets";
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -92,7 +87,6 @@ export default async function WorkspacePage({
   if (!workspace) notFound();
 
   const { roots } = buildTaskIndex(allTasks as RawTask[]);
-  const isOwner = membership.role === "OWNER";
   const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
   const isArchived = workspace.archivedAt !== null;
 
@@ -134,25 +128,14 @@ export default async function WorkspacePage({
     />
   );
 
+  // Onglet « Membres » de la page de l'espace : lecture seule. La gestion
+  // (invitations, rôles, désactivation) se fait dans la page Administration.
   const membresPanel = (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.members.list}</p>
-        {isAdmin && (
-          <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
-            {t.members.invite}
-          </ButtonLink>
-        )}
-      </div>
-      {sentTo && (
-        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
-          {t.members.invitationSent} {sentTo}.
-        </p>
-      )}
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.members.list}</p>
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
         {workspace.members.map((m) => {
           const deactivated = m.deactivatedAt !== null;
-          const canManage = isAdmin && m.role !== "OWNER" && m.user.id !== user.id;
           return (
             <li
               key={m.id}
@@ -177,76 +160,14 @@ export default async function WorkspacePage({
                   <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{m.user.email}</p>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-                  {roleLabel(m.role)}
-                  {m.role === "OWNER" && ` ${t.members.creator}`}
-                </span>
-                {canManage && (
-                  <MemberControls
-                    workspaceId={workspace.id}
-                    memberUserId={m.user.id}
-                    role={m.role === "ADMIN" ? "ADMIN" : "MEMBER"}
-                    deactivated={deactivated}
-                  />
-                )}
-              </div>
+              <span className="shrink-0 text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                {roleLabel(m.role)}
+                {m.role === "OWNER" && ` ${t.members.creator}`}
+              </span>
             </li>
           );
         })}
       </ul>
-
-      {workspace.invitations.length > 0 && (
-        <section className="space-y-2">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            {t.members.pendingInvitations}
-          </h3>
-          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
-            {workspace.invitations.map((inv) => {
-              const expired = inv.expiresAt.getTime() < Date.now();
-              return (
-                <li
-                  key={inv.id}
-                  className="flex items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{inv.email}</p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {expired ? (
-                        <span className="text-red-600 dark:text-red-400">{t.members.expired}</span>
-                      ) : (
-                        <>
-                          {t.members.pendingExpires} {formatDate(inv.expiresAt, locale)}
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <form action={resendInvitation}>
-                      <input type="hidden" name="invitationId" value={inv.id} />
-                      <button
-                        type="submit"
-                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40"
-                      >
-                        {t.members.resend}
-                      </button>
-                    </form>
-                    <form action={cancelInvitation}>
-                      <input type="hidden" name="invitationId" value={inv.id} />
-                      <button
-                        type="submit"
-                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 dark:text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
-                      >
-                        {t.members.cancel}
-                      </button>
-                    </form>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
     </div>
   );
 
@@ -321,7 +242,7 @@ export default async function WorkspacePage({
             {workspace.name}
           </h1>
         </div>
-        {isOwner && (
+        {isAdmin && (
           <ButtonLink href={`/app/workspaces/${workspace.id}/administration`} variant="secondary">
             {t.workspace.administration}
           </ButtonLink>

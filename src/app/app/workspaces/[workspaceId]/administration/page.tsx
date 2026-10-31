@@ -2,76 +2,259 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
-import { getDictionary } from "@/lib/i18n/server";
-import { Button } from "@/components/Button";
-import { archiveWorkspace, unarchiveWorkspace } from "@/lib/actions/workspaces";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { Button, ButtonLink } from "@/components/Button";
+import { UserAvatar } from "@/components/UserAvatar";
+import { MemberControls } from "@/components/MemberControls";
+import { AdminTabs } from "@/components/AdminTabs";
+import {
+  archiveWorkspace,
+  unarchiveWorkspace,
+  resendInvitation,
+  cancelInvitation,
+} from "@/lib/actions/workspaces";
+import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
-// Page d'administration d'un espace. Pour l'instant : archivage (archiver /
-// désarchiver / supprimer définitivement). D'autres réglages viendront.
+// Page d'administration d'un espace : accessible aux administrateurs, signalée
+// par un bandeau rouge. Onglets : Membres (gestion complète), Identité,
+// Consommation, Facturation (à venir). Zone « danger » (archivage) en bas,
+// réservée au propriétaire.
 export default async function WorkspaceAdminPage({
   params,
+  searchParams,
 }: PageProps<"/app/workspaces/[workspaceId]/administration">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const locale = await getLocale();
   const { workspaceId } = await params;
+  const sp = await searchParams;
+  const sentTo = typeof sp.sent === "string" ? sp.sent : null;
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
-  // Administration de l'espace réservée au propriétaire.
-  if (membership.role !== "OWNER") notFound();
+  // Accès réservé aux administrateurs ; l'archivage reste réservé au propriétaire.
+  const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
+  if (!isAdmin) notFound();
+  const isOwner = membership.role === "OWNER";
 
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
-    select: { id: true, name: true, archivedAt: true },
+    select: {
+      id: true,
+      name: true,
+      archivedAt: true,
+      members: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          role: true,
+          deactivatedAt: true,
+          user: { select: { ...ASSIGNEE_SELECT, email: true } },
+        },
+      },
+      invitations: {
+        where: { acceptedAt: null },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, email: true, expiresAt: true },
+      },
+    },
   });
   if (!workspace) notFound();
 
   const isArchived = workspace.archivedAt !== null;
+  const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
+    r === "MEMBER" ? t.members.roleUser : t.members.roleAdmin;
+
+  const membresPanel = (
+    <div className="space-y-6">
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
+        {t.workspace.adminEnoughAdmins}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.members.list}</p>
+        <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
+          {t.members.invite}
+        </ButtonLink>
+      </div>
+
+      {sentTo && (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+          {t.members.invitationSent} {sentTo}.
+        </p>
+      )}
+
+      <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        {workspace.members.map((m) => {
+          const deactivated = m.deactivatedAt !== null;
+          const canManage = m.role !== "OWNER" && m.user.id !== user.id;
+          return (
+            <li
+              key={m.id}
+              className={`flex flex-wrap items-center justify-between gap-3 p-4 ${
+                deactivated ? "bg-zinc-50 dark:bg-zinc-800/40" : "bg-white dark:bg-zinc-900"
+              }`}
+            >
+              <div className={`flex min-w-0 items-center gap-3 ${deactivated ? "opacity-60" : ""}`}>
+                <UserAvatar user={toAssigneeInfo(m.user)!} className="h-9 w-9" />
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {m.user.name}
+                    {m.user.id === user.id && (
+                      <span className="ml-2 text-xs text-zinc-400 dark:text-zinc-500">{t.members.you}</span>
+                    )}
+                    {deactivated && (
+                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700">
+                        {t.members.deactivated}
+                      </span>
+                    )}
+                  </p>
+                  <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{m.user.email}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                  {roleLabel(m.role)}
+                  {m.role === "OWNER" && ` ${t.members.creator}`}
+                </span>
+                {canManage && (
+                  <MemberControls
+                    workspaceId={workspace.id}
+                    memberUserId={m.user.id}
+                    role={m.role === "ADMIN" ? "ADMIN" : "MEMBER"}
+                    deactivated={deactivated}
+                  />
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {workspace.invitations.length > 0 && (
+        <section className="space-y-2">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            {t.members.pendingInvitations}
+          </h3>
+          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
+            {workspace.invitations.map((inv) => {
+              const expired = inv.expiresAt.getTime() < Date.now();
+              return (
+                <li
+                  key={inv.id}
+                  className="flex items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{inv.email}</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {expired ? (
+                        <span className="text-red-600 dark:text-red-400">{t.members.expired}</span>
+                      ) : (
+                        <>
+                          {t.members.pendingExpires} {formatDate(inv.expiresAt, locale)}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <form action={resendInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:border-zinc-700 dark:hover:bg-indigo-950/40"
+                      >
+                        {t.members.resend}
+                      </button>
+                    </form>
+                    <form action={cancelInvitation}>
+                      <input type="hidden" name="invitationId" value={inv.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-500 dark:text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:border-zinc-700 dark:hover:bg-red-950/50"
+                      >
+                        {t.members.cancel}
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+
+  const comingSoon = (
+    <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
+      {t.workspace.comingSoon}
+    </p>
+  );
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/30">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight text-red-900 dark:text-red-200">
+            <span className="text-red-400 dark:text-red-500">{t.workspace.prefix} </span>
+            {workspace.name}
+          </h1>
+          <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-red-700 dark:bg-red-900/60 dark:text-red-200">
+            {t.workspace.adminMode}
+          </span>
+        </div>
         <Link
           href={`/app/workspaces/${workspace.id}`}
-          className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+          className="mt-1 inline-block text-sm text-red-700 hover:underline dark:text-red-300"
         >
           ← {workspace.name}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.workspace.administration}</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.administrationDesc}</p>
       </div>
 
-      <section className={`${cardClass} space-y-4`}>
-        <div>
-          <h2 className="text-base font-semibold">{t.workspace.archiveSectionTitle}</h2>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.archiveSectionDesc}</p>
-        </div>
+      <AdminTabs
+        memberCount={workspace.members.length}
+        membres={membresPanel}
+        identite={comingSoon}
+        consommation={comingSoon}
+        facturation={comingSoon}
+      />
 
-        {isArchived ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <form action={unarchiveWorkspace}>
+      {isOwner && (
+        <section className={`${cardClass} space-y-4 border-red-200 dark:border-red-900`}>
+          <div>
+            <h2 className="text-base font-semibold text-red-800 dark:text-red-300">
+              {t.workspace.archiveSectionTitle}
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.archiveSectionDesc}</p>
+          </div>
+
+          {isArchived ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <form action={unarchiveWorkspace}>
+                <input type="hidden" name="workspaceId" value={workspace.id} />
+                <Button type="submit" variant="secondary">
+                  {t.workspace.unarchive}
+                </Button>
+              </form>
+              <Link
+                href={`/app/workspaces/${workspace.id}/delete`}
+                className="rounded-lg border border-red-400 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
+              >
+                {t.workspace.deletePermanently}
+              </Link>
+            </div>
+          ) : (
+            <form action={archiveWorkspace}>
               <input type="hidden" name="workspaceId" value={workspace.id} />
               <Button type="submit" variant="secondary">
-                {t.workspace.unarchive}
+                {t.workspace.archive}
               </Button>
             </form>
-            <Link
-              href={`/app/workspaces/${workspace.id}/delete`}
-              className="rounded-lg border border-red-400 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
-            >
-              {t.workspace.deletePermanently}
-            </Link>
-          </div>
-        ) : (
-          <form action={archiveWorkspace}>
-            <input type="hidden" name="workspaceId" value={workspace.id} />
-            <Button type="submit" variant="secondary">
-              {t.workspace.archive}
-            </Button>
-          </form>
-        )}
-      </section>
+          )}
+        </section>
+      )}
     </div>
   );
 }
