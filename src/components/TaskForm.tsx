@@ -25,6 +25,7 @@ export function TaskForm({
   submitLabel,
   cancelHref,
   showAccess = false,
+  autoFocusTitle = false,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   members: Member[];
@@ -34,6 +35,8 @@ export function TaskForm({
   cancelHref?: string;
   // Affiche la section « Accès au projet » (uniquement à la création d'un projet).
   showAccess?: boolean;
+  // Place le curseur dans le champ titre au montage (création d'une tâche).
+  autoFocusTitle?: boolean;
 }) {
   const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(action, undefined);
@@ -54,6 +57,7 @@ export function TaskForm({
           defaultValue={defaults.title}
           className={inputClass}
           placeholder={t.task.titlePlaceholder}
+          autoFocus={autoFocusTitle}
         />
       </div>
 

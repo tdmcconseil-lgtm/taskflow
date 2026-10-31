@@ -101,6 +101,7 @@ export default async function NewTaskPage({
           submitLabel={isSubtask ? t.task.createSubtask : t.task.createProject}
           cancelHref={backHref}
           showAccess={!isSubtask}
+          autoFocusTitle
         />
       </div>
     </div>
