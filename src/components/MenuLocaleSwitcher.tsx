@@ -36,7 +36,11 @@ export function MenuLocaleSwitcher({ locale, label }: { locale: Locale; label: s
     setOpen(false);
     if (next === locale) return;
     setPending(true);
-    setLocale(next).then(() => router.refresh());
+    // router.refresh() ne remonte pas ce composant client : il faut réarmer le
+    // bouton nous-mêmes, sinon il reste désactivé jusqu'au rechargement complet.
+    setLocale(next)
+      .then(() => router.refresh())
+      .finally(() => setPending(false));
   }
 
   return (

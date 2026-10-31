@@ -6,6 +6,7 @@ import { logout } from "@/lib/actions/auth";
 import { countNewEventGroups } from "@/lib/events";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
+import { NavLinks } from "@/components/NavLinks";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { MenuLocaleSwitcher } from "@/components/MenuLocaleSwitcher";
@@ -93,15 +94,9 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
       activeWorkspaceId = t?.workspaceId ?? null;
     }
   }
-  // Hors d'un espace/tâche (Accueil, Discussions, Événements…) ou après un
-  // rechargement : on conserve le dernier espace visité (cookie) afin de ne pas
-  // vider la liste des projets dans le menu.
-  if (!activeWorkspaceId) {
-    const remembered = (await cookies()).get("tf_ws")?.value;
-    if (remembered && workspaces.some((w) => w.id === remembered)) {
-      activeWorkspaceId = remembered;
-    }
-  }
+  // Hors d'un espace/tâche (Accueil, Discussions, Événements…), aucun espace
+  // n'est déplié : la liste des projets est repliée et l'item de menu courant
+  // est surligné à sa place.
 
   const nav = (
     <>
@@ -110,36 +105,11 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
       </Link>
 
       <nav className="flex-1 space-y-6 overflow-y-auto">
-        <div className="space-y-0.5">
-          <Link
-            href="/app"
-            className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          >
-            🏠 {t.nav.home}
-          </Link>
-          <Link
-            href="/app/discussions"
-            className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          >
-            <span>💬 {t.nav.discussions}</span>
-            {unreadCount > 0 && (
-              <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
-                {unreadCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/app/evenements"
-            className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          >
-            <span>🔔 {t.nav.events}</span>
-            {eventsCount > 0 && (
-              <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
-                {eventsCount > 99 ? "99+" : eventsCount}
-              </span>
-            )}
-          </Link>
-        </div>
+        <NavLinks
+          labels={{ home: t.nav.home, discussions: t.nav.discussions, events: t.nav.events }}
+          unreadCount={unreadCount}
+          eventsCount={eventsCount}
+        />
 
         <WorkspaceNav workspaces={workspaces} initialActiveId={activeWorkspaceId} />
       </nav>

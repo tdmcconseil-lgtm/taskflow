@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Ws = { id: string; name: string; tasks: { id: string; title: string }[] };
 
@@ -20,33 +20,22 @@ export function WorkspaceNav({
   const [active, setActive] = useState<string | null>(initialActiveId);
 
   // Espace actif = celui de la page visitée, résolu pendant le rendu (motif
-  // React d'ajustement d'état sur changement de props, sans effet). Les pages
-  // hors-espace (Accueil, Discussions…) et les sous-tâches non listées
-  // conservent l'espace courant, pour ne pas vider la liste des projets.
+  // React d'ajustement d'état sur changement de props, sans effet).
   let nextActive = active;
   const wsMatch = pathname.match(/^\/app\/workspaces\/([^/]+)/);
   if (wsMatch) {
     nextActive = wsMatch[1];
-  } else {
+  } else if (pathname.startsWith("/app/tasks/")) {
+    // Projet de 1er niveau connu → on bascule sur son espace ; sous-tâche non
+    // listée → on garde l'espace courant déplié.
     const taskMatch = pathname.match(/^\/app\/tasks\/([^/]+)/);
-    if (taskMatch) {
-      // Projet de 1er niveau connu → on bascule sur son espace.
-      const ws = workspaces.find((w) => w.tasks.some((t) => t.id === taskMatch[1]));
-      if (ws) nextActive = ws.id;
-    }
+    const ws = workspaces.find((w) => w.tasks.some((t) => t.id === taskMatch?.[1]));
+    if (ws) nextActive = ws.id;
+  } else {
+    // Accueil, Discussions, Événements… → aucun espace déplié.
+    nextActive = null;
   }
   if (nextActive !== active) setActive(nextActive);
-
-  // Mémorise le dernier espace actif (cookie), relu côté serveur pour garder ses
-  // projets affichés sur les pages hors-espace et après un rechargement.
-  useEffect(() => {
-    if (!active) return;
-    try {
-      document.cookie = `tf_ws=${active}; path=/; max-age=31536000; samesite=lax`;
-    } catch {
-      // Cookie indisponible : simple perte de la préférence, sans incidence.
-    }
-  }, [active]);
 
   return (
     <div>
