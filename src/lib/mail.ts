@@ -54,10 +54,16 @@ export async function sendMail(mail: Mail): Promise<void> {
 
   if (transport === "smtp") {
     const from = process.env.MAIL_FROM ?? "Taskflow <no-reply@taskflow.local>";
+    // Redirection de test (préprod) : si MAIL_REDIRECT_TO est défini, tous les
+    // mails partent vers cette adresse quel que soit le destinataire réel, qui
+    // est rappelé dans le sujet. Non défini en prod → aucun effet.
+    const redirectTo = process.env.MAIL_REDIRECT_TO?.trim();
+    const to = redirectTo || mail.to;
+    const subject = redirectTo ? `[→ ${mail.to}] ${mail.subject}` : mail.subject;
     await smtpTransport().sendMail({
       from,
-      to: mail.to,
-      subject: mail.subject,
+      to,
+      subject,
       text: mail.body,
     });
     return;
