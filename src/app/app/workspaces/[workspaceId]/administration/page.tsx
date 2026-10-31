@@ -257,16 +257,24 @@ export default async function WorkspaceAdminPage({
             <span className="text-red-400 dark:text-red-500">{t.workspace.prefix} </span>
             {workspace.name}
           </h1>
-          <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-red-700 dark:bg-red-900/60 dark:text-red-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 py-1 pl-3 pr-1.5 text-xs font-medium uppercase tracking-wide text-red-700 dark:bg-red-900/60 dark:text-red-200">
             {t.workspace.adminMode}
+            <Link
+              href={`/app/workspaces/${workspace.id}`}
+              title={t.workspace.exitAdmin}
+              aria-label={t.workspace.exitAdmin}
+              className="inline-flex h-5 w-5 items-center justify-center rounded-full text-red-700 transition hover:bg-red-200 dark:text-red-200 dark:hover:bg-red-800/60"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+                />
+              </svg>
+            </Link>
           </span>
         </div>
-        <Link
-          href={`/app/workspaces/${workspace.id}`}
-          className="mt-1 inline-block text-sm text-red-700 hover:underline dark:text-red-300"
-        >
-          ← {workspace.name}
-        </Link>
       </div>
 
       <AdminTabs

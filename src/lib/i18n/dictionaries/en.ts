@@ -178,6 +178,7 @@ const en: Dictionary = {
     tabUsage: "Usage",
     tabBilling: "Billing",
     adminMode: "Administration mode",
+    exitAdmin: "Exit administration mode",
     comingSoon: "Coming soon.",
     archiveSectionTitle: "Archiving",
     archiveSectionDesc:

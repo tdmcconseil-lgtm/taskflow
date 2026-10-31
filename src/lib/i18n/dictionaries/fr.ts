@@ -177,6 +177,7 @@ const fr = {
     tabUsage: "Consommation",
     tabBilling: "Facturation",
     adminMode: "Mode administration",
+    exitAdmin: "Quitter le mode administration",
     comingSoon: "Bientôt disponible.",
     archiveSectionTitle: "Archivage",
     archiveSectionDesc:
