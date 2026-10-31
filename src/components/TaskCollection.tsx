@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ButtonLink } from "@/components/Button";
 import { KanbanBoard, type BoardTask } from "@/components/KanbanBoard";
 import { TaskRow } from "@/components/TaskRow";
 import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
@@ -70,12 +70,9 @@ export function TaskCollection({
           </button>
         </form>
         {newTaskHref && (
-          <Link
-            href={newTaskHref}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={newTaskHref} variant="primary">
             {newTaskLabel}
-          </Link>
+          </ButtonLink>
         )}
       </div>
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button, ButtonLink } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
@@ -128,12 +129,9 @@ export default async function WorkspacePage({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.task.projectsList}</p>
         {!isArchived && (
-          <Link
-            href={`/app/tasks/new?workspace=${workspace.id}`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={`/app/tasks/new?workspace=${workspace.id}`} variant="primary">
             {t.task.newProject}
-          </Link>
+          </ButtonLink>
         )}
       </div>
       {visibleRoots.length === 0 ? (
@@ -155,12 +153,9 @@ export default async function WorkspacePage({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.members.list}</p>
         {isAdmin && (
-          <Link
-            href={`/app/workspaces/${workspace.id}/members/new`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
             {t.members.invite}
-          </Link>
+          </ButtonLink>
         )}
       </div>
       {sentTo && (
@@ -338,12 +333,9 @@ export default async function WorkspacePage({
         {isOwner && !isArchived && (
           <form action={archiveWorkspace}>
             <input type="hidden" name="workspaceId" value={workspace.id} />
-            <button
-              type="submit"
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-            >
+            <Button type="submit" variant="secondary">
               {t.workspace.archive}
-            </button>
+            </Button>
           </form>
         )}
       </div>

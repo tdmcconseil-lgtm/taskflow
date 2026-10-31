@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ButtonLink } from "@/components/Button";
 import { detachDocument } from "@/lib/actions/documents";
 import { useT } from "@/lib/i18n/context";
 
@@ -29,19 +30,13 @@ export function TaskDocuments({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{heading}</h2>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/app/tasks/${taskId}/documents/new`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={`/app/tasks/${taskId}/documents/new`} variant="primary">
             {t.documents.upload}
-          </Link>
+          </ButtonLink>
           {!isTopLevel && (
-            <Link
-              href={`/app/tasks/${taskId}/documents/attach`}
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-            >
+            <ButtonLink href={`/app/tasks/${taskId}/documents/attach`} variant="secondary">
               {t.documents.attachFromProject}
-            </Link>
+            </ButtonLink>
           )}
         </div>
       </div>

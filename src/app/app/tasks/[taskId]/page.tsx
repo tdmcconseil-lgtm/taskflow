@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ButtonLink } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { canAccessTask } from "@/lib/access";
@@ -341,12 +342,9 @@ export default async function TaskDetailPage({
             </button>
           </form>
           <StatusSelect taskId={task.id} status={task.status} />
-          <Link
-            href={`${detailHref}?edit=1`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={`${detailHref}?edit=1`} variant="primary">
             {t.task.edit}
-          </Link>
+          </ButtonLink>
         </div>
       </div>
 

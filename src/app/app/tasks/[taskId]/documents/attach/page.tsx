@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
@@ -70,12 +71,9 @@ export default async function AttachDocumentPage({
               <form action={attachDocument}>
                 <input type="hidden" name="taskId" value={task.id} />
                 <input type="hidden" name="documentId" value={d.id} />
-                <button
-                  type="submit"
-                  className="shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-                >
+                <Button type="submit" variant="primary" className="shrink-0">
                   {t.documentPage.attach}
-                </button>
+                </Button>
               </form>
             </li>
           ))}

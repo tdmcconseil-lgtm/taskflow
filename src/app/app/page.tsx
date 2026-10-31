@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ButtonLink } from "@/components/Button";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
@@ -97,12 +98,9 @@ export default async function DashboardPage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t.dashboard.myWorkspaces}</h2>
-          <Link
-            href="/app/workspaces/new"
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href="/app/workspaces/new" variant="primary">
             {t.dashboard.newWorkspace}
-          </Link>
+          </ButtonLink>
         </div>
         {workspaces.length === 0 ? (
           <p className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">

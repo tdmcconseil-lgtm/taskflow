@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ButtonLink } from "@/components/Button";
 import { setDecisionProject, deleteDecision } from "@/lib/actions/decisions";
 import { formatDate } from "@/lib/labels";
 import { useT, useLocale } from "@/lib/i18n/context";
@@ -82,12 +83,9 @@ export function TaskDecisions({
           <h2 className="text-lg font-semibold">
             {isTopLevel ? t.decisions.taskDecisionsTop : t.decisions.taskDecisions}
           </h2>
-          <Link
-            href={`/app/tasks/${taskId}/decisions/new`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <ButtonLink href={`/app/tasks/${taskId}/decisions/new`} variant="primary">
             {t.decisions.add}
-          </Link>
+          </ButtonLink>
         </div>
 
         {decisions.length === 0 ? (

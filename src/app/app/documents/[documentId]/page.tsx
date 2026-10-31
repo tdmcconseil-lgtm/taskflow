@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buttonClass } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
@@ -66,10 +67,7 @@ export default async function DocumentPage({
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">{doc.fileName}</p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href={`/api/documents/${doc.id}?dl=1`}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <a href={`/api/documents/${doc.id}?dl=1`} className={buttonClass("primary")}>
             {t.documentPage.download}
           </a>
           <DeleteDocumentButton documentId={doc.id} />

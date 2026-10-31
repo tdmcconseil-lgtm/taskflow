@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { deleteTask } from "@/lib/actions/tasks";
 import { useT } from "@/lib/i18n/context";
+import { buttonClass } from "@/components/Button";
 
 export function DeleteTaskButton({ taskId }: { taskId: string }) {
   const [state, action] = useActionState(deleteTask, undefined);
@@ -15,26 +16,15 @@ export function DeleteTaskButton({ taskId }: { taskId: string }) {
       {confirming ? (
         <span className="inline-flex items-center gap-2">
           <span className="text-sm text-zinc-500 dark:text-zinc-300">{t.task.confirmDelete}</span>
-          <button
-            type="submit"
-            className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50"
-          >
+          <button type="submit" className={buttonClass("danger")}>
             {t.common.yes}
           </button>
-          <button
-            type="button"
-            onClick={() => setConfirming(false)}
-            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          >
+          <button type="button" onClick={() => setConfirming(false)} className={buttonClass("secondary")}>
             {t.common.no}
           </button>
         </span>
       ) : (
-        <button
-          type="button"
-          onClick={() => setConfirming(true)}
-          className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50"
-        >
+        <button type="button" onClick={() => setConfirming(true)} className={buttonClass("danger")}>
           {t.task.delete}
         </button>
       )}
