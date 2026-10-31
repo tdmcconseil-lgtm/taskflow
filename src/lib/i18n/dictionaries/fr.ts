@@ -4,6 +4,8 @@ const fr = {
   common: {
     appName: "Taskflow",
     language: "Langue",
+    yes: "Oui",
+    no: "Non",
   },
   auth: {
     loginSubtitle: "Connectez-vous à votre espace",
@@ -82,6 +84,16 @@ const fr = {
     dragToReorder: "Glisser pour réordonner",
     attachments: "Pièces jointes",
     addSubtask: "Ajouter une sous-tâche",
+    save: "Enregistrer",
+    deleteHint: "Supprimer définitivement cette tâche.",
+    subscribeTitle: "S'abonner à cette tâche",
+    unsubscribeTitle: "Se désabonner",
+    noTasksInProject: "Aucune tâche dans ce projet. Créez la première.",
+    noSubtasks: "Aucune sous-tâche.",
+    chatEmpty: "Aucun message. Lancez la conversation.",
+    deleteTaskTitle: "Supprimer la tâche",
+    confirmDelete: "Supprimer ?",
+    delete: "Supprimer",
   },
   status: {
     TODO: "À faire",

@@ -5,6 +5,8 @@ const en: Dictionary = {
   common: {
     appName: "Taskflow",
     language: "Language",
+    yes: "Yes",
+    no: "No",
   },
   auth: {
     loginSubtitle: "Sign in to your workspace",
@@ -83,6 +85,16 @@ const en: Dictionary = {
     dragToReorder: "Drag to reorder",
     attachments: "Attachments",
     addSubtask: "Add a subtask",
+    save: "Save",
+    deleteHint: "Permanently delete this task.",
+    subscribeTitle: "Subscribe to this task",
+    unsubscribeTitle: "Unsubscribe",
+    noTasksInProject: "No task in this project. Create the first one.",
+    noSubtasks: "No subtask.",
+    chatEmpty: "No message. Start the conversation.",
+    deleteTaskTitle: "Delete task",
+    confirmDelete: "Delete?",
+    delete: "Delete",
   },
   status: {
     TODO: "To do",

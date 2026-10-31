@@ -5,9 +5,7 @@ import Link from "next/link";
 import { SubmitButton } from "@/components/SubmitButton";
 import { login, signup, type FormState } from "@/lib/actions/auth";
 import { useT } from "@/lib/i18n/context";
-
-const inputClass =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900";
+import { inputClass } from "@/components/ui";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const t = useT();

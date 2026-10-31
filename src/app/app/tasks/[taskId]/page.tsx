@@ -226,9 +226,9 @@ export default async function TaskDetailPage({
       <div className="mx-auto max-w-2xl space-y-6">
         {breadcrumb}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight">Modifier</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t.task.edit}</h1>
           <Link href={detailHref} className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
-            Annuler
+            {t.task.cancel}
           </Link>
         </div>
         <div className={cardClass}>
@@ -243,12 +243,12 @@ export default async function TaskDetailPage({
               priority: task.priority,
               dueDate: task.dueDate ? task.dueDate.toISOString().slice(0, 10) : undefined,
             }}
-            submitLabel="Enregistrer"
+            submitLabel={t.task.save}
           />
         </div>
 
         <div className="flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-          <span className="text-sm text-zinc-500 dark:text-zinc-300">Supprimer définitivement cette tâche.</span>
+          <span className="text-sm text-zinc-500 dark:text-zinc-300">{t.task.deleteHint}</span>
           <DeleteTaskButton taskId={task.id} />
         </div>
       </div>
@@ -329,7 +329,7 @@ export default async function TaskDetailPage({
             <input type="hidden" name="taskId" value={task.id} />
             <button
               type="submit"
-              title={isFollowing ? "Se désabonner" : "S'abonner à cette tâche"}
+              title={isFollowing ? t.task.unsubscribeTitle : t.task.subscribeTitle}
               className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 isFollowing
                   ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
@@ -409,14 +409,10 @@ export default async function TaskDetailPage({
             view={view}
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
-            newTaskLabel="Nouvelle sous-tâche"
+            newTaskLabel={t.task.newSubtask}
             reorderParentId={task.id}
             followedIds={followedChildIds}
-            emptyLabel={
-              isTopLevel
-                ? "Aucune tâche dans ce projet. Créez la première."
-                : "Aucune sous-tâche."
-            }
+            emptyLabel={isTopLevel ? t.task.noTasksInProject : t.task.noSubtasks}
           />
         }
         documents={
@@ -445,7 +441,7 @@ export default async function TaskDetailPage({
             />
             {task.comments.length === 0 ? (
               <p className="text-sm italic text-zinc-400 dark:text-zinc-300">
-                Aucun message. Lancez la conversation.
+                {t.task.chatEmpty}
               </p>
             ) : (
               <ul className="space-y-3">
