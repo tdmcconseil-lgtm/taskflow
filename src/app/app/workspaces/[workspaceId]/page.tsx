@@ -3,6 +3,7 @@ import { Button, ButtonLink } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { getTaskView } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
 import {
   archiveWorkspace,
@@ -15,7 +16,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
-import { TaskRow } from "@/components/TaskRow";
+import { TaskCollection } from "@/components/TaskCollection";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
@@ -30,6 +31,7 @@ export default async function WorkspacePage({
   const user = await requireUser();
   const t = await getDictionary();
   const locale = await getLocale();
+  const view = await getTaskView();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
@@ -125,27 +127,15 @@ export default async function WorkspacePage({
   const followedIds = new Set(followedTasks.map((f) => f.task.id));
 
   const projetsPanel = (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.task.projectsList}</p>
-        {!isArchived && (
-          <ButtonLink href={`/app/tasks/new?workspace=${workspace.id}`} variant="primary">
-            {t.task.newProject}
-          </ButtonLink>
-        )}
-      </div>
-      {visibleRoots.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
-          {t.task.noProjects}
-        </p>
-      ) : (
-        <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-          {visibleRoots.map((node) => (
-            <TaskRow key={node.id} node={node} followed={followedIds.has(node.id)} />
-          ))}
-        </ul>
-      )}
-    </div>
+    <TaskCollection
+      roots={visibleRoots}
+      view={view}
+      toggleBase={`/app/workspaces/${workspace.id}`}
+      newTaskHref={isArchived ? null : `/app/tasks/new?workspace=${workspace.id}`}
+      newTaskLabel={t.task.newProject}
+      followedIds={followedIds}
+      emptyLabel={t.task.noProjects}
+    />
   );
 
   const membresPanel = (
