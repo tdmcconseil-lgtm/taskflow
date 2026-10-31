@@ -9,6 +9,7 @@ import { MemberControls } from "@/components/MemberControls";
 import { AdminTabs } from "@/components/AdminTabs";
 import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
+import { PlanPanel } from "@/components/PlanPanel";
 import {
   archiveWorkspace,
   unarchiveWorkspace,
@@ -270,6 +271,7 @@ export default async function WorkspaceAdminPage({
 
       <AdminTabs
         memberCount={workspace.members.length}
+        formule={<PlanPanel workspaceId={workspace.id} plan={workspace.plan} t={t} />}
         membres={membresPanel}
         identite={
           <OrganizationProfileForm
@@ -277,14 +279,7 @@ export default async function WorkspaceAdminPage({
             profile={workspace.organizationProfile}
           />
         }
-        consommation={
-          <UsagePanel
-            workspaceId={workspace.id}
-            plan={workspace.plan}
-            metrics={usageMetrics}
-            t={t}
-          />
-        }
+        consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
         facturation={comingSoon}
         archivage={isOwner ? archivagePanel : undefined}
       />

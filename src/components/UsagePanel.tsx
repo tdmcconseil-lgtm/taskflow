@@ -1,6 +1,4 @@
-import { PLAN_LIMITS, PLANS, type WorkspacePlan } from "@/lib/plans";
-import { setWorkspacePlan } from "@/lib/actions/admin";
-import { Button } from "@/components/Button";
+import { PLAN_LIMITS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 type Metrics = {
@@ -9,15 +7,6 @@ type Metrics = {
   storageBytes: number;
   pendingInvites: number;
 };
-
-// Formate une taille en Mo : au-delà de 1024 Mo, on bascule en Go.
-function fmtStorage(mb: number): string {
-  if (mb >= 1024) {
-    const go = mb / 1024;
-    return `${Number.isInteger(go) ? go : go.toFixed(1)} Go`;
-  }
-  return `${Math.round(mb)} Mo`;
-}
 
 // Barre de jauge : verte < 70 %, ambre 70-90 %, rouge > 90 %. Une limite
 // illimitée (Infinity) n'affiche pas de remplissage.
@@ -60,12 +49,10 @@ function Gauge({
 
 // Volet Consommation : usage de l'espace comparé aux limites de sa formule.
 export function UsagePanel({
-  workspaceId,
   plan,
   metrics,
   t,
 }: {
-  workspaceId: string;
   plan: WorkspacePlan;
   metrics: Metrics;
   t: Dictionary;
@@ -94,7 +81,7 @@ export function UsagePanel({
       label: t.usage.storage,
       used: usedMb,
       limit: limits.storageMb,
-      display: `${fmtStorage(usedMb)} / ${fmtStorage(limits.storageMb)}`,
+      display: `${formatStorageMb(usedMb)} / ${formatStorageMb(limits.storageMb)}`,
     },
     {
       key: "pendingInvites",
@@ -113,36 +100,6 @@ export function UsagePanel({
   return (
     <div className="space-y-6">
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.desc}</p>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.plan}</span>
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
-            {plan}
-          </span>
-        </div>
-        <form action={setWorkspacePlan} className="flex items-center gap-2">
-          <input type="hidden" name="workspaceId" value={workspaceId} />
-          <label htmlFor="plan" className="sr-only">
-            {t.usage.changePlan}
-          </label>
-          <select
-            id="plan"
-            name="plan"
-            defaultValue={plan}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
-          >
-            {PLANS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-          <Button type="submit" variant="secondary" size="md">
-            {t.usage.changePlan}
-          </Button>
-        </form>
-      </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {gauges.map((g) => (
