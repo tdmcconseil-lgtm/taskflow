@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { Button, ButtonLink } from "@/components/Button";
+import { ButtonLink } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { getTaskView } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
-import {
-  archiveWorkspace,
-  unarchiveWorkspace,
-  cancelInvitation,
-  resendInvitation,
-} from "@/lib/actions/workspaces";
+import { cancelInvitation, resendInvitation } from "@/lib/actions/workspaces";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
@@ -326,38 +321,16 @@ export default async function WorkspacePage({
             {workspace.name}
           </h1>
         </div>
-        {isOwner && !isArchived && (
-          <form action={archiveWorkspace}>
-            <input type="hidden" name="workspaceId" value={workspace.id} />
-            <Button type="submit" variant="secondary">
-              {t.workspace.archive}
-            </Button>
-          </form>
+        {isOwner && (
+          <ButtonLink href={`/app/workspaces/${workspace.id}/administration`} variant="secondary">
+            {t.workspace.administration}
+          </ButtonLink>
         )}
       </div>
 
       {isArchived && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-900 dark:bg-amber-950/40">
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-900 dark:bg-amber-950/40">
           <p className="text-amber-800 dark:text-amber-300">{t.workspace.archivedBanner}</p>
-          {isOwner && (
-            <div className="flex items-center gap-2">
-              <form action={unarchiveWorkspace}>
-                <input type="hidden" name="workspaceId" value={workspace.id} />
-                <button
-                  type="submit"
-                  className="rounded-md border border-amber-400 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:text-amber-300 dark:hover:bg-amber-900/50"
-                >
-                  {t.workspace.unarchive}
-                </button>
-              </form>
-              <Link
-                href={`/app/workspaces/${workspace.id}/delete`}
-                className="rounded-md border border-red-400 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
-              >
-                {t.workspace.deletePermanently}
-              </Link>
-            </div>
-          )}
         </div>
       )}
 

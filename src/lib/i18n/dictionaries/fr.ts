@@ -167,6 +167,11 @@ const fr = {
   workspace: {
     prefix: "Espace :",
     archive: "Archiver",
+    administration: "Administration",
+    administrationDesc: "Gérer cet espace de travail.",
+    archiveSectionTitle: "Archivage",
+    archiveSectionDesc:
+      "Archiver masque l'espace sans supprimer ses données. Une fois archivé, il peut être restauré ou supprimé définitivement.",
     archivedBanner: "Cet espace est archivé — masqué de votre liste active.",
     unarchive: "Désarchiver",
     deletePermanently: "Supprimer définitivement",

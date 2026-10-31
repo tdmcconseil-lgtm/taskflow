@@ -168,6 +168,11 @@ const en: Dictionary = {
   workspace: {
     prefix: "Workspace:",
     archive: "Archive",
+    administration: "Administration",
+    administrationDesc: "Manage this workspace.",
+    archiveSectionTitle: "Archiving",
+    archiveSectionDesc:
+      "Archiving hides the workspace without deleting its data. Once archived, it can be restored or permanently deleted.",
     archivedBanner: "This workspace is archived — hidden from your active list.",
     unarchive: "Unarchive",
     deletePermanently: "Delete permanently",

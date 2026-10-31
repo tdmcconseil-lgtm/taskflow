@@ -168,6 +168,11 @@ const es: Dictionary = {
   workspace: {
     prefix: "Espacio:",
     archive: "Archivar",
+    administration: "Administración",
+    administrationDesc: "Gestiona este espacio de trabajo.",
+    archiveSectionTitle: "Archivado",
+    archiveSectionDesc:
+      "Archivar oculta el espacio sin borrar sus datos. Una vez archivado, se puede restaurar o eliminar definitivamente.",
     archivedBanner: "Este espacio está archivado — oculto de tu lista activa.",
     unarchive: "Desarchivar",
     deletePermanently: "Eliminar definitivamente",
