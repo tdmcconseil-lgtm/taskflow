@@ -17,6 +17,7 @@ import { MemberControls } from "@/components/MemberControls";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
 import { TaskCollection } from "@/components/TaskCollection";
+import { TypeIcon } from "@/components/TypeIcon";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
@@ -269,13 +270,18 @@ export default async function WorkspacePage({
                 href={`/app/tasks/${f.task.id}`}
                 className="flex items-center justify-between gap-3 bg-white p-4 hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
               >
-                <span
-                  className={`truncate text-sm font-medium ${
-                    f.task.status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
-                  }`}
-                >
-                  {f.task.parentId === null ? t.task.prefixProject : t.task.prefixTask} :{" "}
-                  {f.task.title}
+                <span className="inline-flex min-w-0 items-center gap-1.5">
+                  <TypeIcon
+                    isProject={f.task.parentId === null}
+                    label={f.task.parentId === null ? t.task.prefixProject : t.task.prefixTask}
+                  />
+                  <span
+                    className={`truncate text-sm font-medium ${
+                      f.task.status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
+                    }`}
+                  >
+                    {f.task.title}
+                  </span>
                 </span>
                 <div className="flex shrink-0 items-center gap-2">
                   <PriorityBadge priority={f.task.priority} />

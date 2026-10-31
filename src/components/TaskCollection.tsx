@@ -37,7 +37,8 @@ export function TaskCollection({
   const locale = useLocale();
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
-    title: `${n.parentId === null ? t.task.prefixProject : t.task.prefixTask} : ${n.title}`,
+    title: n.title,
+    isProject: n.parentId === null,
     description: n.description,
     priority: n.priority,
     status: n.status,

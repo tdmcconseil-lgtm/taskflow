@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
+import { TypeIcon } from "@/components/TypeIcon";
 import { TaskControls } from "@/components/TaskControls";
 import { UserAvatar } from "@/components/UserAvatar";
 import { formatDate, isOverdue } from "@/lib/labels";
@@ -14,26 +15,27 @@ import type { TaskNode } from "@/lib/task-tree";
 export function TaskRow({ node, followed = false }: { node: TaskNode; followed?: boolean }) {
   const t = useT();
   const locale = useLocale();
-  const prefix = node.parentId === null ? t.task.prefixProject : t.task.prefixTask;
+  const isProject = node.parentId === null;
   return (
     <li className="bg-white dark:bg-zinc-900">
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0 flex-1">
-          <p className="font-medium">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <TypeIcon isProject={isProject} label={isProject ? t.task.prefixProject : t.task.prefixTask} />
             <Link
               href={`/app/tasks/${node.id}`}
-              className={`hover:underline ${
+              className={`truncate font-medium hover:underline ${
                 node.status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
               }`}
             >
-              {prefix} : {node.title}
+              {node.title}
             </Link>
             {followed && (
-              <span className="ml-1" title={t.task.subscribed} aria-label={t.task.subscribed}>
+              <span className="shrink-0" title={t.task.subscribed} aria-label={t.task.subscribed}>
                 👁
               </span>
             )}
-          </p>
+          </div>
           {node.description && (
             <p className="mt-0.5 line-clamp-1 text-sm text-zinc-500 dark:text-zinc-400">{node.description}</p>
           )}

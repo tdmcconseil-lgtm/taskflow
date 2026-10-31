@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
+import { TypeIcon } from "@/components/TypeIcon";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { AssigneeInfo } from "@/lib/task-tree";
 import { STATUS_ORDER } from "@/lib/labels";
@@ -13,6 +14,7 @@ import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 export type BoardTask = {
   id: string;
   title: string;
+  isProject: boolean;
   description: string | null;
   priority: TaskPriority;
   status: TaskStatus;
@@ -131,11 +133,15 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
                   }`}
                 >
                   <p
-                    className={`text-sm font-medium ${
+                    className={`flex items-center gap-1.5 text-sm font-medium ${
                       status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
                     }`}
                   >
-                    {task.title}
+                    <TypeIcon
+                      isProject={task.isProject}
+                      label={task.isProject ? t.task.prefixProject : t.task.prefixTask}
+                    />
+                    <span className="truncate">{task.title}</span>
                   </p>
                   {task.description && (
                     <p className="mt-1 line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">

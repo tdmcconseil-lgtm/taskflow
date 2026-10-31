@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PriorityBadge } from "@/components/badges";
+import { TypeIcon } from "@/components/TypeIcon";
 import { UserAvatar } from "@/components/UserAvatar";
 import { TaskControls } from "@/components/TaskControls";
 import { reorderTasks } from "@/lib/actions/tasks";
@@ -90,20 +91,21 @@ export function ReorderableSubtasks({
             </span>
 
             <div className="min-w-0 flex-1">
-              <p className="font-medium">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <TypeIcon isProject={false} label={dict.task.prefixTask} />
                 <Link
                   href={`/app/tasks/${t.id}`}
                   draggable={false}
-                  className={`hover:underline ${done ? "text-zinc-400 dark:text-zinc-600" : ""}`}
+                  className={`truncate font-medium hover:underline ${done ? "text-zinc-400 dark:text-zinc-600" : ""}`}
                 >
-                  {dict.task.prefixTask} : {t.title}
+                  {t.title}
                 </Link>
                 {t.followed && (
-                  <span className="ml-1" title={dict.task.subscribed} aria-label={dict.task.subscribed}>
+                  <span className="shrink-0" title={dict.task.subscribed} aria-label={dict.task.subscribed}>
                     👁
                   </span>
                 )}
-              </p>
+              </div>
               {t.description && (
                 <p
                   className={`mt-0.5 line-clamp-1 text-sm ${

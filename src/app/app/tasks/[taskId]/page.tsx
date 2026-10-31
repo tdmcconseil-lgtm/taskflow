@@ -13,6 +13,7 @@ import { TaskFollowers } from "@/components/TaskFollowers";
 import { DescriptionReveal } from "@/components/DescriptionReveal";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskCollection } from "@/components/TaskCollection";
+import { TypeIcon } from "@/components/TypeIcon";
 import { UserAvatar } from "@/components/UserAvatar";
 import { CommentBox } from "@/components/CommentBox";
 import { EditableComment } from "@/components/EditableComment";
@@ -23,7 +24,7 @@ import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { getTaskView, getTaskTab } from "@/lib/view";
-import { formatDate, isOverdue, prefixedTitle } from "@/lib/labels";
+import { formatDate, isOverdue } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
 export default async function TaskDetailPage({
@@ -318,11 +319,16 @@ export default async function TaskDetailPage({
         <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1
-            className={`text-2xl font-semibold tracking-tight ${
+            className={`flex items-center gap-2 text-2xl font-semibold tracking-tight ${
               task.status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
             }`}
           >
-            {prefixedTitle(task.title, task.parentId === null)}
+            <TypeIcon
+              isProject={task.parentId === null}
+              label={task.parentId === null ? t.task.prefixProject : t.task.prefixTask}
+              className="h-5 w-5"
+            />
+            {task.title}
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
