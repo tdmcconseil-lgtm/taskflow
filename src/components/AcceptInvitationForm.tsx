@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 import { acceptInvitation, type FormState } from "@/lib/actions/workspaces";
+import { usePasswordConfirmMirror } from "@/components/usePasswordConfirmMirror";
 import { useT } from "@/lib/i18n/context";
 
 export function AcceptInvitationForm({
@@ -19,6 +20,7 @@ export function AcceptInvitationForm({
 }) {
   const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(acceptInvitation, undefined);
+  const { confirmRef, onPasswordInput } = usePasswordConfirmMirror();
 
   if (existingAccount) {
     return (
@@ -86,6 +88,7 @@ export function AcceptInvitationForm({
           name="password"
           type="password"
           autoComplete="new-password"
+          onInput={onPasswordInput}
           className={inputClass}
         />
         <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.auth.passwordHint}</p>
@@ -100,6 +103,7 @@ export function AcceptInvitationForm({
           name="confirm"
           type="password"
           autoComplete="new-password"
+          ref={confirmRef}
           className={inputClass}
         />
       </div>

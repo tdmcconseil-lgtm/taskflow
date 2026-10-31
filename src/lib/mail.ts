@@ -93,6 +93,25 @@ export function emailChangeEmail(
   };
 }
 
+export function passwordResetEmail(
+  params: {
+    name: string;
+    resetUrl: string;
+    expiresAt: Date;
+  },
+  t: Dictionary,
+  locale: Locale,
+): { subject: string; body: string } {
+  const expires = params.expiresAt.toLocaleString(INTL_LOCALE[locale]);
+  return {
+    subject: t.email.resetSubject,
+    body: t.email.resetBody
+      .replace("{name}", params.name)
+      .replace("{url}", params.resetUrl)
+      .replace("{expires}", expires),
+  };
+}
+
 export function invitationEmail(
   params: {
     inviterName: string;

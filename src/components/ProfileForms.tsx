@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
+import { usePasswordConfirmMirror } from "@/components/usePasswordConfirmMirror";
 import { useT } from "@/lib/i18n/context";
 import {
   updateProfileName,
@@ -91,6 +92,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
 export function PasswordForm() {
   const t = useT();
   const [state, action] = useActionState<FormState, FormData>(changePassword, undefined);
+  const { confirmRef, onPasswordInput } = usePasswordConfirmMirror();
   return (
     <form action={action} className="space-y-3">
       <div className="space-y-1">
@@ -114,6 +116,7 @@ export function PasswordForm() {
           name="password"
           type="password"
           autoComplete="new-password"
+          onInput={onPasswordInput}
           className={inputClass}
         />
         <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.auth.passwordHint}</p>
@@ -127,6 +130,7 @@ export function PasswordForm() {
           name="confirm"
           type="password"
           autoComplete="new-password"
+          ref={confirmRef}
           className={inputClass}
         />
       </div>

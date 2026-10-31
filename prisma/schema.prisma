@@ -93,6 +93,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   emailChanges  EmailChangeRequest[]
+  passwordResets PasswordResetRequest[]
   memberships   Membership[]
   createdTasks  Task[]       @relation("TaskCreatedBy")
   assignedTasks Task[]       @relation("TaskAssignee")
@@ -367,6 +368,20 @@ model TaskFollow {
 
   @@unique([userId, taskId])
   @@index([taskId])
+}
+
+// --- Demande de réinitialisation de mot de passe (lien envoyé par email) ---
+// Un jeton aléatoire est envoyé dans le lien ; seul son hash est stocké.
+model PasswordResetRequest {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // --- Demande de changement d'email (confirmation par lien envoyé au nouvel email) ---

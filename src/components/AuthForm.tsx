@@ -66,6 +66,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           className={inputClass}
         />
         {mode === "signup" && <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.auth.passwordHint}</p>}
+        {mode === "login" && (
+          <div className="text-right">
+            <Link href="/forgot-password" className="text-xs font-medium text-indigo-600 hover:underline">
+              {t.auth.forgotPassword}
+            </Link>
+          </div>
+        )}
       </div>
 
       {state?.error && (
