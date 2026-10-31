@@ -353,6 +353,8 @@ const en: Dictionary = {
     goToLogin: "Go to login",
     invitesYou: "invites you to join the workspace",
     createToAccept: "Create your account to accept.",
+    alreadyAccount: "You already have a Taskflow account — join the workspace, then sign in.",
+    join: "Join workspace",
   },
   confirmEmail: {
     unavailable: "Link unavailable",

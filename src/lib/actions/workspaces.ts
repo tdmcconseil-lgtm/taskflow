@@ -196,20 +196,17 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   });
   if (!workspace) return { error: t.errors.workspaceNotFound };
 
-  // Si la personne a déjà un compte, on l'ajoute directement.
+  // On s'assure seulement que la personne n'est pas déjà membre. Dans tous les
+  // autres cas — y compris si elle a déjà un compte Taskflow — on envoie une
+  // invitation par email : son appartenance reste « en attente » tant qu'elle
+  // n'a pas validé l'invitation (elle n'est donc pas ajoutée silencieusement).
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     const already = await getMembership(existingUser.id, workspaceId);
     if (already) return { error: t.errors.alreadyMember };
-
-    await prisma.membership.create({
-      data: { userId: existingUser.id, workspaceId, role },
-    });
-    revalidatePath(`/app/workspaces/${workspaceId}`);
-    redirect(`/app/workspaces/${workspaceId}/administration`);
   }
 
-  // Sinon, on crée (ou on renouvelle) une invitation et on envoie l'email.
+  // On crée (ou on renouvelle) une invitation et on envoie l'email.
   const token = generateInvitationToken();
   const tokenHash = hashToken(token);
   const ttlDays = Number.parseInt(process.env.INVITATION_TTL_DAYS ?? "7", 10);
@@ -328,18 +325,13 @@ const acceptSchema = z
 
 export async function acceptInvitation(_prev: FormState, formData: FormData): Promise<FormState> {
   const t = await getDictionary();
-  const parsed = acceptSchema.safeParse({
-    token: formData.get("token"),
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName") || "",
-    password: formData.get("password"),
-    confirm: formData.get("confirm"),
-  });
-  if (!parsed.success) {
-    return { error: zodError(t, parsed.error.issues[0]?.message) };
-  }
 
-  const tokenHash = hashToken(parsed.data.token);
+  // On valide d'abord le jeton seul : un compte déjà existant pourra rejoindre
+  // l'espace sans ressaisir de mot de passe.
+  const token = String(formData.get("token") ?? "");
+  if (!token) return { error: t.errors.invitationInvalid };
+
+  const tokenHash = hashToken(token);
   const invitation = await prisma.invitation.findUnique({ where: { tokenHash } });
 
   if (!invitation || invitation.acceptedAt) {
@@ -349,7 +341,8 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
     return { error: t.errors.invitationExpired };
   }
 
-  // Cas limite : un compte avec cet email a été créé entre-temps.
+  // Compte déjà existant pour cet email : on l'ajoute à l'espace (s'il n'y est
+  // pas déjà) et on le renvoie se connecter — aucun mot de passe requis.
   const existingUser = await prisma.user.findUnique({ where: { email: invitation.email } });
   if (existingUser) {
     const already = await getMembership(existingUser.id, invitation.workspaceId);
@@ -371,6 +364,18 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
       }),
     ]);
     redirect("/login");
+  }
+
+  // Aucun compte : on en crée un (nom + mot de passe requis).
+  const parsed = acceptSchema.safeParse({
+    token,
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName") || "",
+    password: formData.get("password"),
+    confirm: formData.get("confirm"),
+  });
+  if (!parsed.success) {
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
   const passwordHash = await hashPassword(parsed.data.password);

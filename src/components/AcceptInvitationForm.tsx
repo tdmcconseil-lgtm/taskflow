@@ -9,12 +9,27 @@ import { useT } from "@/lib/i18n/context";
 export function AcceptInvitationForm({
   token,
   email,
+  existingAccount = false,
 }: {
   token: string;
   email: string;
+  // Un compte existe déjà pour cet email : on ne demande ni nom ni mot de passe,
+  // juste une validation pour rejoindre l'espace.
+  existingAccount?: boolean;
 }) {
   const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(acceptInvitation, undefined);
+
+  if (existingAccount) {
+    return (
+      <form action={formAction} className="space-y-4">
+        <input type="hidden" name="token" value={token} />
+        <input type="hidden" name="email" value={email} />
+        {state?.error && <p className={errorClass}>{state.error}</p>}
+        <SubmitButton className="w-full">{t.invitePage.join}</SubmitButton>
+      </form>
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-4">

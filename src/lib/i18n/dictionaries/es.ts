@@ -353,6 +353,8 @@ const es: Dictionary = {
     goToLogin: "Ir al inicio de sesión",
     invitesYou: "te invita a unirte al espacio",
     createToAccept: "Crea tu cuenta para aceptar.",
+    alreadyAccount: "Ya tienes una cuenta de Taskflow: únete al espacio y luego inicia sesión.",
+    join: "Unirse al espacio",
   },
   confirmEmail: {
     unavailable: "Enlace no disponible",

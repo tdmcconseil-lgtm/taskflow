@@ -34,6 +34,16 @@ export default async function AcceptInvitationPage({
   const invalid = !invitation || invitation.acceptedAt;
   const expired = invitation && invitation.expiresAt.getTime() < Date.now();
 
+  // Un compte existe-t-il déjà pour cet email ? Si oui, on propose simplement de
+  // rejoindre l'espace (sans recréer de mot de passe).
+  const existingAccount =
+    !invalid && !expired && invitation
+      ? (await prisma.user.findUnique({
+          where: { email: invitation.email },
+          select: { id: true },
+        })) !== null
+      : false;
+
   if (invalid || expired) {
     return (
       <Card>
@@ -60,10 +70,14 @@ export default async function AcceptInvitationPage({
           <span className="font-medium text-zinc-700 dark:text-zinc-300">
             « {invitation.workspace.name} »
           </span>
-          . {t.invitePage.createToAccept}
+          . {existingAccount ? t.invitePage.alreadyAccount : t.invitePage.createToAccept}
         </p>
       </div>
-      <AcceptInvitationForm token={token} email={invitation.email} />
+      <AcceptInvitationForm
+        token={token}
+        email={invitation.email}
+        existingAccount={existingAccount}
+      />
     </Card>
   );
 }

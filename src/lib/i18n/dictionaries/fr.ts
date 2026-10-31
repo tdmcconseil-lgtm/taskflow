@@ -352,6 +352,8 @@ const fr = {
     goToLogin: "Aller à la connexion",
     invitesYou: "vous invite à rejoindre l'espace",
     createToAccept: "Créez votre compte pour accepter.",
+    alreadyAccount: "Vous avez déjà un compte Taskflow — rejoignez l'espace puis connectez-vous.",
+    join: "Rejoindre l'espace",
   },
   confirmEmail: {
     unavailable: "Lien indisponible",
