@@ -9,7 +9,7 @@ const es: Dictionary = {
     no: "No",
   },
   auth: {
-    loginSubtitle: "Inicia sesión en tu espacio",
+    loginSubtitle: "Inicia sesión",
     signupSubtitle: "Crea tu cuenta",
     firstName: "Nombre",
     lastName: "Apellido",
@@ -23,6 +23,7 @@ const es: Dictionary = {
     signUp: "Registrarse",
     haveAccount: "¿Ya tienes una cuenta?",
     forgotPassword: "¿Olvidaste tu contraseña?",
+    backHome: "Inicio",
   },
   nav: {
     home: "Inicio",
@@ -179,6 +180,7 @@ const es: Dictionary = {
     tabBilling: "Facturación",
     adminMode: "Modo administración",
     exitAdmin: "Salir del modo administración",
+    exit: "Salir",
     comingSoon: "Próximamente.",
     archiveSectionTitle: "Archivado",
     archiveSectionDesc:

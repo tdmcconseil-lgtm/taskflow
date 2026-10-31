@@ -257,23 +257,44 @@ export default async function WorkspaceAdminPage({
             <span className="text-red-400 dark:text-red-500">{t.workspace.prefix} </span>
             {workspace.name}
           </h1>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 py-1 pl-3 pr-1.5 text-xs font-medium uppercase tracking-wide text-red-700 dark:bg-red-900/60 dark:text-red-200">
-            {t.workspace.adminMode}
-            <Link
-              href={`/app/workspaces/${workspace.id}`}
-              title={t.workspace.exitAdmin}
-              aria-label={t.workspace.exitAdmin}
-              className="inline-flex h-5 w-5 items-center justify-center rounded-full text-red-700 transition hover:bg-red-200 dark:text-red-200 dark:hover:bg-red-800/60"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+          {/* Badge cliquable : affiche « Mode administration » au repos et, au
+              survol, bascule en « Sortir » avec l'icône agrandie (retour à l'espace). */}
+          <Link
+            href={`/app/workspaces/${workspace.id}`}
+            title={t.workspace.exitAdmin}
+            aria-label={t.workspace.exitAdmin}
+            className="group inline-flex items-center gap-1.5 rounded-full bg-red-100 py-1 pl-3 pr-2.5 text-xs font-medium uppercase tracking-wide text-red-700 transition hover:bg-red-200 dark:bg-red-900/60 dark:text-red-200 dark:hover:bg-red-800/60"
+          >
+            {/* Les deux libellés occupent la même cellule de grille : la largeur
+                reste celle du plus long (« Mode administration »), donc le badge
+                ne rétrécit pas au survol (pas d'oscillation). */}
+            <span className="grid">
+              <span className="col-start-1 row-start-1 transition-opacity group-hover:opacity-0">
+                {t.workspace.adminMode}
+              </span>
+              <span className="col-start-1 row-start-1 opacity-0 transition-opacity group-hover:opacity-100">
+                {t.workspace.exit}
+              </span>
+            </span>
+            {/* Conteneur d'icône de taille fixe : l'icône grossit visuellement
+                sans décaler la mise en page. */}
+            <span className="inline-flex h-5 w-5 items-center justify-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+                className="h-3.5 w-3.5 transition-all group-hover:h-5 group-hover:w-5"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
                 />
               </svg>
-            </Link>
-          </span>
+            </span>
+          </Link>
         </div>
       </div>
 

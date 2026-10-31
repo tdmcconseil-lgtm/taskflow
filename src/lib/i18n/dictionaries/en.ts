@@ -9,7 +9,7 @@ const en: Dictionary = {
     no: "No",
   },
   auth: {
-    loginSubtitle: "Sign in to your workspace",
+    loginSubtitle: "Sign in",
     signupSubtitle: "Create your account",
     firstName: "First name",
     lastName: "Last name",
@@ -23,6 +23,7 @@ const en: Dictionary = {
     signUp: "Sign up",
     haveAccount: "Already have an account?",
     forgotPassword: "Forgot password?",
+    backHome: "Home",
   },
   nav: {
     home: "Home",
@@ -179,6 +180,7 @@ const en: Dictionary = {
     tabBilling: "Billing",
     adminMode: "Administration mode",
     exitAdmin: "Exit administration mode",
+    exit: "Exit",
     comingSoon: "Coming soon.",
     archiveSectionTitle: "Archiving",
     archiveSectionDesc:

@@ -8,7 +8,7 @@ const fr = {
     no: "Non",
   },
   auth: {
-    loginSubtitle: "Connectez-vous à votre espace",
+    loginSubtitle: "Connectez-vous",
     signupSubtitle: "Créez votre compte",
     firstName: "Prénom",
     lastName: "Nom",
@@ -22,6 +22,7 @@ const fr = {
     signUp: "S'inscrire",
     haveAccount: "Déjà un compte ?",
     forgotPassword: "Mot de passe oublié ?",
+    backHome: "Accueil",
   },
   nav: {
     home: "Accueil",
@@ -178,6 +179,7 @@ const fr = {
     tabBilling: "Facturation",
     adminMode: "Mode administration",
     exitAdmin: "Quitter le mode administration",
+    exit: "Sortir",
     comingSoon: "Bientôt disponible.",
     archiveSectionTitle: "Archivage",
     archiveSectionDesc:
