@@ -20,7 +20,11 @@ services:
       timeout: 5s
       retries: 10
 
-  app:
+  # Nommé "staging-app" (et non "app") : sur le réseau partagé "edge", Docker
+  # ajoute le nom du service comme alias. Un service nommé "app" entrerait en
+  # collision avec l'app de prod côté Caddy (reverse_proxy app:3001) et
+  # détournerait le trafic de getrida.com vers la préprod.
+  staging-app:
     build: .
     restart: unless-stopped
     env_file: .env
