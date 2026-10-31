@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 // Mémorise la préférence Liste / Tableau (cookie) puis revient à la page
 // courante. Le choix est ainsi conservé en changeant de page.
 export async function setTaskView(formData: FormData): Promise<void> {
-  const view = formData.get("view") === "liste" ? "liste" : "tableau";
+  const raw = formData.get("view");
+  const view = raw === "liste" ? "liste" : raw === "analyse" ? "analyse" : "tableau";
   const back = String(formData.get("back") ?? "/app");
 
   const store = await cookies();

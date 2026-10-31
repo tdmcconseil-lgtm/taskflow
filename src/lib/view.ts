@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
 
-export type TaskView = "liste" | "tableau";
+export type TaskView = "liste" | "tableau" | "analyse";
 
-// Préférence d'affichage des collections de tâches (Liste / Tableau),
+// Préférence d'affichage des collections de tâches (Liste / Tableau / Analyse),
 // persistée en cookie pour être conservée d'une page à l'autre.
 // Par défaut : tableau.
 export async function getTaskView(): Promise<TaskView> {
   const v = (await cookies()).get("tf_vue")?.value;
-  return v === "liste" ? "liste" : "tableau";
+  return v === "liste" ? "liste" : v === "analyse" ? "analyse" : "tableau";
 }
 
 export type TaskTab = "sous" | "docs" | "decisions" | "chat" | "followers" | "activite";
