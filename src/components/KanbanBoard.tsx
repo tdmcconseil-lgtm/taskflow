@@ -103,10 +103,10 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
             } ${overCol === status ? "ring-2 ring-indigo-400" : ""}`}
           >
             <div className="mb-3 flex items-center gap-2 px-1">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                 {t.status[status]}
               </h3>
-              <span className="rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:text-zinc-300 dark:bg-zinc-800">
+              <span className="rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:text-zinc-400 dark:bg-zinc-800">
                 {columnTasks.length}
               </span>
             </div>
@@ -132,17 +132,17 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
                 >
                   <p
                     className={`text-sm font-medium ${
-                      status === "DONE" ? "text-zinc-400 dark:text-zinc-300 line-through" : ""
+                      status === "DONE" ? "text-zinc-400 dark:text-zinc-500 line-through" : ""
                     }`}
                   >
                     {task.title}
                   </p>
                   {task.description && (
-                    <p className="mt-1 line-clamp-2 text-xs text-zinc-500 dark:text-zinc-300">
+                    <p className="mt-1 line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
                       {task.description}
                     </p>
                   )}
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-300">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
                     <PriorityBadge priority={task.priority} />
                     {task.subtaskCount > 0 && (
                       <span title={t.taskTabs.subtasks}>↳ {task.subtaskCount}</span>
@@ -169,7 +169,7 @@ export function KanbanBoard({ tasks: initial }: { tasks: BoardTask[] }) {
               ))}
 
               {columnTasks.length === 0 && (
-                <p className="rounded-lg border border-dashed border-zinc-300 p-3 text-center text-xs italic text-zinc-400 dark:text-zinc-300 dark:border-zinc-700">
+                <p className="rounded-lg border border-dashed border-zinc-300 p-3 text-center text-xs italic text-zinc-400 dark:text-zinc-500 dark:border-zinc-700">
                   {t.task.dropHere}
                 </p>
               )}

@@ -50,7 +50,7 @@ export default async function DocumentPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-300">
+      <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400">
         <Link href={`/app/tasks/${doc.projectTask.id}`} className="hover:underline">
           {doc.projectTask.title}
         </Link>
@@ -64,7 +64,7 @@ export default async function DocumentPage({
             <span aria-hidden>📄</span>
             {doc.name}
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">{doc.fileName}</p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{doc.fileName}</p>
         </div>
         <div className="flex items-center gap-2">
           <a href={`/api/documents/${doc.id}?dl=1`} className={buttonClass("primary")}>
@@ -76,7 +76,7 @@ export default async function DocumentPage({
 
       <dl className="grid grid-cols-1 gap-4 rounded-xl border border-zinc-200 bg-white p-5 sm:grid-cols-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.documentPage.uploadedBy}</dt>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.uploadedBy}</dt>
           <dd className="mt-1 text-sm">
             {uploader ? (
               <span className="inline-flex items-center gap-2">
@@ -89,17 +89,17 @@ export default async function DocumentPage({
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.documentPage.uploadedOn}</dt>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.uploadedOn}</dt>
           <dd className="mt-1 text-sm">{formatDateTime(doc.createdAt, locale)}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-300">{t.documentPage.size}</dt>
+          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.size}</dt>
           <dd className="mt-1 text-sm">{formatBytes(doc.size, t)}</dd>
         </div>
       </dl>
 
       <div>
-        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           {t.documentPage.simpleName}
         </h2>
         <RenameDocumentForm documentId={doc.id} name={doc.name} />
@@ -108,10 +108,10 @@ export default async function DocumentPage({
       <section className="space-y-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
         <h2 className="text-lg font-semibold">
           {t.documentPage.linkedTasks}{" "}
-          <span className="text-sm font-normal text-zinc-400 dark:text-zinc-300">({doc.links.length})</span>
+          <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">({doc.links.length})</span>
         </h2>
         {doc.links.length === 0 ? (
-          <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.documentPage.noLinks}</p>
+          <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.documentPage.noLinks}</p>
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {doc.links.map((l) => (

@@ -37,7 +37,7 @@ export function NameForm({
         </div>
         <div className="space-y-1">
           <label htmlFor="lastName" className={labelClass}>
-            {t.auth.lastName} <span className="text-zinc-400 dark:text-zinc-300">{t.auth.optional}</span>
+            {t.auth.lastName} <span className="text-zinc-400 dark:text-zinc-500">{t.auth.optional}</span>
           </label>
           <input
             id="lastName"
@@ -59,7 +59,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
   const [state, action] = useActionState<FormState, FormData>(requestEmailChange, undefined);
   return (
     <form action={action} className="space-y-3">
-      <p className="text-sm text-zinc-500 dark:text-zinc-300">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
         {t.profileForms.currentEmail}{" "}
         <span className="font-medium text-zinc-700 dark:text-zinc-300">{currentEmail}</span>
       </p>
@@ -81,7 +81,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
           className={inputClass}
         />
       </div>
-      <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.profileForms.emailChangeHint}</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.profileForms.emailChangeHint}</p>
       {state?.error && <p className={errorClass}>{state.error}</p>}
       <SubmitButton>{t.profileForms.sendConfirmation}</SubmitButton>
     </form>
@@ -116,7 +116,7 @@ export function PasswordForm() {
           autoComplete="new-password"
           className={inputClass}
         />
-        <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.auth.passwordHint}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.auth.passwordHint}</p>
       </div>
       <div className="space-y-1">
         <label htmlFor="confirm" className={labelClass}>

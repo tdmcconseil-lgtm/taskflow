@@ -51,7 +51,7 @@ export function TaskCollection({
     `rounded-md px-3 py-1 text-sm font-medium transition ${
       active
         ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-white"
-        : "text-zinc-500 dark:text-zinc-300 hover:text-zinc-800 dark:hover:text-zinc-200"
+        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
     }`;
 
   return (
@@ -77,7 +77,7 @@ export function TaskCollection({
       </div>
 
       {roots.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
           {emptyLabel}
         </p>
       ) : view === "tableau" ? (
@@ -107,14 +107,14 @@ export function TaskCollection({
             const rootsOfStatus = roots.filter((n) => n.status === status);
             return (
               <section key={status} className="space-y-2">
-                <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-300">
+                <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                   {t.status[status]}
-                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-normal text-zinc-500 dark:text-zinc-300 dark:bg-zinc-800">
+                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-normal text-zinc-500 dark:text-zinc-400 dark:bg-zinc-800">
                     {rootsOfStatus.length}
                   </span>
                 </h3>
                 {rootsOfStatus.length === 0 ? (
-                  <p className="px-1 text-xs italic text-zinc-400 dark:text-zinc-300">{t.task.noTasks}</p>
+                  <p className="px-1 text-xs italic text-zinc-400 dark:text-zinc-500">{t.task.noTasks}</p>
                 ) : (
                   <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
                     {rootsOfStatus.map((node) => (

@@ -59,7 +59,7 @@ export function TaskForm({
 
       <div className="space-y-1">
         <label htmlFor="description" className={labelClass}>
-          {t.task.description} <span className="text-zinc-400 dark:text-zinc-300">{t.task.optional}</span>
+          {t.task.description} <span className="text-zinc-400 dark:text-zinc-500">{t.task.optional}</span>
         </label>
         <textarea
           id="description"
@@ -139,7 +139,7 @@ export function TaskForm({
           </label>
           {members.length > 0 && (
             <div className="pt-1">
-              <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-300">{t.task.allowedMembers}</p>
+              <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-400">{t.task.allowedMembers}</p>
               <div className="space-y-1">
                 {members.map((m) => (
                   <label key={m.id} className="flex items-center gap-2 text-sm">

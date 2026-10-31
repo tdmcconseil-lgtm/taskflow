@@ -24,11 +24,11 @@ export default async function NewDocumentPage({
     <div className="mx-auto max-w-xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">{t.documentPage.newTitle}</h1>
-        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
+        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline">
           {t.documentPage.cancel}
         </Link>
       </div>
-      <p className="text-sm text-zinc-500 dark:text-zinc-300">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
         {t.documentPage.newDesc.replace("{title}", task.title)}
       </p>
       <div className={cardClass}>

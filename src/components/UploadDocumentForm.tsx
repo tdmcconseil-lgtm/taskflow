@@ -23,13 +23,13 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
           {t.documentPage.file}
         </label>
         <input id="file" name="file" type="file" required className={fileInputClass} />
-        <p className="text-xs text-zinc-400 dark:text-zinc-300">{t.documentPage.maxSize}</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">{t.documentPage.maxSize}</p>
       </div>
 
       <div className="space-y-1">
         <label className={labelClass} htmlFor="name">
           {t.documentPage.simpleName}{" "}
-          <span className="font-normal text-zinc-400 dark:text-zinc-300">{t.documentPage.optional}</span>
+          <span className="font-normal text-zinc-400 dark:text-zinc-500">{t.documentPage.optional}</span>
         </label>
         <input
           id="name"

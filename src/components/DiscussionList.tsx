@@ -16,7 +16,7 @@ export function DiscussionList({
 }) {
   if (rows.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
+      <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
         {emptyLabel}
       </p>
     );
@@ -40,18 +40,18 @@ export function DiscussionList({
                 <p className={`truncate ${r.unread ? "font-semibold" : "font-medium"}`}>
                   {r.title}
                   {!r.following && (
-                    <span className="ml-2 text-xs font-normal text-zinc-400 dark:text-zinc-300">{notFollowingLabel}</span>
+                    <span className="ml-2 text-xs font-normal text-zinc-400 dark:text-zinc-500">{notFollowingLabel}</span>
                   )}
                 </p>
-                <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-300">
+                <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
                   {formatDateTime(r.last.createdAt, locale)}
                 </span>
               </div>
-              <p className="mt-0.5 truncate text-sm text-zinc-500 dark:text-zinc-300">
+              <p className="mt-0.5 truncate text-sm text-zinc-500 dark:text-zinc-400">
                 <span className="text-zinc-600 dark:text-zinc-300">{r.last.author.name}</span> ·{" "}
                 {r.last.body}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-300">{r.workspace}</p>
+              <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">{r.workspace}</p>
             </div>
           </Link>
         </li>

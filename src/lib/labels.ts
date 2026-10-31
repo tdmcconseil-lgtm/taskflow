@@ -18,16 +18,34 @@ export const PRIORITY_LABELS: Record<TaskPriority, string> = {
   HIGH: "Haute",
 };
 
+// Statut : pastille pleine (famille « état »).
 export const STATUS_STYLES: Record<TaskStatus, string> = {
   TODO: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
   IN_PROGRESS: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   DONE: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
 };
 
-export const PRIORITY_STYLES: Record<TaskPriority, string> = {
-  LOW: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
-  MEDIUM: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
-  HIGH: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+// Sélecteur de statut : mêmes couleurs que la pastille, pour que le contrôle
+// reflète l'état courant (et non un gris neutre).
+export const STATUS_SELECT: Record<TaskStatus, string> = {
+  TODO: "border-zinc-300 bg-zinc-50 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200",
+  IN_PROGRESS: "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300",
+  DONE: "border-green-300 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300",
+};
+
+// Priorité : famille visuellement distincte du statut — puce colorée + libellé
+// sur un chip bordé (forme différente de la pastille). La puce remplace l'aplat
+// rouge d'avant, ce qui désengorge le rouge sur les lignes.
+export const PRIORITY_DOT: Record<TaskPriority, string> = {
+  LOW: "bg-zinc-400 dark:bg-zinc-500",
+  MEDIUM: "bg-amber-500",
+  HIGH: "bg-red-500",
+};
+
+export const PRIORITY_TEXT: Record<TaskPriority, string> = {
+  LOW: "text-zinc-500 dark:text-zinc-400",
+  MEDIUM: "text-amber-700 dark:text-amber-300",
+  HIGH: "text-red-600 dark:text-red-400",
 };
 
 export function formatDate(

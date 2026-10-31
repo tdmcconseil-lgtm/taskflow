@@ -29,7 +29,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           </div>
           <div className="space-y-1">
             <label htmlFor="lastName" className="text-sm font-medium">
-              {t.auth.lastName} <span className="text-zinc-400 dark:text-zinc-300">{t.auth.optional}</span>
+              {t.auth.lastName} <span className="text-zinc-400 dark:text-zinc-500">{t.auth.optional}</span>
             </label>
             <input
               id="lastName"
@@ -65,7 +65,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           className={inputClass}
         />
-        {mode === "signup" && <p className="text-xs text-zinc-500 dark:text-zinc-300">{t.auth.passwordHint}</p>}
+        {mode === "signup" && <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.auth.passwordHint}</p>}
       </div>
 
       {state?.error && (
@@ -78,7 +78,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         {mode === "login" ? t.auth.signIn : t.auth.createAccount}
       </SubmitButton>
 
-      <p className="text-center text-sm text-zinc-500 dark:text-zinc-300">
+      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
         {mode === "login" ? (
           <>
             {t.auth.noAccount}{" "}

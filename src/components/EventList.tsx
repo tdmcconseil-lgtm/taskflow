@@ -15,7 +15,7 @@ export function EventList({
 }) {
   if (groups.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-300 dark:border-zinc-700">
+      <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
         {emptyLabel}
       </p>
     );
@@ -40,15 +40,15 @@ export function EventList({
                 <p className={`truncate ${g.unread ? "font-semibold" : "font-medium"}`}>
                   {g.task.title}
                 </p>
-                <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-300">
+                <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
                   {formatDateTime(g.createdAt, locale)}
                 </span>
               </div>
-              <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-300">
+              <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
                 <span className="text-zinc-600 dark:text-zinc-300">{g.actorName}</span>{" "}
                 {g.summary}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-300">{g.task.workspace}</p>
+              <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">{g.task.workspace}</p>
             </div>
           </Link>
         </li>

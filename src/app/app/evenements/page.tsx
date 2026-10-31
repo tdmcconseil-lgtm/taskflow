@@ -24,7 +24,7 @@ export default async function EvenementsPage({
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t.events.title}</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">{t.events.desc}</p>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.events.desc}</p>
         <div className="mt-3">
           <EventFilter hideMine={!includeOwn} />
         </div>

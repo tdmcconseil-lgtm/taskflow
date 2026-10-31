@@ -107,7 +107,7 @@ export function ReorderableSubtasks({
               {t.description && (
                 <p
                   className={`mt-0.5 line-clamp-1 text-sm ${
-                    done ? "text-zinc-400 dark:text-zinc-600" : "text-zinc-500 dark:text-zinc-300"
+                    done ? "text-zinc-400 dark:text-zinc-600" : "text-zinc-500 dark:text-zinc-400"
                   }`}
                 >
                   {t.description}
@@ -115,7 +115,7 @@ export function ReorderableSubtasks({
               )}
               <div
                 className={`mt-1 flex flex-wrap items-center gap-2 text-xs ${
-                  done ? "text-zinc-400 dark:text-zinc-600" : "text-zinc-500 dark:text-zinc-300"
+                  done ? "text-zinc-400 dark:text-zinc-600" : "text-zinc-500 dark:text-zinc-400"
                 }`}
               >
                 {t.assignee ? (
@@ -149,7 +149,7 @@ export function ReorderableSubtasks({
                 href={`/app/tasks/new?parent=${t.id}`}
                 draggable={false}
                 title={dict.task.addSubtask}
-                className="rounded-md px-2 py-1 text-sm text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
+                className="rounded-md px-2 py-1 text-sm text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 hover:text-indigo-600 dark:hover:bg-zinc-800"
               >
                 +
               </Link>

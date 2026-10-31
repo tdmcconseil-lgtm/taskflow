@@ -15,7 +15,7 @@ export function DeleteTaskButton({ taskId }: { taskId: string }) {
       <input type="hidden" name="taskId" value={taskId} />
       {confirming ? (
         <span className="inline-flex items-center gap-2">
-          <span className="text-sm text-zinc-500 dark:text-zinc-300">{t.task.confirmDelete}</span>
+          <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.task.confirmDelete}</span>
           <button type="submit" className={buttonClass("danger")}>
             {t.common.yes}
           </button>

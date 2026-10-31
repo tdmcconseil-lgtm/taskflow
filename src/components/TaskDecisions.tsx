@@ -42,11 +42,11 @@ export function TaskDecisions({
         <section className="space-y-3">
           <div>
             <h2 className="text-lg font-semibold">{t.decisions.projectDecisions}</h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-300">{t.decisions.projectDecisionsDesc}</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.decisions.projectDecisionsDesc}</p>
           </div>
 
           {projectDecisions.length === 0 ? (
-            <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.decisions.noProjectDecisions}</p>
+            <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.decisions.noProjectDecisions}</p>
           ) : (
             <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
               {projectDecisions.map((d) => (
@@ -54,7 +54,7 @@ export function TaskDecisions({
                   <p className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
                     {d.content}
                   </p>
-                  <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400 dark:text-zinc-300">
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
                     <span>
                       {d.authorName} · {formatDate(d.createdAt, locale)} · {t.decisions.inTask}{" "}
                       <Link href={`/app/tasks/${d.taskId}`} className="hover:underline">
@@ -89,7 +89,7 @@ export function TaskDecisions({
         </div>
 
         {decisions.length === 0 ? (
-          <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.decisions.noDecisions}</p>
+          <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.decisions.noDecisions}</p>
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {decisions.map((d) => (
@@ -97,7 +97,7 @@ export function TaskDecisions({
                 <p className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
                   {d.content}
                 </p>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-300">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
                   <span>
                     {d.authorName} · {formatDate(d.createdAt, locale)}
                   </span>
@@ -121,7 +121,7 @@ export function TaskDecisions({
                       className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition ${
                         d.isProjectDecision
                           ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300"
-                          : "border-zinc-300 text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                          : "border-zinc-300 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
                       }`}
                     >
                       <span aria-hidden>🏷️</span>
@@ -137,7 +137,7 @@ export function TaskDecisions({
                     <button
                       type="submit"
                       title={t.decisions.deleteTitle}
-                      className="rounded-md px-2 py-1 text-xs text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                      className="rounded-md px-2 py-1 text-xs text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                     >
                       {t.decisions.delete}
                     </button>

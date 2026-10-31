@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { setTaskStatus, type FormState } from "@/lib/actions/tasks";
-import { STATUS_ORDER } from "@/lib/labels";
+import { STATUS_ORDER, STATUS_SELECT } from "@/lib/labels";
 import { useT } from "@/lib/i18n/context";
 import type { TaskStatus } from "@/generated/prisma/client";
 
@@ -38,7 +38,7 @@ export function StatusSelect({
             e.currentTarget.form?.requestSubmit();
           }}
           aria-label="Changer le statut"
-          className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
+          className={`rounded-md border px-2.5 py-1.5 text-sm font-medium outline-none focus:ring-1 focus:ring-indigo-500 ${STATUS_SELECT[value]}`}
         >
           {STATUS_ORDER.map((s) => (
             <option key={s} value={s}>

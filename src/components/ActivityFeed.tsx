@@ -23,7 +23,7 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
   const t = useT();
   const locale = useLocale();
   if (activities.length === 0) {
-    return <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{t.activity.none}</p>;
+    return <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.activity.none}</p>;
   }
   return (
     <ul className="space-y-3">
@@ -36,7 +36,7 @@ export function ActivityFeed({ activities }: { activities: Activity[] }) {
           <p>
             <span className="font-medium text-zinc-700 dark:text-zinc-300">{a.actor.name}</span>{" "}
             {describeActivity(a, t)}
-            <span className="ml-1 text-xs text-zinc-400 dark:text-zinc-300">· {formatDateTime(a.createdAt, locale)}</span>
+            <span className="ml-1 text-xs text-zinc-400 dark:text-zinc-500">· {formatDateTime(a.createdAt, locale)}</span>
           </p>
         </li>
       ))}

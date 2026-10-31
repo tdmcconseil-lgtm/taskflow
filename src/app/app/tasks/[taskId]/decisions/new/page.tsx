@@ -41,11 +41,11 @@ export default async function NewDecisionPage({
     <div className="mx-auto max-w-xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Ajouter une décision</h1>
-        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 dark:text-zinc-300 hover:underline">
+        <Link href={`/app/tasks/${task.id}`} className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline">
           Annuler
         </Link>
       </div>
-      <p className="text-sm text-zinc-500 dark:text-zinc-300">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
         La décision sera ajoutée à « {task.title} ».
       </p>
       <div className={cardClass}>

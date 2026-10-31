@@ -42,7 +42,7 @@ export function TaskDocuments({
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm italic text-zinc-400 dark:text-zinc-300">{empty}</p>
+        <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{empty}</p>
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {items.map((d) => (
@@ -56,7 +56,7 @@ export function TaskDocuments({
               >
                 <span aria-hidden>📄</span>
                 <span className="truncate font-medium">{d.name}</span>
-                <span className="truncate text-xs text-zinc-400 dark:text-zinc-300">{d.fileName}</span>
+                <span className="truncate text-xs text-zinc-400 dark:text-zinc-500">{d.fileName}</span>
               </Link>
               {!isTopLevel && (
                 <form action={detachDocument}>
@@ -65,7 +65,7 @@ export function TaskDocuments({
                   <button
                     type="submit"
                     title={t.documents.detachTitle}
-                    className="shrink-0 rounded-md px-2 py-1 text-xs text-zinc-400 dark:text-zinc-300 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                    className="shrink-0 rounded-md px-2 py-1 text-xs text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                   >
                     {t.documents.detach}
                   </button>
