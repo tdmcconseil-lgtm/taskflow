@@ -30,6 +30,15 @@ enum ProjectVisibility {
   RESTRICTED // accessible au créateur, aux administrateurs et aux membres listés
 }
 
+// Formule d'abonnement d'un espace. Les limites associées sont définies en code
+// (src/lib/plans.ts), pas en base. Choisie par l'administrateur à la création
+// de l'espace, modifiable ensuite depuis la page d'administration.
+enum WorkspacePlan {
+  FREE
+  PRO
+  BUSINESS
+}
+
 // Statut d'avancement d'une tâche.
 enum TaskStatus {
   TODO
@@ -101,16 +110,40 @@ model User {
 
 // --- Espace de travail (équipe) ---
 model Workspace {
-  id         String    @id @default(cuid())
+  id         String        @id @default(cuid())
   name       String
+  // Formule d'abonnement (limites définies en code). Défaut : FREE.
+  plan       WorkspacePlan @default(FREE)
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   members     Membership[]
   tasks       Task[]
   invitations Invitation[]
   documents   Document[]
+  // Informations d'entreprise (volet Identité de l'administration), 1-1.
+  organizationProfile OrganizationProfile?
+}
+
+// --- Informations d'entreprise d'un espace (volet Identité) ---
+// Relation 1-1 avec Workspace, isolée pour ne pas alourdir le modèle principal.
+// Champs texte uniquement en v1 (le logo est prévu pour une itération ultérieure).
+model OrganizationProfile {
+  id           String   @id @default(cuid())
+  legalName    String // Raison sociale — requis (>= 2 caractères)
+  siret        String? // 14 chiffres si renseigné
+  vatNumber    String?
+  addressLine1 String?
+  postalCode   String?
+  city         String?
+  country      String   @default("France")
+  contactEmail String? // format email si renseigné
+  phone        String?
+  updatedAt    DateTime @updatedAt
+
+  workspaceId String    @unique
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 // --- Invitation à rejoindre un workspace (par email) ---

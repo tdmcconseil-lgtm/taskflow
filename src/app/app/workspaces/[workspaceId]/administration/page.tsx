@@ -7,6 +7,8 @@ import { Button, ButtonLink } from "@/components/Button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
 import { AdminTabs } from "@/components/AdminTabs";
+import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
+import { UsagePanel } from "@/components/UsagePanel";
 import {
   archiveWorkspace,
   unarchiveWorkspace,
@@ -44,7 +46,9 @@ export default async function WorkspaceAdminPage({
     select: {
       id: true,
       name: true,
+      plan: true,
       archivedAt: true,
+      organizationProfile: true,
       members: {
         orderBy: { createdAt: "asc" },
         select: {
@@ -62,6 +66,21 @@ export default async function WorkspaceAdminPage({
     },
   });
   if (!workspace) notFound();
+
+  // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée).
+  const [projectCount, pendingInviteCount, storageAgg] = await Promise.all([
+    prisma.task.count({ where: { workspaceId, parentId: null } }),
+    prisma.invitation.count({
+      where: { workspaceId, acceptedAt: null, expiresAt: { gt: new Date() } },
+    }),
+    prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
+  ]);
+  const usageMetrics = {
+    members: workspace.members.filter((m) => m.deactivatedAt === null).length,
+    projects: projectCount,
+    storageBytes: storageAgg._sum.size ?? 0,
+    pendingInvites: pendingInviteCount,
+  };
 
   const isArchived = workspace.archivedAt !== null;
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
@@ -193,6 +212,42 @@ export default async function WorkspaceAdminPage({
     </p>
   );
 
+  // Onglet Archivage (dernier onglet, réservé au propriétaire).
+  const archivagePanel = (
+    <section className={`${cardClass} space-y-4 border-red-200 dark:border-red-900`}>
+      <div>
+        <h2 className="text-base font-semibold text-red-800 dark:text-red-300">
+          {t.workspace.archiveSectionTitle}
+        </h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.archiveSectionDesc}</p>
+      </div>
+
+      {isArchived ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <form action={unarchiveWorkspace}>
+            <input type="hidden" name="workspaceId" value={workspace.id} />
+            <Button type="submit" variant="secondary">
+              {t.workspace.unarchive}
+            </Button>
+          </form>
+          <Link
+            href={`/app/workspaces/${workspace.id}/delete`}
+            className="rounded-lg border border-red-400 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
+          >
+            {t.workspace.deletePermanently}
+          </Link>
+        </div>
+      ) : (
+        <form action={archiveWorkspace}>
+          <input type="hidden" name="workspaceId" value={workspace.id} />
+          <Button type="submit" variant="secondary">
+            {t.workspace.archive}
+          </Button>
+        </form>
+      )}
+    </section>
+  );
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/30">
@@ -216,45 +271,23 @@ export default async function WorkspaceAdminPage({
       <AdminTabs
         memberCount={workspace.members.length}
         membres={membresPanel}
-        identite={comingSoon}
-        consommation={comingSoon}
+        identite={
+          <OrganizationProfileForm
+            workspaceId={workspace.id}
+            profile={workspace.organizationProfile}
+          />
+        }
+        consommation={
+          <UsagePanel
+            workspaceId={workspace.id}
+            plan={workspace.plan}
+            metrics={usageMetrics}
+            t={t}
+          />
+        }
         facturation={comingSoon}
+        archivage={isOwner ? archivagePanel : undefined}
       />
-
-      {isOwner && (
-        <section className={`${cardClass} space-y-4 border-red-200 dark:border-red-900`}>
-          <div>
-            <h2 className="text-base font-semibold text-red-800 dark:text-red-300">
-              {t.workspace.archiveSectionTitle}
-            </h2>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.archiveSectionDesc}</p>
-          </div>
-
-          {isArchived ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <form action={unarchiveWorkspace}>
-                <input type="hidden" name="workspaceId" value={workspace.id} />
-                <Button type="submit" variant="secondary">
-                  {t.workspace.unarchive}
-                </Button>
-              </form>
-              <Link
-                href={`/app/workspaces/${workspace.id}/delete`}
-                className="rounded-lg border border-red-400 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/50"
-              >
-                {t.workspace.deletePermanently}
-              </Link>
-            </div>
-          ) : (
-            <form action={archiveWorkspace}>
-              <input type="hidden" name="workspaceId" value={workspace.id} />
-              <Button type="submit" variant="secondary">
-                {t.workspace.archive}
-              </Button>
-            </form>
-          )}
-        </section>
-      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 import { createWorkspace, type FormState } from "@/lib/actions/workspaces";
+import { PLANS } from "@/lib/plans";
 import { useT } from "@/lib/i18n/context";
 
 export function WorkspaceForm() {
@@ -22,6 +23,20 @@ export function WorkspaceForm() {
           className={inputClass}
           placeholder={t.newWorkspace.namePlaceholder}
         />
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="plan" className={labelClass}>
+          {t.newWorkspace.planLabel}
+        </label>
+        <select id="plan" name="plan" defaultValue="FREE" className={inputClass}>
+          {PLANS.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.newWorkspace.planHint}</p>
       </div>
 
       {state?.error && <p className={errorClass}>{state.error}</p>}

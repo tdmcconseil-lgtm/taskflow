@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
+import { ensureOwner, ensureAdmin } from "@/lib/auth/guards";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
@@ -16,12 +17,16 @@ export type FormState = { error?: string } | undefined;
 
 const workspaceSchema = z.object({
   name: z.string().trim().min(2, "nameMin2"),
+  plan: z.enum(["FREE", "PRO", "BUSINESS"]).default("FREE"),
 });
 
 export async function createWorkspace(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
   const t = await getDictionary();
-  const parsed = workspaceSchema.safeParse({ name: formData.get("name") });
+  const parsed = workspaceSchema.safeParse({
+    name: formData.get("name"),
+    plan: formData.get("plan") || undefined,
+  });
   if (!parsed.success) {
     return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
@@ -29,33 +34,13 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
   await prisma.workspace.create({
     data: {
       name: parsed.data.name,
+      plan: parsed.data.plan,
       members: { create: { userId: user.id, role: "OWNER" } },
     },
   });
 
   revalidatePath("/app");
   redirect("/app");
-}
-
-// Seul le propriétaire peut archiver/supprimer un espace. Renvoie l'erreur
-// éventuelle, ou null si l'utilisateur est bien OWNER.
-async function ensureOwner(userId: string, workspaceId: string): Promise<string | null> {
-  const membership = await getMembership(userId, workspaceId);
-  if (!membership) return (await getDictionary()).errors.noWorkspaceAccess;
-  if (membership.role !== "OWNER") {
-    return (await getDictionary()).errors.ownerOnly;
-  }
-  return null;
-}
-
-// Administrateur = créateur (OWNER) ou administrateur (ADMIN).
-async function ensureAdmin(userId: string, workspaceId: string): Promise<string | null> {
-  const membership = await getMembership(userId, workspaceId);
-  if (!membership) return (await getDictionary()).errors.noWorkspaceAccess;
-  if (membership.role !== "OWNER" && membership.role !== "ADMIN") {
-    return (await getDictionary()).errors.adminOnly;
-  }
-  return null;
 }
 
 // Change le rôle d'un membre (admin uniquement ; le créateur n'est pas modifiable).

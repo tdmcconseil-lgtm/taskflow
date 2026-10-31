@@ -3,23 +3,26 @@
 import { useState, type ReactNode } from "react";
 import { useT } from "@/lib/i18n/context";
 
-type AdminTab = "membres" | "identite" | "consommation" | "facturation";
+type AdminTab = "membres" | "identite" | "consommation" | "facturation" | "archivage";
 
 // Onglets de la page d'administration de l'espace, sur le même modèle que
-// WorkspaceTabs. Pour l'instant : Membres (actif), puis Identité, Consommation
-// et Facturation (à venir).
+// WorkspaceTabs. Membres, Identité, Consommation, Facturation (à venir), puis —
+// en dernier et seulement pour le propriétaire — Archivage.
 export function AdminTabs({
   memberCount,
   membres,
   identite,
   consommation,
   facturation,
+  archivage,
 }: {
   memberCount: number;
   membres: ReactNode;
   identite: ReactNode;
   consommation: ReactNode;
   facturation: ReactNode;
+  // Onglet Archivage : fourni uniquement au propriétaire ; absent sinon.
+  archivage?: ReactNode;
 }) {
   const [active, setActive] = useState<AdminTab>("membres");
   const dict = useT();
@@ -29,6 +32,9 @@ export function AdminTabs({
     { key: "identite", label: dict.workspace.tabIdentity },
     { key: "consommation", label: dict.workspace.tabUsage },
     { key: "facturation", label: dict.workspace.tabBilling },
+    ...(archivage !== undefined
+      ? [{ key: "archivage" as const, label: dict.workspace.archiveSectionTitle }]
+      : []),
   ];
 
   return (
@@ -60,6 +66,7 @@ export function AdminTabs({
         <div hidden={active !== "identite"}>{identite}</div>
         <div hidden={active !== "consommation"}>{consommation}</div>
         <div hidden={active !== "facturation"}>{facturation}</div>
+        {archivage !== undefined && <div hidden={active !== "archivage"}>{archivage}</div>}
       </div>
     </div>
   );
