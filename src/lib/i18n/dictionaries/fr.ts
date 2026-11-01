@@ -141,6 +141,8 @@ const fr = {
     emailSent:
       "Email de confirmation envoyé à la nouvelle adresse. Cliquez sur le lien reçu pour valider.",
     emailChanged: "Votre adresse email a bien été modifiée.",
+    notifications: "Notifications",
+    notifSaved: "Préférences de notification enregistrées.",
   },
   members: {
     list: "Liste des membres associés à cet espace.",
@@ -301,6 +303,7 @@ const fr = {
     aspectDescription: "description",
     aspectSubtaskAdded: "sous-tâche ajoutée",
     aspectSubtaskRemoved: "sous-tâche supprimée",
+    followerAdded: "vous a ajouté comme suiveur",
   },
   events: {
     title: "Événements",
@@ -437,6 +440,57 @@ const fr = {
     resetSubject: "Réinitialisation de votre mot de passe getRIDA",
     resetBody:
       "Bonjour {name},\n\nUne demande de réinitialisation de mot de passe a été faite pour votre compte getRIDA. Pour choisir un nouveau mot de passe, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email : votre mot de passe actuel reste inchangé.\n\n— L'équipe getRIDA",
+    notifyMentionSubject: "{actor} vous a mentionné dans « {task} »",
+    notifyMentionBody:
+      "Bonjour {name},\n\n{actor} vous a mentionné dans la discussion de la tâche « {task} » ({workspace}) sur getRIDA.\n\nVoir la tâche :\n{url}",
+    notifyAssignedSubject: "Une tâche vous a été assignée : « {task} »",
+    notifyAssignedBody:
+      "Bonjour {name},\n\n{actor} vous a assigné la tâche « {task} » ({workspace}) sur getRIDA.\n\nVoir la tâche :\n{url}",
+    notifyFollowerSubject: "Vous suivez désormais « {task} »",
+    notifyFollowerBody:
+      "Bonjour {name},\n\n{actor} vous a ajouté comme suiveur de la tâche « {task} » ({workspace}) sur getRIDA. Vous recevrez désormais ses mises à jour.\n\nVoir la tâche :\n{url}",
+    notifyUpdateSubject: "Activité sur « {task} »",
+    notifyUpdateBody:
+      "Bonjour {name},\n\n{actor} {detail} — tâche « {task} » ({workspace}) sur getRIDA.\n\nVoir la tâche :\n{url}",
+    notifyFooter: "—\nGérer vos préférences de notification : {manage}\n\n— L'équipe getRIDA",
+    digestSubject: "Votre récapitulatif d'activité getRIDA",
+    digestIntro:
+      "Bonjour {name},\n\nVoici les nouveautés sur les tâches que vous suivez depuis votre dernier récapitulatif :",
+    digestTaskHeader: "{task} — {workspace}",
+    digestLine: "  · {actor} {detail}",
+    digestFooter:
+      "—\nVous recevez ce récapitulatif car vous suivez ces tâches.\nGérer vos préférences de notification : {manage}\n\n— L'équipe getRIDA",
+  },
+  notifications: {
+    intro:
+      "Choisissez comment getRIDA vous prévient par email. La lecture dans l'application annule les emails en attente : un membre actif ne reçoit presque rien.",
+    emailEnabled: "Recevoir des notifications par email",
+    channelInstant: "Immédiat",
+    channelDigest: "Récapitulatif",
+    channelOff: "Jamais",
+    digestCadence: "Fréquence du récapitulatif",
+    digestCadenceHint: "Regroupe les notifications « Récapitulatif » en un seul email.",
+    digestDaily: "Une fois par jour",
+    digestHourly: "Toutes les heures",
+    categories: {
+      mentions: { label: "Mentions (@moi)", hint: "Quand on vous mentionne dans une discussion." },
+      assignments: {
+        label: "Tâches qui me concernent",
+        hint: "Assignation ou ajout comme suiveur d'une tâche.",
+      },
+      discussions: {
+        label: "Discussions des tâches suivies",
+        hint: "Nouveaux messages, hors mentions.",
+      },
+      taskChanges: {
+        label: "Modifications des tâches suivies",
+        hint: "Statut, échéance, priorité, titre, sous-tâches…",
+      },
+      dueReminders: {
+        label: "Rappels d'échéance",
+        hint: "À l'approche de l'échéance d'une tâche qui vous est assignée.",
+      },
+    },
   },
   theme: {
     darkMode: "Mode sombre",

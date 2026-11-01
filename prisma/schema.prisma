@@ -66,6 +66,23 @@ enum TaskActivityType {
   SUBTASK_REMOVED
   COMMENT_ADDED
   MENTIONED
+  FOLLOWER_ADDED // ajouté comme suiveur d'une tâche (événement ciblé)
+}
+
+// Canal de livraison d'une catégorie de notification par email.
+//  - INSTANT : email immédiat (événement adressé, actionnable) ;
+//  - DIGEST  : regroupé dans le récapitulatif périodique ;
+//  - OFF      : jamais d'email (reste visible dans le flux in-app).
+enum NotifChannel {
+  INSTANT
+  DIGEST
+  OFF
+}
+
+// Cadence du récapitulatif (digest) d'un utilisateur.
+enum DigestFrequency {
+  HOURLY
+  DAILY
 }
 
 // --- Utilisateur ---
@@ -87,11 +104,15 @@ model User {
   photoUpdatedAt DateTime?
   // Date de dernière consultation de la page « Événements » (calcul des non-lus).
   eventsReadAt   DateTime?
+  // Curseur du digest email : borne basse du prochain récapitulatif.
+  lastDigestAt   DateTime?
   // Langue d'interface préférée (fr | en | es) ; sert de défaut à la connexion.
   locale         String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  notificationPreference NotificationPreference?
+  notificationOutbox     NotificationOutbox[]
   emailChanges  EmailChangeRequest[]
   passwordResets PasswordResetRequest[]
   memberships   Membership[]
@@ -382,6 +403,41 @@ model PasswordResetRequest {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// --- Préférences de notification email d'un utilisateur (1-1 avec User) ---
+// Cinq catégories métier (pas les 11 types techniques), chacune avec un canal
+// { INSTANT · DIGEST · OFF }, plus un interrupteur maître et la cadence du digest.
+// L'absence de ligne équivaut aux valeurs par défaut ci-dessous (opt-in sobre).
+model NotificationPreference {
+  id              String          @id @default(cuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailEnabled    Boolean         @default(true)
+  mentions        NotifChannel    @default(INSTANT)
+  assignments     NotifChannel    @default(INSTANT)
+  discussions     NotifChannel    @default(DIGEST)
+  taskChanges     NotifChannel    @default(DIGEST)
+  dueReminders    NotifChannel    @default(INSTANT)
+  digestFrequency DigestFrequency @default(DAILY)
+  updatedAt       DateTime        @updatedAt
+}
+
+// --- File d'envoi + journal anti-doublon des notifications email ---
+// Une ligne = un fait à notifier à un utilisateur. @@unique(userId, activityId)
+// garantit qu'un même événement n'est jamais mailé deux fois (instantané puis
+// digest). activityId null = envoi sans activité liée (ex. digest, rappel).
+model NotificationOutbox {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String? // lien TaskActivity (null pour digests / rappels)
+  kind       String // INSTANT_MENTION, INSTANT_ASSIGN, INSTANT_FOLLOWER, DIGEST…
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, activityId])
+  @@index([userId, sentAt])
 }
 
 // --- Demande de changement d'email (confirmation par lien envoyé au nouvel email) ---

@@ -154,6 +154,18 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
 
   // Journal : création (+ sous-tâche ajoutée côté parent).
   await logActivity({ taskId: task.id, actorId: user.id, type: "CREATED" });
+  // Tâche créée déjà assignée à quelqu'un d'autre : événement adressé à l'assigné
+  // (comme une assignation ultérieure), pour qu'il puisse en être notifié.
+  if (assigneeId && assigneeId !== user.id) {
+    const a = await prisma.user.findUnique({ where: { id: assigneeId }, select: { name: true } });
+    await logActivity({
+      taskId: task.id,
+      actorId: user.id,
+      type: "ASSIGNED",
+      targetName: a?.name ?? null,
+      targetUserId: assigneeId,
+    });
+  }
   if (parentId) {
     await logActivity({
       taskId: parentId,
@@ -255,7 +267,10 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
     await logActivity({ taskId: old.id, actorId: user.id, type: "DUE_DATE_CHANGED", fromValue: formatDate(old.dueDate), toValue: formatDate(dueDate), groupId });
   }
   if ((old.assigneeId ?? null) !== (assigneeId ?? null)) {
-    await logActivity({ taskId: old.id, actorId: user.id, type: "ASSIGNED", fromValue: old.assignee?.name ?? null, targetName: assigneeName, groupId });
+    // targetUserId = le nouvel assigné : l'événement lui est adressé (il le voit
+    // dans son flux et peut être notifié en instantané). Une désassignation
+    // (assigneeId null) reste un événement de tâche visible par les suiveurs.
+    await logActivity({ taskId: old.id, actorId: user.id, type: "ASSIGNED", fromValue: old.assignee?.name ?? null, targetName: assigneeName, targetUserId: assigneeId ?? undefined, groupId });
   }
 
   revalidatePath(`/app/tasks/${old.id}`);

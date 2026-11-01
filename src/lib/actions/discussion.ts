@@ -195,7 +195,24 @@ export async function addFollower(formData: FormData): Promise<void> {
   if (!(await getMembership(user.id, task.workspaceId))) return;
   if (!(await getMembership(userId, task.workspaceId))) return;
 
+  // Ne notifier (et ne journaliser) que si la personne ne suivait pas déjà la
+  // tâche : réajouter un suiveur existant ne doit pas renvoyer d'email.
+  const existing = await prisma.taskFollow.findUnique({
+    where: { userId_taskId: { userId, taskId: task.id } },
+    select: { following: true },
+  });
   await ensureFollow(userId, task.id);
+
+  if (userId !== user.id && !existing?.following) {
+    // Événement adressé à la personne ajoutée (instantané possible).
+    await logActivity({
+      taskId: task.id,
+      actorId: user.id,
+      type: "FOLLOWER_ADDED",
+      targetUserId: userId,
+    });
+  }
+
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath("/app", "layout");
 }

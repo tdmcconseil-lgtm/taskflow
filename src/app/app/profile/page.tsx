@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { NameForm, EmailForm, PasswordForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { NotificationSettings } from "@/components/NotificationSettings";
+import { getEffectivePreference } from "@/lib/notify";
 import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 
@@ -32,6 +34,8 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
   });
   if (!user) return null;
 
+  const notifPref = await getEffectivePreference(user.id);
+
   const banner =
     sp.saved === "1"
       ? t.profile.savedProfile
@@ -41,7 +45,9 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
           ? t.profile.emailSent
           : sp.emailChanged === "1"
             ? t.profile.emailChanged
-            : null;
+            : sp.notifSaved === "1"
+              ? t.profile.notifSaved
+              : null;
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -104,6 +110,14 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
           {t.profile.password}
         </h2>
         <PasswordForm />
+      </section>
+
+      {/* Notifications */}
+      <section id="notifications" className={cardClass}>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          {t.profile.notifications}
+        </h2>
+        <NotificationSettings pref={notifPref} />
       </section>
     </div>
   );

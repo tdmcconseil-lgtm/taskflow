@@ -142,6 +142,8 @@ const es: Dictionary = {
     emailSent:
       "Correo de confirmación enviado a la nueva dirección. Haz clic en el enlace recibido para validar.",
     emailChanged: "Tu dirección de correo ha sido modificada.",
+    notifications: "Notificaciones",
+    notifSaved: "Preferencias de notificación guardadas.",
   },
   members: {
     list: "Miembros de este espacio.",
@@ -302,6 +304,7 @@ const es: Dictionary = {
     aspectDescription: "descripción",
     aspectSubtaskAdded: "subtarea añadida",
     aspectSubtaskRemoved: "subtarea eliminada",
+    followerAdded: "te añadió como seguidor",
   },
   events: {
     title: "Eventos",
@@ -438,6 +441,57 @@ const es: Dictionary = {
     resetSubject: "Restablece tu contraseña de getRIDA",
     resetBody:
       "Hola {name},\n\nSe ha solicitado restablecer la contraseña de tu cuenta de getRIDA. Para elegir una nueva contraseña, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no has solicitado este cambio, ignora este correo: tu contraseña actual no cambia.\n\n— El equipo de getRIDA",
+    notifyMentionSubject: "{actor} te mencionó en «{task}»",
+    notifyMentionBody:
+      "Hola {name},\n\n{actor} te mencionó en la discusión de la tarea «{task}» ({workspace}) en getRIDA.\n\nVer la tarea:\n{url}",
+    notifyAssignedSubject: "Se te ha asignado una tarea: «{task}»",
+    notifyAssignedBody:
+      "Hola {name},\n\n{actor} te asignó la tarea «{task}» ({workspace}) en getRIDA.\n\nVer la tarea:\n{url}",
+    notifyFollowerSubject: "Ahora sigues «{task}»",
+    notifyFollowerBody:
+      "Hola {name},\n\n{actor} te añadió como seguidor de la tarea «{task}» ({workspace}) en getRIDA. A partir de ahora recibirás sus novedades.\n\nVer la tarea:\n{url}",
+    notifyUpdateSubject: "Actividad en «{task}»",
+    notifyUpdateBody:
+      "Hola {name},\n\n{actor} {detail} — tarea «{task}» ({workspace}) en getRIDA.\n\nVer la tarea:\n{url}",
+    notifyFooter: "—\nGestiona tus preferencias de notificación: {manage}\n\n— El equipo de getRIDA",
+    digestSubject: "Tu resumen de actividad de getRIDA",
+    digestIntro:
+      "Hola {name},\n\nEstas son las novedades de las tareas que sigues desde tu último resumen:",
+    digestTaskHeader: "{task} — {workspace}",
+    digestLine: "  · {actor} {detail}",
+    digestFooter:
+      "—\nRecibes este resumen porque sigues estas tareas.\nGestiona tus preferencias de notificación: {manage}\n\n— El equipo de getRIDA",
+  },
+  notifications: {
+    intro:
+      "Elige cómo te avisa getRIDA por correo. Leer en la aplicación cancela los correos pendientes: un miembro activo casi no recibe nada.",
+    emailEnabled: "Recibir notificaciones por correo",
+    channelInstant: "Inmediato",
+    channelDigest: "Resumen",
+    channelOff: "Nunca",
+    digestCadence: "Frecuencia del resumen",
+    digestCadenceHint: "Agrupa las notificaciones «Resumen» en un solo correo.",
+    digestDaily: "Una vez al día",
+    digestHourly: "Cada hora",
+    categories: {
+      mentions: { label: "Menciones (@yo)", hint: "Cuando alguien te menciona en una discusión." },
+      assignments: {
+        label: "Tareas que me conciernen",
+        hint: "Asignación o inclusión como seguidor de una tarea.",
+      },
+      discussions: {
+        label: "Discusiones de las tareas seguidas",
+        hint: "Nuevos mensajes, excepto menciones.",
+      },
+      taskChanges: {
+        label: "Cambios en las tareas seguidas",
+        hint: "Estado, fecha límite, prioridad, título, subtareas…",
+      },
+      dueReminders: {
+        label: "Recordatorios de vencimiento",
+        hint: "Cuando se acerca la fecha límite de una tarea asignada a ti.",
+      },
+    },
   },
   theme: {
     darkMode: "Modo oscuro",

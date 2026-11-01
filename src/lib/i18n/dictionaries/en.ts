@@ -142,6 +142,8 @@ const en: Dictionary = {
     emailSent:
       "Confirmation email sent to the new address. Click the link you receive to confirm.",
     emailChanged: "Your email address has been changed.",
+    notifications: "Notifications",
+    notifSaved: "Notification preferences saved.",
   },
   members: {
     list: "Members of this workspace.",
@@ -302,6 +304,7 @@ const en: Dictionary = {
     aspectDescription: "description",
     aspectSubtaskAdded: "subtask added",
     aspectSubtaskRemoved: "subtask removed",
+    followerAdded: "added you as a follower",
   },
   events: {
     title: "Events",
@@ -438,6 +441,57 @@ const en: Dictionary = {
     resetSubject: "Reset your getRIDA password",
     resetBody:
       "Hello {name},\n\nA password reset was requested for your getRIDA account. To choose a new password, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf you did not make this request, ignore this email: your current password stays unchanged.\n\n— The getRIDA team",
+    notifyMentionSubject: "{actor} mentioned you in “{task}”",
+    notifyMentionBody:
+      "Hello {name},\n\n{actor} mentioned you in the discussion of the task “{task}” ({workspace}) on getRIDA.\n\nView the task:\n{url}",
+    notifyAssignedSubject: "A task was assigned to you: “{task}”",
+    notifyAssignedBody:
+      "Hello {name},\n\n{actor} assigned you the task “{task}” ({workspace}) on getRIDA.\n\nView the task:\n{url}",
+    notifyFollowerSubject: "You are now following “{task}”",
+    notifyFollowerBody:
+      "Hello {name},\n\n{actor} added you as a follower of the task “{task}” ({workspace}) on getRIDA. You will now receive its updates.\n\nView the task:\n{url}",
+    notifyUpdateSubject: "Activity on “{task}”",
+    notifyUpdateBody:
+      "Hello {name},\n\n{actor} {detail} — task “{task}” ({workspace}) on getRIDA.\n\nView the task:\n{url}",
+    notifyFooter: "—\nManage your notification preferences: {manage}\n\n— The getRIDA team",
+    digestSubject: "Your getRIDA activity digest",
+    digestIntro:
+      "Hello {name},\n\nHere is what's new on the tasks you follow since your last digest:",
+    digestTaskHeader: "{task} — {workspace}",
+    digestLine: "  · {actor} {detail}",
+    digestFooter:
+      "—\nYou receive this digest because you follow these tasks.\nManage your notification preferences: {manage}\n\n— The getRIDA team",
+  },
+  notifications: {
+    intro:
+      "Choose how getRIDA emails you. Reading in the app cancels pending emails: an active member gets almost nothing.",
+    emailEnabled: "Receive email notifications",
+    channelInstant: "Immediate",
+    channelDigest: "Digest",
+    channelOff: "Never",
+    digestCadence: "Digest frequency",
+    digestCadenceHint: "Groups “Digest” notifications into a single email.",
+    digestDaily: "Once a day",
+    digestHourly: "Every hour",
+    categories: {
+      mentions: { label: "Mentions (@me)", hint: "When someone mentions you in a discussion." },
+      assignments: {
+        label: "Tasks involving me",
+        hint: "Assignment or being added as a follower of a task.",
+      },
+      discussions: {
+        label: "Discussions on followed tasks",
+        hint: "New messages, excluding mentions.",
+      },
+      taskChanges: {
+        label: "Changes to followed tasks",
+        hint: "Status, due date, priority, title, subtasks…",
+      },
+      dueReminders: {
+        label: "Due-date reminders",
+        hint: "As the due date of a task assigned to you approaches.",
+      },
+    },
   },
   theme: {
     darkMode: "Dark mode",
