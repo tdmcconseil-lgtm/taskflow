@@ -6,7 +6,7 @@ import { useT } from "@/lib/i18n/context";
 import { buttonClass } from "@/components/Button";
 
 // Grille tarifaire de la page d'accueil. Bascule mensuel / annuel (annuel =
-// 2 mois offerts, soit prix mensuel × 10 par an). Tarif plat par siège.
+// 2 mois offerts, soit prix mensuel × 10 par an). Tarif plat par utilisateur.
 const MONTHLY = { free: 0, pro: 3, business: 6 } as const;
 
 export function PricingTable() {

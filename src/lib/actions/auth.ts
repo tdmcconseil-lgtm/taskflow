@@ -41,21 +41,11 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
 
   const passwordHash = await hashPassword(password);
 
-  // L'utilisateur est créé avec son propre espace de travail (dont il est OWNER).
+  // Aucun espace n'est créé par défaut : la personne arrive sur son tableau de
+  // bord, qui lui propose de créer son premier espace (en choisissant d'abord
+  // une formule). Elle peut aussi n'en avoir aucun si elle rejoint par invitation.
   const user = await prisma.user.create({
-    data: {
-      firstName,
-      lastName,
-      name,
-      email,
-      passwordHash,
-      memberships: {
-        create: {
-          role: "OWNER",
-          workspace: { create: { name: `Espace de ${firstName}` } },
-        },
-      },
-    },
+    data: { firstName, lastName, name, email, passwordHash },
   });
 
   await createSession({ userId: user.id });

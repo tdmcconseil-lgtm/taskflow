@@ -128,6 +128,10 @@ const en: Dictionary = {
     projectsWord: "projects",
     memberWord: "member",
     membersWord: "members",
+    welcomeTitle: "Welcome to getRIDA 🎉",
+    welcomeDesc:
+      "To get started, create your first workspace. You'll choose a plan first, then add projects, tasks and teammates.",
+    createFirst: "Create my workspace",
   },
   profile: {
     back: "Home",
@@ -328,6 +332,7 @@ const en: Dictionary = {
     namePlaceholder: "e.g. Marketing Team",
     planLabel: "Plan",
     planHint: "You can change it later in the workspace administration.",
+    planStep: "Choose your plan",
     create: "Create workspace",
   },
   deleteWorkspace: {
@@ -500,7 +505,7 @@ const en: Dictionary = {
     signIn: "Sign in",
     signUp: "Sign up",
     openApp: "Open my workspace",
-    heroTitle: "Project management, at the price of storage",
+    heroTitle: "Your collaborative project management tool",
     heroSubtitle:
       "Projects, tasks, discussions and decisions in one place — for the whole team, without paying a premium.",
     heroPrimary: "Start for free",

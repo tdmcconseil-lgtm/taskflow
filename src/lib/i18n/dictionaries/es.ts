@@ -128,6 +128,10 @@ const es: Dictionary = {
     projectsWord: "proyectos",
     memberWord: "miembro",
     membersWord: "miembros",
+    welcomeTitle: "Bienvenido a getRIDA 🎉",
+    welcomeDesc:
+      "Para empezar, crea tu primer espacio de trabajo. Primero elegirás un plan y luego podrás añadir proyectos, tareas y colaboradores.",
+    createFirst: "Crear mi espacio",
   },
   profile: {
     back: "Inicio",
@@ -328,6 +332,7 @@ const es: Dictionary = {
     namePlaceholder: "Ej. Equipo de Marketing",
     planLabel: "Plan",
     planHint: "Podrás cambiarlo más tarde en la administración del espacio.",
+    planStep: "Elige tu plan",
     create: "Crear el espacio",
   },
   deleteWorkspace: {
@@ -500,7 +505,7 @@ const es: Dictionary = {
     signIn: "Iniciar sesión",
     signUp: "Registrarse",
     openApp: "Abrir mi espacio",
-    heroTitle: "Gestión de proyectos, al precio del almacenamiento",
+    heroTitle: "Tu herramienta colaborativa de gestión de proyectos",
     heroSubtitle:
       "Proyectos, tareas, debates y decisiones en un solo lugar — para todo el equipo, sin pagar de más.",
     heroPrimary: "Empezar gratis",

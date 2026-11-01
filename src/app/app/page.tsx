@@ -37,6 +37,30 @@ export default async function DashboardPage() {
     }),
   ]);
 
+  // Premier pas : aucun espace (ni actif, ni archivé). On accueille la personne
+  // sur son tableau de bord et on lui propose de créer son premier espace, en
+  // commençant par le choix de la formule (page dédiée /workspaces/new).
+  if (workspaces.length === 0 && archivedWorkspaces.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t.dashboard.greeting} {user.name} 👋
+        </h1>
+        <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 className="text-lg font-semibold">{t.dashboard.welcomeTitle}</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
+            {t.dashboard.welcomeDesc}
+          </p>
+          <div className="mt-6">
+            <ButtonLink href="/app/workspaces/new" variant="primary">
+              {t.dashboard.createFirst}
+            </ButtonLink>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-10">
       <div>
