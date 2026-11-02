@@ -104,9 +104,11 @@ export function PlanAndBudgetForm({
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
-          {/* Formule : libellé puis pastille/menu à la suite (même emplacement). */}
+          {/* Formule : libellé puis pastille/menu à la suite (même emplacement).
+              Hauteur de ligne figée pour que le passage en édition ne décale
+              rien — seule l'apparence du champ change. */}
           <div>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex min-h-[36px] flex-wrap items-center gap-x-3 gap-y-1">
               <label htmlFor="plan" className={labelCls}>
                 {t.usage.plan}
               </label>
@@ -116,7 +118,7 @@ export function PlanAndBudgetForm({
                   name="plan"
                   value={sel}
                   onChange={(e) => setSel(e.target.value as WorkspacePlan)}
-                  className="block rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
+                  className="block h-9 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-semibold shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
                 >
                   {PLANS.map((p) => (
                     <option key={p} value={p}>
@@ -139,7 +141,7 @@ export function PlanAndBudgetForm({
           {/* Plafond mensuel de paiement, sous l'offre : libellé puis valeur
               (champ + « € » à droite en édition). */}
           {showCap && (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex min-h-[36px] flex-wrap items-center gap-x-3 gap-y-1">
               <label htmlFor="budgetEuros" className={labelCls}>
                 {t.usage.capMonthlyLabel}
               </label>
@@ -153,7 +155,7 @@ export function PlanAndBudgetForm({
                     step="1"
                     value={euros}
                     onChange={(e) => setEuros(e.target.value)}
-                    className="w-28 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
+                    className="h-9 w-28 rounded-lg border border-zinc-300 bg-white px-3 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
                   />
                   <span>€</span>
                 </div>
