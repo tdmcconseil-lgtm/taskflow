@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
@@ -52,10 +51,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <Link href="/app" className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline">
-          ← {t.profile.back}
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.profile.title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t.profile.title}</h1>
       </div>
 
       {banner && (
