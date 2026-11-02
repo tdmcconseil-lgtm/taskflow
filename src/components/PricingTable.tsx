@@ -1,26 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
 import { buttonClass } from "@/components/Button";
 
-// Grille tarifaire de la page d'accueil. Bascule mensuel / annuel (annuel =
-// 2 mois offerts, soit prix mensuel × 10 par an). Tarif plat par utilisateur.
+// Grille tarifaire de la page d'accueil. Tarif plat mensuel par utilisateur
+// (pas d'offre annuelle).
 const MONTHLY = { free: 0, pro: 3, business: 6 } as const;
 
 export function PricingTable() {
   const t = useT();
-  const [yearly, setYearly] = useState(false);
 
-  // Montant affiché pour un plan selon la périodicité (Free reste « 0 € »).
+  // Montant mensuel affiché pour un plan (Free reste « 0 € »).
   function amount(plan: keyof typeof MONTHLY): string {
     const m = MONTHLY[plan];
     if (m === 0) return t.landing.freePrice;
-    return `${yearly ? m * 10 : m} €`;
+    return `${m} €`;
   }
   const suffix = (plan: keyof typeof MONTHLY) =>
-    MONTHLY[plan] === 0 ? "" : yearly ? t.landing.perYear : t.landing.perMonth;
+    MONTHLY[plan] === 0 ? "" : t.landing.perMonth;
 
   const plans = [
     {
@@ -57,35 +55,6 @@ export function PricingTable() {
 
   return (
     <div>
-      {/* Bascule mensuel / annuel */}
-      <div className="mb-8 flex items-center justify-center gap-3">
-        <span className={`text-sm ${!yearly ? "font-semibold" : "text-zinc-500 dark:text-zinc-400"}`}>
-          {t.landing.billingMonthly}
-        </span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={yearly}
-          aria-label={t.landing.billingYearly}
-          onClick={() => setYearly((y) => !y)}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-            yearly ? "bg-indigo-600" : "bg-zinc-300 dark:bg-zinc-600"
-          }`}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-              yearly ? "translate-x-5" : "translate-x-0.5"
-            }`}
-          />
-        </button>
-        <span className={`text-sm ${yearly ? "font-semibold" : "text-zinc-500 dark:text-zinc-400"}`}>
-          {t.landing.billingYearly}
-          <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-950/50 dark:text-green-300">
-            {t.landing.billingYearlyNote}
-          </span>
-        </span>
-      </div>
-
       {/* Cartes d'offres */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {plans.map((p) => (

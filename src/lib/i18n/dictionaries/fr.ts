@@ -590,7 +590,7 @@ const fr = {
     proSpec: "Essai gratuit 1 mois",
     businessSeats: "Illimités",
     businessStorage: "20 Go / utilisateur",
-    businessSpec: "SSO, SLA, facturation annuelle",
+    businessSpec: "SSO, SLA, support dédié",
     freeCta: "Créer un espace",
     proCta: "Essayer Pro",
     businessCta: "Nous contacter",

@@ -590,7 +590,7 @@ const en: Dictionary = {
     proSpec: "Free 1-month trial",
     businessSeats: "Unlimited",
     businessStorage: "20 GB / user",
-    businessSpec: "SSO, SLA, annual billing",
+    businessSpec: "SSO, SLA, dedicated support",
     freeCta: "Create a workspace",
     proCta: "Try Pro",
     businessCta: "Contact us",
