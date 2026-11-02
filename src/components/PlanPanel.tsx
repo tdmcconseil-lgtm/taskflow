@@ -1,12 +1,13 @@
-import { PLAN_LIMITS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
+import { type WorkspacePlan } from "@/lib/plans";
 import { type SeatIssue } from "@/lib/billing/budget";
 import { PlanAndBudgetForm } from "@/components/PlanAndBudgetForm";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
-// Volet Formule (premier onglet de l'administration) : récapitule la formule de
-// l'espace, et propose de changer OFFRE + PLAFOND en une seule opération
-// (PlanAndBudgetForm). Un changement dont les membres actifs dépasseraient les
-// sièges autorisés est bloqué côté serveur et renvoie ici avec un message.
+// Volet Formule (premier onglet de l'administration) : l'encart de description
+// de l'abonnement (récap + bouton « Modifier » en haut à droite) et le
+// formulaire offre + plafond sont rendus par PlanAndBudgetForm. Un changement
+// dont les membres actifs dépasseraient les sièges autorisés est bloqué côté
+// serveur et renvoie ici avec un message (le formulaire se rouvre d'emblée).
 export function PlanPanel({
   workspaceId,
   plan,
@@ -24,16 +25,6 @@ export function PlanPanel({
   triedPlan: WorkspacePlan | null;
   t: Dictionary;
 }) {
-  const limits = PLAN_LIMITS[plan];
-  const fmt = (n: number) => (Number.isFinite(n) ? String(n) : t.usage.unlimited);
-
-  const rows = [
-    { label: t.usage.members, value: fmt(limits.members) },
-    { label: t.usage.projects, value: fmt(limits.projects) },
-    { label: t.usage.storage, value: formatStorageMb(limits.storageMb) },
-    { label: t.usage.pendingInvites, value: fmt(limits.pendingInvites) },
-  ];
-
   return (
     <div className="space-y-6">
       {planError && (
@@ -46,32 +37,10 @@ export function PlanPanel({
 
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.planRecapDesc}</p>
 
-      <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.plan}</span>
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
-            {plan}
-          </span>
-        </div>
-
-        <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-          {t.usage.includes}
-        </p>
-        <ul className="mt-2 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
-          {rows.map((r) => (
-            <li key={r.label} className="flex justify-between gap-3 text-sm">
-              <span className="text-zinc-500 dark:text-zinc-400">{r.label}</span>
-              <span className="font-medium">{r.value}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Récap statique ci-dessus ; le formulaire ne s'ouvre qu'au clic sur
-          « Modifier » (ou d'emblée si le serveur a refusé un changement). */}
       <PlanAndBudgetForm
         workspaceId={workspaceId}
-        plan={triedPlan ?? plan}
+        plan={plan}
+        triedPlan={triedPlan}
         budgetCapCents={budgetCapCents}
         activeMembers={activeMembers}
         defaultOpen={planError != null}
