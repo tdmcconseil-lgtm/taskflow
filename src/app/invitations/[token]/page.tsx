@@ -3,6 +3,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/lib/auth/tokens";
 import { AcceptInvitationForm } from "@/components/AcceptInvitationForm";
+import { getSession } from "@/lib/auth/session";
+import { buttonClass } from "@/components/Button";
+import { logoutAndReturn } from "@/lib/actions/workspaces";
 import { getDictionary } from "@/lib/i18n/server";
 
 export const metadata: Metadata = { title: "Invitation — getRIDA" };
@@ -57,6 +60,37 @@ export default async function AcceptInvitationPage({
         >
           {t.invitePage.goToLogin}
         </Link>
+      </Card>
+    );
+  }
+
+  // Garde-fou : si une AUTRE session est déjà ouverte sur ce poste, on exige
+  // d'abord la déconnexion — sinon l'invitation pourrait être acceptée sous la
+  // mauvaise identité (et un email sans compte sauterait la création de profil).
+  // Même compte que l'email invité = on laisse rejoindre sans friction.
+  const session = await getSession();
+  const sessionUser = session
+    ? await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { name: true, email: true },
+      })
+    : null;
+  if (sessionUser && sessionUser.email !== invitation.email) {
+    return (
+      <Card>
+        <h1 className="text-2xl font-semibold tracking-tight">{t.common.appName}</h1>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          {t.invitePage.loggedInAs.replace("{name}", sessionUser.name)}{" "}
+          {t.invitePage.signOutToContinue
+            .replace("{workspace}", invitation.workspace.name)
+            .replace("{email}", invitation.email)}
+        </p>
+        <form action={logoutAndReturn} className="mt-6">
+          <input type="hidden" name="token" value={token} />
+          <button type="submit" className={`${buttonClass("primary")} w-full`}>
+            {t.invitePage.signOutAndContinue}
+          </button>
+        </form>
       </Card>
     );
   }

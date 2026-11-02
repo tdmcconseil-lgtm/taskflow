@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { ensureOwner, ensureAdmin } from "@/lib/auth/guards";
 import { hashPassword } from "@/lib/auth/password";
-import { createSession } from "@/lib/auth/session";
+import { createSession, getSession, destroySession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail, workspaceAddedEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
@@ -412,6 +412,7 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
       );
       if (issue) return { error: t.errors[issue] };
     }
+    const session = await getSession();
     await prisma.$transaction([
       ...(already
         ? []
@@ -429,6 +430,13 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
         data: { acceptedAt: new Date() },
       }),
     ]);
+    // Déjà connecté avec le bon compte → accès direct. Sinon (aucune session, ou
+    // une AUTRE session ouverte sur ce poste), on la nettoie et on renvoie se
+    // connecter : l'invitation reste liée à l'identité de l'email invité.
+    if (session?.userId === existingUser.id) {
+      redirect("/app");
+    }
+    await destroySession();
     redirect("/login");
   }
 
@@ -472,4 +480,13 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
 
   await createSession({ userId: newUser.id });
   redirect("/app");
+}
+
+// Déconnecte la session en cours puis revient sur la page d'invitation : garantit
+// qu'une invitation est acceptée sous l'identité de l'email invité, jamais sous
+// une autre session déjà ouverte sur le poste.
+export async function logoutAndReturn(formData: FormData): Promise<void> {
+  const token = String(formData.get("token") ?? "");
+  await destroySession();
+  redirect(token ? `/invitations/${token}` : "/login");
 }

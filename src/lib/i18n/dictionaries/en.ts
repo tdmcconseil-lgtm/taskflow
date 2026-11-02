@@ -453,6 +453,9 @@ const en: Dictionary = {
     createToAccept: "Create your account to accept.",
     alreadyAccount: "You already have a getRIDA account — join the workspace, then sign in.",
     join: "Join workspace",
+    loggedInAs: "You’re signed in as {name}.",
+    signOutToContinue: "To join “{workspace}” as {email}, sign out first.",
+    signOutAndContinue: "Sign out and continue",
   },
   forgotPassword: {
     title: "Forgot password",

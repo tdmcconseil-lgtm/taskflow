@@ -453,6 +453,9 @@ const es: Dictionary = {
     createToAccept: "Crea tu cuenta para aceptar.",
     alreadyAccount: "Ya tienes una cuenta de getRIDA: únete al espacio y luego inicia sesión.",
     join: "Unirse al espacio",
+    loggedInAs: "Has iniciado sesión como {name}.",
+    signOutToContinue: "Para unirte a «{workspace}» como {email}, cierra sesión primero.",
+    signOutAndContinue: "Cerrar sesión y continuar",
   },
   forgotPassword: {
     title: "Contraseña olvidada",

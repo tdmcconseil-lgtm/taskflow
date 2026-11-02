@@ -452,6 +452,9 @@ const fr = {
     createToAccept: "Créez votre compte pour accepter.",
     alreadyAccount: "Vous avez déjà un compte getRIDA — rejoignez l'espace puis connectez-vous.",
     join: "Rejoindre l'espace",
+    loggedInAs: "Vous êtes connecté avec le compte {name}.",
+    signOutToContinue: "Pour rejoindre « {workspace} » avec {email}, déconnectez-vous d'abord.",
+    signOutAndContinue: "Se déconnecter et continuer",
   },
   forgotPassword: {
     title: "Mot de passe oublié",
