@@ -30,7 +30,9 @@ export default async function AttachDocumentPage({
     select: {
       id: true,
       name: true,
+      kind: true,
       fileName: true,
+      url: true,
       createdAt: true,
       uploadedBy: { select: { name: true } },
     },
@@ -61,11 +63,11 @@ export default async function AttachDocumentPage({
             >
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-sm font-medium">
-                  <span aria-hidden>📄</span>
+                  <span aria-hidden>{d.kind === "LINK" ? "🔗" : "📄"}</span>
                   <span className="truncate">{d.name}</span>
                 </p>
                 <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-zinc-500">
-                  {d.fileName} · {d.uploadedBy.name} · {formatDate(d.createdAt, locale)}
+                  {(d.kind === "LINK" ? d.url : d.fileName) ?? "—"} · {d.uploadedBy.name} · {formatDate(d.createdAt, locale)}
                 </p>
               </div>
               <form action={attachDocument}>

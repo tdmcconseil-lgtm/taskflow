@@ -30,9 +30,11 @@ export default async function DocumentPage({
     select: {
       id: true,
       name: true,
+      kind: true,
       fileName: true,
       mime: true,
       size: true,
+      url: true,
       createdAt: true,
       workspaceId: true,
       uploadedBy: { select: ASSIGNEE_SELECT },
@@ -47,6 +49,7 @@ export default async function DocumentPage({
   if (!(await getMembership(user.id, doc.workspaceId))) notFound();
 
   const uploader = toAssigneeInfo(doc.uploadedBy);
+  const isLink = doc.kind === "LINK";
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -61,15 +64,37 @@ export default async function DocumentPage({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <span aria-hidden>📄</span>
+            <span aria-hidden>{isLink ? "🔗" : "📄"}</span>
             {doc.name}
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{doc.fileName}</p>
+          {isLink ? (
+            <a
+              href={doc.url ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 block truncate text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+            >
+              {doc.url}
+            </a>
+          ) : (
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{doc.fileName}</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          <a href={`/api/documents/${doc.id}?dl=1`} className={buttonClass("primary")}>
-            {t.documentPage.download}
-          </a>
+          {isLink ? (
+            <a
+              href={doc.url ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClass("primary")}
+            >
+              {t.documentPage.openLink}
+            </a>
+          ) : (
+            <a href={`/api/documents/${doc.id}?dl=1`} className={buttonClass("primary")}>
+              {t.documentPage.download}
+            </a>
+          )}
           <DeleteDocumentButton documentId={doc.id} />
         </div>
       </div>
@@ -93,8 +118,21 @@ export default async function DocumentPage({
           <dd className="mt-1 text-sm">{formatDateTime(doc.createdAt, locale)}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.size}</dt>
-          <dd className="mt-1 text-sm">{formatBytes(doc.size, t)}</dd>
+          {isLink ? (
+            <>
+              <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.linkLabel}</dt>
+              <dd className="mt-1 truncate text-sm">
+                <a href={doc.url ?? "#"} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline dark:text-indigo-400">
+                  {doc.url}
+                </a>
+              </dd>
+            </>
+          ) : (
+            <>
+              <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.documentPage.size}</dt>
+              <dd className="mt-1 text-sm">{formatBytes(doc.size ?? 0, t)}</dd>
+            </>
+          )}
         </div>
       </dl>
 

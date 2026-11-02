@@ -81,11 +81,60 @@ export async function uploadDocument(
 
   const doc = await prisma.document.create({
     data: {
+      kind: "FILE",
       name: providedName || defaultName(file.name),
       fileName: file.name,
       mime: file.type || "application/octet-stream",
       size: file.size,
       data: bytes,
+      workspaceId: task.workspaceId,
+      projectTaskId,
+      uploadedById: user.id,
+    },
+  });
+  await prisma.documentLink.create({ data: { documentId: doc.id, taskId: task.id } });
+
+  revalidatePath(`/app/tasks/${task.id}`);
+  revalidatePath(`/app/tasks/${projectTaskId}`);
+  redirect(`/app/tasks/${task.id}`);
+}
+
+// Ajoute un « document lien » : une URL externe (pas de fichier stocké, donc pas
+// de consommation de quota de stockage). Il rejoint le pool du projet et se lie
+// à la tâche, exactement comme un document fichier.
+export async function createLinkDocument(
+  _prev: DocFormState,
+  formData: FormData,
+): Promise<DocFormState> {
+  const user = await requireUser();
+  const t = await getDictionary();
+  const taskId = String(formData.get("taskId") ?? "");
+  const task = await loadTask(user.id, taskId);
+  if (!task) return { error: t.errors.taskNotFoundOrDenied };
+
+  const rawUrl = String(formData.get("url") ?? "").trim();
+  if (!rawUrl) return { error: t.errors.urlRequired };
+  if (rawUrl.length > 2048) return { error: t.errors.urlTooLong };
+
+  // Protocole http(s) uniquement (on rejette javascript:, data:, etc.).
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return { error: t.errors.urlInvalid };
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    return { error: t.errors.urlInvalid };
+  }
+
+  const providedName = String(formData.get("name") ?? "").trim();
+  const projectTaskId = await rootTaskId(task.id);
+
+  const doc = await prisma.document.create({
+    data: {
+      kind: "LINK",
+      name: providedName || parsed.host,
+      url: rawUrl,
       workspaceId: task.workspaceId,
       projectTaskId,
       uploadedById: user.id,

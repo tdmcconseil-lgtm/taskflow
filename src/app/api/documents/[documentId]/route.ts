@@ -10,7 +10,7 @@ export async function GET(
 
   const doc = await prisma.document.findUnique({
     where: { id: documentId },
-    select: { data: true, mime: true, fileName: true, workspaceId: true },
+    select: { kind: true, url: true, data: true, mime: true, fileName: true, workspaceId: true },
   });
   if (!doc) return new Response("Introuvable", { status: 404 });
   if (!(await getMembership(user.id, doc.workspaceId))) {
@@ -19,8 +19,17 @@ export async function GET(
 
   // ?dl=1 force le téléchargement ; sinon affichage dans le navigateur si possible.
   const download = new URL(req.url).searchParams.get("dl") === "1";
+
+  // Document lien : on redirige vers l'URL externe (pas de téléchargement possible).
+  if (doc.kind === "LINK") {
+    if (download || !doc.url) return new Response("Introuvable", { status: 404 });
+    return new Response(null, { status: 302, headers: { Location: doc.url } });
+  }
+
+  // Document fichier : le binaire est servi depuis la base.
+  if (!doc.data) return new Response("Introuvable", { status: 404 });
   const disposition = download ? "attachment" : "inline";
-  const safeName = doc.fileName.replace(/["\r\n]/g, "_");
+  const safeName = (doc.fileName ?? "document").replace(/["\r\n]/g, "_");
 
   return new Response(new Uint8Array(doc.data), {
     headers: {

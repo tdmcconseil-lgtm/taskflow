@@ -127,15 +127,23 @@ export default async function TaskDetailPage({
     prisma.documentLink.findMany({
       where: { taskId: task.id },
       orderBy: { createdAt: "desc" },
-      select: { document: { select: { id: true, name: true, fileName: true } } },
+      select: { document: { select: { id: true, name: true, kind: true, fileName: true, url: true } } },
     }),
     task.parentId === null
       ? prisma.document.findMany({
           where: { projectTaskId: task.id },
           orderBy: { createdAt: "desc" },
-          select: { id: true, name: true, fileName: true },
+          select: { id: true, name: true, kind: true, fileName: true, url: true },
         })
-      : Promise.resolve([] as { id: string; name: string; fileName: string }[]),
+      : Promise.resolve(
+          [] as {
+            id: string;
+            name: string;
+            kind: "FILE" | "LINK";
+            fileName: string | null;
+            url: string | null;
+          }[],
+        ),
     prisma.decision.findMany({
       where: { taskId: task.id },
       orderBy: { createdAt: "desc" },

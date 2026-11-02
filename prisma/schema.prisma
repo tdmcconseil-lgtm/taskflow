@@ -276,13 +276,24 @@ model ProjectAccess {
 // --- Document joint (stocké en base, servi par /api/documents/[id]) ---
 // Un document appartient à un projet (la tâche racine) et peut être lié à
 // plusieurs tâches de ce projet via DocumentLink.
+// Un document est soit un fichier téléversé, soit un lien vers une ressource externe.
+enum DocumentKind {
+  FILE
+  LINK
+}
+
 model Document {
   id        String   @id @default(cuid())
   name      String // nom simplifié affiché
-  fileName  String // nom de fichier d'origine
-  mime      String
-  size      Int
-  data      Bytes
+  // Type de document : fichier téléversé (FILE) ou lien externe (LINK).
+  kind      DocumentKind @default(FILE)
+  // Champs propres au fichier téléversé (null pour un lien).
+  fileName  String? // nom de fichier d'origine
+  mime      String?
+  size      Int?
+  data      Bytes?
+  // Adresse externe (renseignée pour un LINK, null pour un fichier).
+  url       String?
   createdAt DateTime @default(now())
 
   workspaceId String

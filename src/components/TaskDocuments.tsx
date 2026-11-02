@@ -5,7 +5,13 @@ import { ButtonLink } from "@/components/Button";
 import { detachDocument } from "@/lib/actions/documents";
 import { useT } from "@/lib/i18n/context";
 
-export type DocItem = { id: string; name: string; fileName: string };
+export type DocItem = {
+  id: string;
+  name: string;
+  kind: "FILE" | "LINK";
+  fileName: string | null;
+  url: string | null;
+};
 
 // Section « Documents » d'une fiche de tâche. Sur la tâche racine (le projet),
 // on montre tout le pool du projet ; sur une sous-tâche, les documents liés.
@@ -31,7 +37,7 @@ export function TaskDocuments({
         <h2 className="text-lg font-semibold">{heading}</h2>
         <div className="flex items-center gap-2">
           <ButtonLink href={`/app/tasks/${taskId}/documents/new`} variant="primary">
-            {t.documents.upload}
+            {t.documents.add}
           </ButtonLink>
           {!isTopLevel && (
             <ButtonLink href={`/app/tasks/${taskId}/documents/attach`} variant="secondary">
@@ -54,9 +60,11 @@ export function TaskDocuments({
                 href={`/app/documents/${d.id}`}
                 className="flex min-w-0 items-center gap-2 text-sm hover:underline"
               >
-                <span aria-hidden>📄</span>
+                <span aria-hidden>{d.kind === "LINK" ? "🔗" : "📄"}</span>
                 <span className="truncate font-medium">{d.name}</span>
-                <span className="truncate text-xs text-zinc-400 dark:text-zinc-500">{d.fileName}</span>
+                <span className="truncate text-xs text-zinc-400 dark:text-zinc-500">
+                  {d.kind === "LINK" ? d.url : d.fileName}
+                </span>
               </Link>
               {!isTopLevel && (
                 <form action={detachDocument}>
