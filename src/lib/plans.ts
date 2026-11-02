@@ -15,9 +15,12 @@ export type PlanLimits = {
 
 // Infinity = illimité (affiché comme tel, jamais comme une barre pleine).
 export const PLAN_LIMITS: Record<WorkspacePlan, PlanLimits> = {
+  // Le plafond de membres ne vaut que pour l'offre gratuite : les formules
+  // payantes sont facturées à l'usage (utilisateur-mois), donc sans limite de
+  // sièges. Les autres quotas (projets, stockage) restent bornés par formule.
   FREE: { members: 3, projects: 10, storageMb: 200, pendingInvites: 5 },
-  PRO: { members: 10, projects: 50, storageMb: 2048, pendingInvites: 20 },
-  BUSINESS: { members: 50, projects: 500, storageMb: 20480, pendingInvites: Infinity },
+  PRO: { members: Infinity, projects: 50, storageMb: 2048, pendingInvites: 20 },
+  BUSINESS: { members: Infinity, projects: 500, storageMb: 20480, pendingInvites: Infinity },
 };
 
 // Formate une taille en Mo : au-delà de 1024 Mo, on bascule en Go.
