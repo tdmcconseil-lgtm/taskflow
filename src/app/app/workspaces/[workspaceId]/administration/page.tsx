@@ -103,11 +103,7 @@ export default async function WorkspaceAdminPage({
         {t.workspace.adminEnoughAdmins}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {t.members.list}{" "}
-          <span className="text-zinc-400 dark:text-zinc-500">· {t.members.listAdminNote}</span>
-        </p>
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
           {t.members.invite}
         </ButtonLink>
