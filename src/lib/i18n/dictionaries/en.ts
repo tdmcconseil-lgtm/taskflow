@@ -230,11 +230,13 @@ const en: Dictionary = {
     desc: "This workspace's usage compared to its plan limits.",
     plan: "Plan",
     changePlan: "Change plan",
+    applyChange: "Apply change",
+    cancel: "Cancel",
     maxSeatsLive: "Maximum allowed seats: {seats}",
     currentMembersLive: "Active members: {n}",
     capRequired: "Enter a budget cap for this paid plan.",
     seatsOverWarning:
-      "Your {m} member(s) exceed the {seats} allowed seats. Raise the cap (paid plan) or reduce the number of members — otherwise, cancel.",
+      "Your {m} member(s) exceed the {seats} allowed seats. Please raise the cap.",
     planErrorCapUnset:
       "To switch to {plan}, first set a budget cap covering your {n} member(s), below.",
     planErrorSeatLimit:

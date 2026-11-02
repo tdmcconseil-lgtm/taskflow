@@ -230,11 +230,13 @@ const es: Dictionary = {
     desc: "Uso de este espacio comparado con los límites de su plan.",
     plan: "Plan",
     changePlan: "Cambiar de plan",
+    applyChange: "Aplicar el cambio",
+    cancel: "Cancelar",
     maxSeatsLive: "Asientos máximos permitidos: {seats}",
     currentMembersLive: "Miembros activos: {n}",
     capRequired: "Indica un tope de presupuesto para este plan de pago.",
     seatsOverWarning:
-      "Tus {m} miembro(s) superan los {seats} asientos permitidos. Aumenta el tope (plan de pago) o reduce el número de miembros — si no, cancela.",
+      "Tus {m} miembro(s) superan los {seats} asientos permitidos. Aumenta el tope.",
     planErrorCapUnset:
       "Para cambiar a {plan}, define primero un tope de presupuesto que cubra tus {n} miembro(s), abajo.",
     planErrorSeatLimit:

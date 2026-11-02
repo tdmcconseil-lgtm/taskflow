@@ -67,12 +67,14 @@ export function PlanPanel({
         </ul>
       </div>
 
-      {/* Offre + plafond, validés ensemble (présélection sur l'offre tentée). */}
+      {/* Récap statique ci-dessus ; le formulaire ne s'ouvre qu'au clic sur
+          « Modifier » (ou d'emblée si le serveur a refusé un changement). */}
       <PlanAndBudgetForm
         workspaceId={workspaceId}
         plan={triedPlan ?? plan}
         budgetCapCents={budgetCapCents}
         activeMembers={activeMembers}
+        defaultOpen={planError != null}
       />
     </div>
   );

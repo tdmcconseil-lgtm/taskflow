@@ -8,26 +8,52 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 
-// Offre + plafond dans un seul formulaire, validés en une opération. Le nombre
+// Offre + plafond dans un seul formulaire, validés en une opération. Le volet
+// Formule n'affiche par défaut que le récapitulatif statique ; ce bloc n'expose
+// qu'un bouton « Modifier » tant qu'on n'édite pas. Une fois ouvert, le nombre
 // de sièges maximum autorisés (plafond / prix unitaire, ou la limite de la
 // formule pour FREE) se met à jour en direct selon l'offre et le montant. Si les
-// membres actifs dépassent ces sièges, on alerte (augmenter le plafond, ou
-// annuler) ; le serveur bloque de toute façon la validation.
+// membres actifs dépassent ces sièges, on alerte (augmenter le plafond) ; le
+// serveur bloque de toute façon la validation.
 export function PlanAndBudgetForm({
   plan,
   workspaceId,
   budgetCapCents,
   activeMembers,
+  defaultOpen = false,
 }: {
   // Offre présélectionnée (l'offre en cours, ou celle qu'on venait de tenter).
   plan: WorkspacePlan;
   workspaceId: string;
   budgetCapCents: number | null;
   activeMembers: number;
+  // Ouvre d'emblée le formulaire (ex. après un refus serveur à corriger).
+  defaultOpen?: boolean;
 }) {
   const t = useT();
+  const initialEuros = budgetCapCents == null ? "" : String(budgetCapCents / 100);
+  const [editing, setEditing] = useState(defaultOpen);
   const [sel, setSel] = useState<WorkspacePlan>(plan);
-  const [euros, setEuros] = useState(budgetCapCents == null ? "" : String(budgetCapCents / 100));
+  const [euros, setEuros] = useState(initialEuros);
+
+  // Fermer = abandonner les changements, revenir aux valeurs en cours.
+  const cancel = () => {
+    setSel(plan);
+    setEuros(initialEuros);
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950"
+      >
+        {t.usage.changePlan}
+      </button>
+    );
+  }
 
   const paid = PLAN_DEFS[sel].priceCentsPerUser > 0;
   const cents = euros.trim() === "" ? null : Math.round(Number(euros) * 100);
@@ -112,7 +138,16 @@ export function PlanAndBudgetForm({
         </p>
       )}
 
-      <SubmitButton>{t.usage.changePlan}</SubmitButton>
+      <div className="flex items-center gap-3">
+        <SubmitButton>{t.usage.applyChange}</SubmitButton>
+        <button
+          type="button"
+          onClick={cancel}
+          className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          {t.usage.cancel}
+        </button>
+      </div>
     </form>
   );
 }

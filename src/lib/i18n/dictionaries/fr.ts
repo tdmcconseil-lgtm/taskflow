@@ -229,11 +229,13 @@ const fr = {
     desc: "Utilisation de cet espace comparée aux limites de sa formule.",
     plan: "Formule",
     changePlan: "Modifier l'abonnement",
+    applyChange: "Valider le changement",
+    cancel: "Annuler",
     maxSeatsLive: "Sièges maximum autorisés : {seats}",
     currentMembersLive: "Membres actifs : {n}",
     capRequired: "Indiquez un plafond de budget pour cette offre payante.",
     seatsOverWarning:
-      "Vos {m} membre(s) dépassent les {seats} sièges autorisés. Augmentez le plafond (offre payante) ou réduisez le nombre de membres — sinon, annulez l'opération.",
+      "Vos {m} membre(s) dépassent les {seats} sièges autorisés. Veuillez augmenter le plafond.",
     planErrorCapUnset:
       "Pour passer à {plan}, définissez d'abord un plafond de budget couvrant vos {n} membre(s), ci-dessous.",
     planErrorSeatLimit:
