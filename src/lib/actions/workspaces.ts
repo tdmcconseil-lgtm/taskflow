@@ -120,9 +120,8 @@ export async function archiveWorkspace(formData: FormData): Promise<void> {
     data: { archivedAt: new Date() },
   });
   revalidatePath("/app");
-  // Retour à l'accueil, où l'espace archivé se retrouve et se réactive, avec un
-  // message de confirmation.
-  redirect(`/app?archived=1`);
+  // On reste dans l'espace (administration) avec un message de confirmation.
+  redirect(`/app/workspaces/${workspaceId}/administration?archived=1`);
 }
 
 export async function unarchiveWorkspace(formData: FormData): Promise<void> {

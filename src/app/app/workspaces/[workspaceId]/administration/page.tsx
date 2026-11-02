@@ -37,6 +37,8 @@ export default async function WorkspaceAdminPage({
   const sp = await searchParams;
   const sentTo = typeof sp.sent === "string" ? sp.sent : null;
   const addedTo = typeof sp.added === "string" ? sp.added : null;
+  // Confirmation affichée après l'archivage (on reste dans l'espace).
+  const justArchived = sp.archived === "1";
   // Changement de formule bloqué faute de plafond couvrant les membres actuels.
   const planError =
     sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
@@ -326,6 +328,12 @@ export default async function WorkspaceAdminPage({
           </Link>
         </div>
       </div>
+
+      {justArchived && (
+        <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
+          {t.workspace.archivedConfirmation}
+        </div>
+      )}
 
       <AdminTabs
         memberCount={workspace.members.length}

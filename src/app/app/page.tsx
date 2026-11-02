@@ -6,13 +6,10 @@ import { formatDate } from "@/lib/labels";
 import { unarchiveWorkspace } from "@/lib/actions/workspaces";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 
-export default async function DashboardPage({ searchParams }: PageProps<"/app">) {
+export default async function DashboardPage() {
   const user = await requireUser();
   const t = await getDictionary();
   const locale = await getLocale();
-  const sp = await searchParams;
-  // Message de confirmation après l'archivage d'un espace (retour à l'accueil).
-  const justArchived = sp.archived === "1";
 
   const [workspaces, archivedWorkspaces] = await Promise.all([
     prisma.workspace.findMany({
@@ -65,12 +62,6 @@ export default async function DashboardPage({ searchParams }: PageProps<"/app">)
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.dashboard.overview}</p>
       </div>
-
-      {justArchived && (
-        <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
-          {t.workspace.archivedConfirmation}
-        </div>
-      )}
 
       {/* Mes espaces */}
       <section className="space-y-3">
