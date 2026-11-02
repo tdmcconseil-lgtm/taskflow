@@ -12,7 +12,7 @@ import {
 } from "@/lib/plans";
 import { maxSeats } from "@/lib/billing/budget";
 import { SubmitButton } from "@/components/SubmitButton";
-import { inputClass, labelClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 
 // Volet Formule : l'encart de description de l'abonnement (formule en cours + ce
@@ -53,7 +53,9 @@ export function PlanAndBudgetForm({
     setEditing(false);
   };
 
-  const limits = PLAN_LIMITS[plan];
+  // En édition, le « compris » reflète l'offre sélectionnée (membres/stockage).
+  const displayPlan = editing ? sel : plan;
+  const limits = PLAN_LIMITS[displayPlan];
   const fmt = (n: number) => (Number.isFinite(n) ? String(n) : t.usage.unlimited);
   const rows = [
     { label: t.usage.members, value: fmt(limits.members) },
@@ -70,35 +72,92 @@ export function PlanAndBudgetForm({
   const seatsLabel = Number.isFinite(seats) ? String(seats) : t.usage.unlimited;
   const over = !capMissing && activeMembers > seats;
 
+  // Un seul encart, qui bascule en édition sur place : l'offre devient un menu,
+  // le plafond un champ, et le « compris » s'ajuste à l'offre sélectionnée. Le
+  // message d'erreur éventuel s'affiche tout en haut.
   return (
-    <div className="space-y-4">
-      {/* Encart de description de l'abonnement : plafond choisi, formule en
-          cours + bouton. */}
-      <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-        {budgetCapCents != null && (
-          <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
-            {t.usage.capChosen.replace("{cap}", formatPrice(budgetCapCents))}
-          </p>
-        )}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.plan}</span>
+    <form
+      action={setPlanAndBudget}
+      className="space-y-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800"
+    >
+      <input type="hidden" name="workspaceId" value={workspaceId} />
+
+      {/* Message d'erreur éventuel, en haut de l'encart. */}
+      {editing && capMissing && (
+        <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+          {t.usage.capRequired}
+        </p>
+      )}
+      {editing && over && (
+        <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+          {t.usage.seatsOverWarning.replace("{m}", String(activeMembers)).replace("{seats}", seatsLabel)}
+        </p>
+      )}
+
+      {/* Plafond choisi : texte en lecture, champ éditable (offre payante). */}
+      {editing
+        ? paid && (
+            <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+              <label htmlFor="budgetEuros">{t.usage.capChosenEditPrefix}</label>
+              <input
+                id="budgetEuros"
+                name="budgetEuros"
+                type="number"
+                min="0"
+                step="1"
+                value={euros}
+                onChange={(e) => setEuros(e.target.value)}
+                className={`${inputClass} w-28`}
+              />
+              <span>{t.usage.capChosenEditSuffix}</span>
+            </div>
+          )
+        : budgetCapCents != null && (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {t.usage.capChosen.replace("{cap}", formatPrice(budgetCapCents))}
+            </p>
+          )}
+
+      {/* En-tête : formule (pastille en lecture, menu en édition) + bouton. */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <label htmlFor="plan" className="text-sm text-zinc-500 dark:text-zinc-400">
+            {t.usage.plan}
+          </label>
+          {editing ? (
+            <select
+              id="plan"
+              name="plan"
+              value={sel}
+              onChange={(e) => setSel(e.target.value as WorkspacePlan)}
+              className="block rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+              {PLANS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          ) : (
             <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
               {plan}
             </span>
-          </div>
-          {!editing && (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950"
-            >
-              {t.usage.changePlan}
-            </button>
           )}
         </div>
+        {!editing && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950"
+          >
+            {t.usage.changePlan}
+          </button>
+        )}
+      </div>
 
-        <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+      {/* Compris dans la formule (s'ajuste à l'offre sélectionnée en édition). */}
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
           {t.usage.includes}
         </p>
         <ul className="mt-2 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
@@ -112,51 +171,7 @@ export function PlanAndBudgetForm({
       </div>
 
       {editing && (
-        <form
-          action={setPlanAndBudget}
-          className="space-y-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800"
-        >
-          <input type="hidden" name="workspaceId" value={workspaceId} />
-
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="space-y-1">
-              <label htmlFor="plan" className={labelClass}>
-                {t.usage.plan}
-              </label>
-              <select
-                id="plan"
-                name="plan"
-                value={sel}
-                onChange={(e) => setSel(e.target.value as WorkspacePlan)}
-                className="block rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
-              >
-                {PLANS.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {paid && (
-              <div className="space-y-1">
-                <label htmlFor="budgetEuros" className={labelClass}>
-                  {t.budgetCap.label}
-                </label>
-                <input
-                  id="budgetEuros"
-                  name="budgetEuros"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={euros}
-                  onChange={(e) => setEuros(e.target.value)}
-                  className={`${inputClass} w-40`}
-                />
-              </div>
-            )}
-          </div>
-
+        <>
           {/* Sièges max autorisés + membres actuels, en direct. */}
           <div className="text-sm">
             <p className="text-zinc-600 dark:text-zinc-300">
@@ -173,17 +188,6 @@ export function PlanAndBudgetForm({
             </p>
           </div>
 
-          {capMissing && (
-            <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-              {t.usage.capRequired}
-            </p>
-          )}
-          {over && (
-            <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-              {t.usage.seatsOverWarning.replace("{m}", String(activeMembers)).replace("{seats}", seatsLabel)}
-            </p>
-          )}
-
           <div className="flex items-center gap-3">
             <SubmitButton>{t.usage.applyChange}</SubmitButton>
             <button
@@ -194,8 +198,8 @@ export function PlanAndBudgetForm({
               {t.usage.cancel}
             </button>
           </div>
-        </form>
+        </>
       )}
-    </div>
+    </form>
   );
 }

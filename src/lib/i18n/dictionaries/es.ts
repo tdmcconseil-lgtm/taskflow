@@ -243,6 +243,8 @@ const es: Dictionary = {
       "Tus {n} miembro(s) superarían el tope actual en {plan}. Aumenta el tope abajo (o reduce el número de miembros).",
     planRecapDesc: "Tu plan actual y lo que incluye.",
     capChosen: "Has elegido el siguiente tope: {cap} al mes.",
+    capChosenEditPrefix: "Has elegido el siguiente tope:",
+    capChosenEditSuffix: "€ al mes",
     includes: "Incluido en este plan",
     members: "Miembros",
     projects: "Proyectos",
