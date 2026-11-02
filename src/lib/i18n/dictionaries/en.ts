@@ -167,6 +167,7 @@ const en: Dictionary = {
     cancel: "Cancel",
     resend: "Resend",
     invitationSent: "An invitation email was sent to",
+    memberAdded: "Member added directly to the workspace:",
     emailLabel: "Person's email",
     emailPlaceholder: "person@example.com",
     emailHint:
@@ -496,6 +497,9 @@ const en: Dictionary = {
     inviteSubject: "{inviter} invites you to join “{workspace}” on getRIDA",
     inviteBody:
       "Hello,\n\n{inviter} invites you to collaborate in the workspace “{workspace}” on getRIDA. To create your account and join, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf this does not concern you, simply ignore this email.\n\n— The getRIDA team",
+    addedSubject: "{inviter} added you to “{workspace}” on getRIDA",
+    addedBody:
+      "Hello,\n\n{inviter} added you to the workspace “{workspace}” on getRIDA. You already have access:\n\n{url}\n\nIf this does not concern you, simply ignore this email.\n\n— The getRIDA team",
     resetSubject: "Reset your getRIDA password",
     resetBody:
       "Hello {name},\n\nA password reset was requested for your getRIDA account. To choose a new password, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf you did not make this request, ignore this email: your current password stays unchanged.\n\n— The getRIDA team",

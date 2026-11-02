@@ -36,6 +36,7 @@ export default async function WorkspaceAdminPage({
   const { workspaceId } = await params;
   const sp = await searchParams;
   const sentTo = typeof sp.sent === "string" ? sp.sent : null;
+  const addedTo = typeof sp.added === "string" ? sp.added : null;
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -106,6 +107,12 @@ export default async function WorkspaceAdminPage({
       {sentTo && (
         <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
           {t.members.invitationSent} {sentTo}.
+        </p>
+      )}
+
+      {addedTo && (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+          {t.members.memberAdded} {addedTo}.
         </p>
       )}
 

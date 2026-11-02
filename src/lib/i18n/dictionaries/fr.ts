@@ -166,6 +166,7 @@ const fr = {
     cancel: "Annuler",
     resend: "Renvoyer",
     invitationSent: "Un email d'invitation a été envoyé à",
+    memberAdded: "Membre ajouté directement à l'espace :",
     emailLabel: "Email de la personne",
     emailPlaceholder: "personne@exemple.fr",
     emailHint:
@@ -495,6 +496,9 @@ const fr = {
     inviteSubject: "{inviter} vous invite à rejoindre « {workspace} » sur getRIDA",
     inviteBody:
       "Bonjour,\n\n{inviter} vous invite à collaborer dans l'espace de travail « {workspace} » sur getRIDA. Pour créer votre compte et le rejoindre, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe getRIDA",
+    addedSubject: "{inviter} vous a ajouté à « {workspace} » sur getRIDA",
+    addedBody:
+      "Bonjour,\n\n{inviter} vous a ajouté à l'espace de travail « {workspace} » sur getRIDA. Vous y avez accès dès maintenant :\n\n{url}\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe getRIDA",
     resetSubject: "Réinitialisation de votre mot de passe getRIDA",
     resetBody:
       "Bonjour {name},\n\nUne demande de réinitialisation de mot de passe a été faite pour votre compte getRIDA. Pour choisir un nouveau mot de passe, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email : votre mot de passe actuel reste inchangé.\n\n— L'équipe getRIDA",

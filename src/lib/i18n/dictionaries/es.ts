@@ -167,6 +167,7 @@ const es: Dictionary = {
     cancel: "Cancelar",
     resend: "Reenviar",
     invitationSent: "Se ha enviado un correo de invitación a",
+    memberAdded: "Miembro añadido directamente al espacio:",
     emailLabel: "Correo de la persona",
     emailPlaceholder: "persona@ejemplo.com",
     emailHint:
@@ -496,6 +497,9 @@ const es: Dictionary = {
     inviteSubject: "{inviter} te invita a unirte a «{workspace}» en getRIDA",
     inviteBody:
       "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en getRIDA. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de getRIDA",
+    addedSubject: "{inviter} te ha añadido a «{workspace}» en getRIDA",
+    addedBody:
+      "Hola,\n\n{inviter} te ha añadido al espacio de trabajo «{workspace}» en getRIDA. Ya tienes acceso:\n\n{url}\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de getRIDA",
     resetSubject: "Restablece tu contraseña de getRIDA",
     resetBody:
       "Hola {name},\n\nSe ha solicitado restablecer la contraseña de tu cuenta de getRIDA. Para elegir una nueva contraseña, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no has solicitado este cambio, ignora este correo: tu contraseña actual no cambia.\n\n— El equipo de getRIDA",

@@ -9,7 +9,7 @@ import { ensureOwner, ensureAdmin } from "@/lib/auth/guards";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
-import { sendMail, invitationEmail } from "@/lib/mail";
+import { sendMail, invitationEmail, workspaceAddedEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 import { seatCheck } from "@/lib/billing/budget";
@@ -220,22 +220,43 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
   );
   if (inviteSeatIssue) return { error: t.errors[inviteSeatIssue] };
 
-  // Garde-fou du quota d'invitations en attente (par formule).
-  if (pendingInvites + 1 > PLAN_LIMITS[workspace.plan].pendingInvites) {
-    return { error: t.errors.invitationQuotaExceeded };
-  }
-
-  // On s'assure seulement que la personne n'est pas déjà membre. Dans tous les
-  // autres cas — y compris si elle a déjà un compte getRIDA — on envoie une
-  // invitation par email : son appartenance reste « en attente » tant qu'elle
-  // n'a pas validé l'invitation (elle n'est donc pas ajoutée silencieusement).
+  // Compte déjà existant pour cet email ? On l'ajoute DIRECTEMENT à l'espace,
+  // sans invitation à accepter. (Email inconnu → flux d'invitation, plus bas.)
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     const already = await getMembership(existingUser.id, workspaceId);
     if (already) return { error: t.errors.alreadyMember };
+
+    // Crée l'appartenance, ou réactive un membre désactivé : l'upsert évite de
+    // violer la contrainte unique (userId, workspaceId). Toute invitation en
+    // attente pour cet email devient inutile, on la supprime.
+    await prisma.$transaction([
+      prisma.membership.upsert({
+        where: { userId_workspaceId: { userId: existingUser.id, workspaceId } },
+        update: { deactivatedAt: null, role },
+        create: { userId: existingUser.id, workspaceId, role },
+      }),
+      prisma.invitation.deleteMany({ where: { email, workspaceId, acceptedAt: null } }),
+    ]);
+
+    // Prévient la personne : accès direct, rien à accepter.
+    const appUrl = process.env.APP_URL ?? "http://localhost:3001";
+    const mail = workspaceAddedEmail(
+      { inviterName: user.name, workspaceName: workspace.name, url: `${appUrl}/app` },
+      t,
+    );
+    await sendMail({ to: email, subject: mail.subject, body: mail.body });
+
+    revalidatePath(`/app/workspaces/${workspaceId}`);
+    redirect(`/app/workspaces/${workspaceId}/administration?added=${encodeURIComponent(email)}`);
   }
 
-  // On crée (ou on renouvelle) une invitation et on envoie l'email.
+  // Email inconnu : garde-fou du quota d'invitations en attente (par formule),
+  // puis création de l'invitation et envoi de l'email d'acceptation.
+  if (pendingInvites + 1 > PLAN_LIMITS[workspace.plan].pendingInvites) {
+    return { error: t.errors.invitationQuotaExceeded };
+  }
+
   const token = generateInvitationToken();
   const tokenHash = hashToken(token);
   const ttlDays = Number.parseInt(process.env.INVITATION_TTL_DAYS ?? "7", 10);

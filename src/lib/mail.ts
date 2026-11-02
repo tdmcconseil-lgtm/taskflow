@@ -138,6 +138,27 @@ export function invitationEmail(
   };
 }
 
+// Envoyé quand on ajoute DIRECTEMENT à un espace une personne qui a déjà un
+// compte getRIDA : aucune invitation à accepter, le lien pointe vers l'app.
+export function workspaceAddedEmail(
+  params: {
+    inviterName: string;
+    workspaceName: string;
+    url: string;
+  },
+  t: Dictionary,
+): { subject: string; body: string } {
+  return {
+    subject: t.email.addedSubject
+      .replace("{inviter}", params.inviterName)
+      .replace("{workspace}", params.workspaceName),
+    body: t.email.addedBody
+      .replace("{inviter}", params.inviterName)
+      .replace("{workspace}", params.workspaceName)
+      .replace("{url}", params.url),
+  };
+}
+
 // --- Notifications ---------------------------------------------------------
 // Gabarits rendus dans la langue du DESTINATAIRE. Chaque mail porte un pied de
 // page « gérer mes notifications » et un en-tête List-Unsubscribe pointant vers
