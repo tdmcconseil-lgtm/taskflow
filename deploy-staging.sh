@@ -12,6 +12,8 @@ git checkout staging
 git pull --ff-only origin staging
 
 echo "→ Reconstruction et redémarrage de la préprod…"
+# Hash du commit déployé, injecté dans l'image (pied de page + route /version).
+export GIT_SHA="$(git rev-parse --short HEAD)"
 docker compose -f docker-compose.staging.yml up -d --build
 
 echo "→ État des services de préprod :"

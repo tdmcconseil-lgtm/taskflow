@@ -9,6 +9,8 @@ echo "→ Récupération du code…"
 git pull --ff-only
 
 echo "→ Reconstruction et redémarrage…"
+# Hash du commit déployé, injecté dans l'image (pied de page + route /version).
+export GIT_SHA="$(git rev-parse --short HEAD)"
 docker compose -f docker-compose.prod.yml up -d --build
 
 echo "→ État des services :"

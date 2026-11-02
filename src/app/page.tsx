@@ -13,6 +13,9 @@ export default async function Home() {
   const session = await getSession();
   const isAuthed = session !== null;
   const t = await getDictionary();
+  // Hash du commit déployé (injecté dans l'image au build). Affiché discrètement
+  // dans le pied de page ; absent en local, donc rien ne s'affiche en dev.
+  const buildSha = process.env.BUILD_SHA;
 
   const advantages = [
     { title: t.landing.advFloorTitle, desc: t.landing.advFloorDesc },
@@ -187,6 +190,14 @@ export default async function Home() {
             <span>
               © {new Date().getFullYear()} {t.common.appName}
             </span>
+            {buildSha && (
+              <span
+                className="font-mono text-xs text-zinc-400 dark:text-zinc-600"
+                title="Version déployée"
+              >
+                {buildSha}
+              </span>
+            )}
           </div>
         </div>
       </footer>

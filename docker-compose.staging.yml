@@ -25,7 +25,10 @@ services:
   # collision avec l'app de prod côté Caddy (reverse_proxy app:3001) et
   # détournerait le trafic de getrida.com vers la préprod.
   staging-app:
-    build: .
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
     restart: unless-stopped
     env_file: .env
     depends_on:

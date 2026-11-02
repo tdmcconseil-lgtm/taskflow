@@ -21,6 +21,12 @@ RUN DATABASE_URL="postgresql://u:p@localhost:5432/db?schema=public" \
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+# Hash du commit déployé (passé par le script de déploiement). Lu au runtime par
+# l'appli (pied de page + route /version) pour vérifier d'un coup d'œil quelle
+# version tourne. Placé dans l'étape runtime : changer de commit ne reconstruit
+# que cette petite couche, pas tout le build.
+ARG GIT_SHA=unknown
+ENV BUILD_SHA=$GIT_SHA
 RUN apt-get update && apt-get install -y --no-install-recommends openssl \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app ./
