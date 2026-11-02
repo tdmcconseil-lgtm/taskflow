@@ -81,7 +81,7 @@ export default async function DashboardPage() {
               <Link
                 key={ws.id}
                 href={`/app/workspaces/${ws.id}`}
-                className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
+                className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-700"
               >
                 <p className="font-medium">{ws.name}</p>
                 <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
@@ -90,6 +90,12 @@ export default async function DashboardPage() {
                   {ws._count.members}{" "}
                   {ws._count.members > 1 ? t.dashboard.membersWord : t.dashboard.memberWord}
                 </p>
+                {/* Formule de l'espace, même pastille que le récap de l'administration. */}
+                <div className="mt-auto flex justify-end pt-4">
+                  <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+                    {ws.plan}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
