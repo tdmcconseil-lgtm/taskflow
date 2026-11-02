@@ -245,7 +245,7 @@ const en: Dictionary = {
     currentMembersLive: "Active members: {n}",
     capRequired: "Enter a budget cap for this paid plan.",
     seatsOverWarning:
-      "With your {m} currently active member(s), your minimum cap should be {min} for the selected plan. Please raise the cap.",
+      "With your {m} currently active member(s), your minimum cap should be {min} for the selected plan. Please raise the cap, choose a lower plan, or remove active users.",
     seatsOk: "Valid settings — {seats} seats allowed for {m} active member(s).",
     planErrorCapUnset:
       "To switch to {plan}, first set a budget cap covering your {n} member(s), below.",
