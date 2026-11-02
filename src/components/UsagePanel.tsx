@@ -22,7 +22,7 @@ function Gauge({
   display: string;
 }) {
   const unlimited = !Number.isFinite(limit);
-  const pct = unlimited ? 0 : Math.min(100, Math.round((used / limit) * 100));
+  const pct = unlimited || limit <= 0 ? 0 : Math.min(100, Math.round((used / limit) * 100));
   const near = !unlimited && pct >= 90;
   const color = unlimited
     ? "bg-zinc-300 dark:bg-zinc-700"
@@ -60,6 +60,9 @@ export function UsagePanel({
   const limits = PLAN_LIMITS[plan];
   const usedMb = metrics.storageBytes / (1024 * 1024);
   const fmtLimit = (n: number) => (Number.isFinite(n) ? String(n) : t.usage.unlimited);
+  // Capacité de stockage totale = nombre d'utilisateurs × stockage par personne
+  // de l'offre actuelle. On compare le stockage effectif (documents) à ce total.
+  const totalStorageMb = metrics.members * limits.storageMb;
 
   const gauges = [
     {
@@ -70,25 +73,11 @@ export function UsagePanel({
       display: `${metrics.members} / ${fmtLimit(limits.members)}`,
     },
     {
-      key: "projects",
-      label: t.usage.projects,
-      used: metrics.projects,
-      limit: limits.projects,
-      display: `${metrics.projects} / ${fmtLimit(limits.projects)}`,
-    },
-    {
       key: "storage",
       label: t.usage.storage,
       used: usedMb,
-      limit: limits.storageMb,
-      display: `${formatStorageMb(usedMb)} / ${formatStorageMb(limits.storageMb)}`,
-    },
-    {
-      key: "pendingInvites",
-      label: t.usage.pendingInvites,
-      used: metrics.pendingInvites,
-      limit: limits.pendingInvites,
-      display: `${metrics.pendingInvites} / ${fmtLimit(limits.pendingInvites)}`,
+      limit: totalStorageMb,
+      display: `${formatStorageMb(usedMb)} / ${formatStorageMb(totalStorageMb)}`,
     },
   ];
 
