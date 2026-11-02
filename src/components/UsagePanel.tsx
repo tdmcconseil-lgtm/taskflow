@@ -1,4 +1,4 @@
-import { PLAN_LIMITS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
+import { PLAN_DEFS, PLAN_LIMITS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 type Metrics = {
@@ -60,6 +60,15 @@ export function UsagePanel({
   const limits = PLAN_LIMITS[plan];
   const usedMb = metrics.storageBytes / (1024 * 1024);
   const fmtLimit = (n: number) => (Number.isFinite(n) ? String(n) : t.usage.unlimited);
+
+  // Sous-titre de la formule, même format que l'onglet Formule (mode affichage) :
+  // nombre max d'utilisateurs + stockage (« par utilisateur » si offre payante).
+  const planPaid = PLAN_DEFS[plan].priceCentsPerUser > 0;
+  const planUsers = Number.isFinite(limits.members)
+    ? t.usage.usersMax.replace("{n}", String(limits.members))
+    : t.usage.usersMaxUnlimited;
+  const planStorage = `${formatStorageMb(limits.storageMb)}${planPaid ? ` ${t.usage.perUser}` : ""}`;
+  const planSubtitle = `${planUsers} · ${planStorage}`;
   // Capacité de stockage totale = nombre d'utilisateurs × stockage par personne
   // de l'offre actuelle. On compare le stockage effectif (documents) à ce total.
   const totalStorageMb = metrics.members * limits.storageMb;
@@ -89,6 +98,19 @@ export function UsagePanel({
   return (
     <div className="space-y-6">
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.desc}</p>
+
+      {/* Formule actuelle, même format que l'onglet Formule (mode affichage). */}
+      <div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            {t.usage.plan}
+          </span>
+          <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+            {plan}
+          </span>
+        </div>
+        <p className="mt-1 pl-3 text-xs text-zinc-500 dark:text-zinc-400">{planSubtitle}</p>
+      </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {gauges.map((g) => (
