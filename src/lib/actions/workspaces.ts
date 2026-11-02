@@ -47,7 +47,7 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
     return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
-  await prisma.workspace.create({
+  const ws = await prisma.workspace.create({
     data: {
       name: parsed.data.name,
       plan: parsed.data.plan,
@@ -56,7 +56,8 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
   });
 
   revalidatePath("/app");
-  redirect("/app");
+  // Après création, on arrive sur l'administration du nouvel espace.
+  redirect(`/app/workspaces/${ws.id}/administration`);
 }
 
 // Change le rôle d'un membre (admin uniquement ; le créateur n'est pas modifiable).
