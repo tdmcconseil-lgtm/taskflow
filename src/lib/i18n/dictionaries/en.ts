@@ -234,6 +234,46 @@ const en: Dictionary = {
     nearLimit:
       "You are nearing your plan limit for: {items}. Consider upgrading your subscription.",
   },
+  billingInfo: {
+    title: "How billing works",
+    intro:
+      "Your workspace is billed based on usage: you only pay for the people who use it, and you stay in control of the amount.",
+    budgetTitle: "You set your budget cap",
+    budgetBody:
+      "On a paid plan there is no seat limit. To avoid any surprise, you set a maximum monthly amount yourself: it translates into a maximum number of billed seats. Until this cap is set, no new member can be added. You can raise or lower it at any time.",
+    points: [
+      {
+        title: "One invoice per month",
+        body: "We add up your usage for the month and a single invoice settles it, after the fact. Nothing is charged the moment you add a member.",
+      },
+      {
+        title: "The unit: the user-month",
+        body: "Anyone who held a seat for at least one day in the month counts as one unit, at full price (no proration). The same user only counts once, even if added and removed several times.",
+      },
+      {
+        title: "Prices",
+        body: "Free: €0. PRO: €3 per user per month. BUSINESS: €6. On the annual plan, two months are free.",
+      },
+      {
+        title: "Free plan",
+        body: "Limited to 3 members, with no invoice at all. Beyond that, move to a paid plan.",
+      },
+      {
+        title: "Rotate your team",
+        body: "Deactivating a member immediately frees a seat: you can add another without exceeding your cap.",
+      },
+      {
+        title: "Always warned before you pay",
+        body: "On each addition, we show the impact on the invoice and the remaining budget. A summary stays available at all times, and an email warns you a few days before the due date.",
+      },
+      {
+        title: "Payment",
+        body: "A valid card is required on paid plans. If a payment fails, you are notified and given time to settle; your data is never deleted.",
+      },
+    ],
+    notActive:
+      "Billing is not active yet: this page describes how it works.",
+  },
   documents: {
     projectDocuments: "Project documents",
     taskDocuments: "Documents",

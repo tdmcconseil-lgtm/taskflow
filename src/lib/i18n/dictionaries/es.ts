@@ -234,6 +234,46 @@ const es: Dictionary = {
     nearLimit:
       "Te acercas al límite de tu plan en: {items}. Considera mejorar la suscripción.",
   },
+  billingInfo: {
+    title: "Cómo funciona la facturación",
+    intro:
+      "Tu espacio se factura según el uso: solo pagas por las personas que lo utilizan y mantienes el control del importe.",
+    budgetTitle: "Tú fijas tu tope de presupuesto",
+    budgetBody:
+      "En un plan de pago no hay límite de asientos. Para evitar sorpresas, defines tú mismo un importe mensual máximo: se traduce en un número máximo de asientos facturados. Mientras no se defina este tope, no se puede añadir ningún miembro nuevo. Puedes subirlo o bajarlo en cualquier momento.",
+    points: [
+      {
+        title: "Una factura al mes",
+        body: "Sumamos tu consumo del mes y una sola factura lo liquida, a posteriori. No se cobra nada en el momento en que añades un miembro.",
+      },
+      {
+        title: "La unidad: el usuario-mes",
+        body: "Toda persona que haya tenido un asiento al menos un día del mes cuenta como una unidad, a precio completo (sin prorrateo). Un mismo usuario cuenta una sola vez, aunque se añada y se quite varias veces.",
+      },
+      {
+        title: "Los precios",
+        body: "Gratis: 0 €. PRO: 3 € por usuario y mes. BUSINESS: 6 €. En el plan anual, dos meses son gratis.",
+      },
+      {
+        title: "Plan gratuito",
+        body: "Limitado a 3 miembros, sin ninguna factura. Por encima, pasa a un plan de pago.",
+      },
+      {
+        title: "Rota tu equipo",
+        body: "Desactivar a un miembro libera un asiento al instante: puedes añadir otro sin superar tu tope.",
+      },
+      {
+        title: "Siempre avisado antes de pagar",
+        body: "En cada alta te indicamos el impacto en la factura y el presupuesto restante. Un resumen queda disponible en todo momento y un correo te avisa unos días antes del vencimiento.",
+      },
+      {
+        title: "Pago",
+        body: "Se requiere una tarjeta válida en los planes de pago. Si falla un pago, se te avisa y dispones de un plazo para regularizar; tus datos nunca se eliminan.",
+      },
+    ],
+    notActive:
+      "La facturación aún no está activada: esta página describe su funcionamiento.",
+  },
   documents: {
     projectDocuments: "Documentos del proyecto",
     taskDocuments: "Documentos",

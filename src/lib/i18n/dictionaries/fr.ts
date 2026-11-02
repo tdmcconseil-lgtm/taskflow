@@ -233,6 +233,46 @@ const fr = {
     nearLimit:
       "Vous approchez de la limite de votre formule pour : {items}. Pensez à faire évoluer l'abonnement.",
   },
+  billingInfo: {
+    title: "Comment fonctionne la facturation",
+    intro:
+      "Votre espace est facturé à l'usage : vous ne payez que pour les personnes qui l'utilisent, et vous gardez la main sur le montant.",
+    budgetTitle: "Vous fixez votre plafond de budget",
+    budgetBody:
+      "Sur une offre payante, aucune limite de sièges n'est imposée. Pour éviter toute mauvaise surprise, vous définissez vous-même un montant mensuel maximum : il se traduit par un nombre maximum de sièges facturés. Tant que ce plafond n'est pas défini, aucun nouveau membre ne peut être ajouté. Vous pouvez le relever ou le baisser à tout moment.",
+    points: [
+      {
+        title: "Une facture par mois",
+        body: "On additionne votre consommation du mois et une seule facture la règle, après coup. Rien n'est débité au moment où vous ajoutez un membre.",
+      },
+      {
+        title: "L'unité : l'utilisateur-mois",
+        body: "Toute personne ayant eu un siège au moins un jour dans le mois compte pour une unité, au prix plein (pas de prorata). Un même utilisateur ne compte qu'une fois, même ajouté puis retiré plusieurs fois.",
+      },
+      {
+        title: "Les prix",
+        body: "Gratuit : 0 €. PRO : 3 € par utilisateur et par mois. BUSINESS : 6 €. En formule annuelle, deux mois sont offerts.",
+      },
+      {
+        title: "Offre gratuite",
+        body: "Limitée à 3 membres, sans aucune facture. Au-delà, passez à une offre payante.",
+      },
+      {
+        title: "Faire tourner votre équipe",
+        body: "Désactiver un membre libère aussitôt un siège : vous pouvez en ajouter un autre sans dépasser votre plafond.",
+      },
+      {
+        title: "Toujours prévenu avant de payer",
+        body: "À chaque ajout, on vous indique l'impact sur la facture et le budget restant. Un récapitulatif reste consultable en continu, et un email vous prévient quelques jours avant l'échéance.",
+      },
+      {
+        title: "Paiement",
+        body: "Une carte valide est requise sur les offres payantes. En cas d'échec de paiement, vous êtes relancé et disposez d'un délai pour régulariser ; vos données ne sont jamais supprimées.",
+      },
+    ],
+    notActive:
+      "La facturation n'est pas encore activée : cette page en décrit le fonctionnement.",
+  },
   documents: {
     projectDocuments: "Documents du projet",
     taskDocuments: "Documents",

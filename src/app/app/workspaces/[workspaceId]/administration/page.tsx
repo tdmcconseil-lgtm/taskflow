@@ -10,6 +10,7 @@ import { AdminTabs } from "@/components/AdminTabs";
 import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
+import { BillingInfo } from "@/components/BillingInfo";
 import {
   archiveWorkspace,
   unarchiveWorkspace,
@@ -22,8 +23,8 @@ import { cardClass } from "@/components/ui";
 
 // Page d'administration d'un espace : accessible aux administrateurs, signalée
 // par un bandeau rouge. Onglets : Membres (gestion complète), Identité,
-// Consommation, Facturation (à venir). Zone « danger » (archivage) en bas,
-// réservée au propriétaire.
+// Consommation, Facturation (explication du modèle à l'usage). Zone « danger »
+// (archivage) en bas, réservée au propriétaire.
 export default async function WorkspaceAdminPage({
   params,
   searchParams,
@@ -207,12 +208,6 @@ export default async function WorkspaceAdminPage({
     </div>
   );
 
-  const comingSoon = (
-    <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
-      {t.workspace.comingSoon}
-    </p>
-  );
-
   // Onglet Archivage (dernier onglet, réservé au propriétaire).
   const archivagePanel = (
     <section className={`${cardClass} space-y-4 border-red-200 dark:border-red-900`}>
@@ -309,7 +304,7 @@ export default async function WorkspaceAdminPage({
           />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
-        facturation={comingSoon}
+        facturation={<BillingInfo t={t} />}
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>
