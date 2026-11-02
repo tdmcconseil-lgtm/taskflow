@@ -1,15 +1,12 @@
-import { PLAN_LIMITS, PLANS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
-import { setWorkspacePlan } from "@/lib/actions/admin";
-import { isPaidPlan, type SeatIssue } from "@/lib/billing/budget";
-import { Button } from "@/components/Button";
-import { BudgetCapForm } from "@/components/BudgetCapForm";
+import { PLAN_LIMITS, formatStorageMb, type WorkspacePlan } from "@/lib/plans";
+import { type SeatIssue } from "@/lib/billing/budget";
+import { PlanAndBudgetForm } from "@/components/PlanAndBudgetForm";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 // Volet Formule (premier onglet de l'administration) : récapitule la formule de
-// l'espace et ce qu'elle inclut, propose d'en changer, et porte le PLAFOND DE
-// BUDGET (déplacé ici depuis Facturation). Un changement vers une offre payante
-// qui dépasserait le plafond est bloqué en amont (action setWorkspacePlan) et
-// renvoie ici avec un message ; le plafond se règle alors juste en dessous.
+// l'espace, et propose de changer OFFRE + PLAFOND en une seule opération
+// (PlanAndBudgetForm). Un changement dont les membres actifs dépasseraient les
+// sièges autorisés est bloqué côté serveur et renvoie ici avec un message.
 export function PlanPanel({
   workspaceId,
   plan,
@@ -36,15 +33,6 @@ export function PlanPanel({
     { label: t.usage.storage, value: formatStorageMb(limits.storageMb) },
     { label: t.usage.pendingInvites, value: fmt(limits.pendingInvites) },
   ];
-
-  // Formule à tarifer pour le plafond : l'offre payante en cours, sinon celle
-  // qu'on tente d'activer (cas d'une montée depuis FREE bloquée faute de plafond).
-  const pricingPlan: WorkspacePlan | null = isPaidPlan(plan)
-    ? plan
-    : triedPlan && isPaidPlan(triedPlan)
-      ? triedPlan
-      : null;
-  const selectDefault = triedPlan ?? plan;
 
   return (
     <div className="space-y-6">
@@ -79,42 +67,13 @@ export function PlanPanel({
         </ul>
       </div>
 
-      <form
-        action={setWorkspacePlan}
-        className="flex flex-wrap items-end gap-3 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800"
-      >
-        <input type="hidden" name="workspaceId" value={workspaceId} />
-        <div className="space-y-1">
-          <label htmlFor="plan" className="text-sm font-medium">
-            {t.usage.changePlan}
-          </label>
-          <select
-            id="plan"
-            name="plan"
-            defaultValue={selectDefault}
-            className="block rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
-          >
-            {PLANS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Button type="submit" variant="primary" size="md" className="py-2">
-          {t.usage.changePlan}
-        </Button>
-      </form>
-
-      {/* Plafond de budget (offres payantes) — déplacé depuis Facturation. */}
-      {pricingPlan && (
-        <BudgetCapForm
-          workspaceId={workspaceId}
-          plan={pricingPlan}
-          budgetCapCents={budgetCapCents}
-          activeMembers={activeMembers}
-        />
-      )}
+      {/* Offre + plafond, validés ensemble (présélection sur l'offre tentée). */}
+      <PlanAndBudgetForm
+        workspaceId={workspaceId}
+        plan={triedPlan ?? plan}
+        budgetCapCents={budgetCapCents}
+        activeMembers={activeMembers}
+      />
     </div>
   );
 }

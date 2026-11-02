@@ -87,66 +87,44 @@ export async function updateOrganizationProfile(
   return { ok: true };
 }
 
-// Change la formule de l'espace (version pré-Stripe : bascule directe du champ
-// `plan`, réservée aux administrateurs). Après Stripe, le changement passera par
-// le paiement (Checkout / Billing Portal).
-const planSchema = z.object({
+// Change la formule ET le plafond de budget en une seule opération (version
+// pré-Stripe, réservée aux administrateurs). Le plafond ne s'applique qu'aux
+// offres payantes ; pour FREE il est remis à null. Les membres actifs doivent
+// tenir dans les sièges autorisés par (offre, plafond) : sinon on bloque et on
+// renvoie sur l'onglet Formule avec un message (annuler ou augmenter le plafond).
+const planBudgetSchema = z.object({
   workspaceId: z.string().min(1),
   plan: z.enum(["FREE", "PRO", "BUSINESS"]),
+  budgetEuros: z.coerce.number().min(0).max(1_000_000).optional(),
 });
 
-export async function setWorkspacePlan(formData: FormData): Promise<void> {
+export async function setPlanAndBudget(formData: FormData): Promise<void> {
   const user = await requireUser();
-  const parsed = planSchema.safeParse({
+  const parsed = planBudgetSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     plan: formData.get("plan"),
+    budgetEuros: formData.get("budgetEuros") || undefined,
   });
   if (!parsed.success) return;
 
-  const { workspaceId, plan } = parsed.data;
+  const { workspaceId, plan, budgetEuros } = parsed.data;
   if (await ensureAdmin(user.id, workspaceId)) return;
 
-  // Vers une offre payante : les membres actifs doivent tenir sous le plafond de
-  // budget défini. Sinon on bloque et on invite à définir / relever le plafond
-  // d'abord (l'erreur est portée par ?planError, affichée dans l'onglet Formule).
-  if (isPaidPlan(plan)) {
-    const [ws, activeMembers] = await Promise.all([
-      prisma.workspace.findUnique({ where: { id: workspaceId }, select: { budgetCapCents: true } }),
-      prisma.membership.count({ where: { workspaceId, deactivatedAt: null } }),
-    ]);
-    const issue = seatCheck(plan, ws?.budgetCapCents ?? null, activeMembers);
-    if (issue) {
-      redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}`);
-    }
+  const budgetCapCents = isPaidPlan(plan)
+    ? budgetEuros == null
+      ? null
+      : Math.round(budgetEuros * 100)
+    : null;
+  const activeMembers = await prisma.membership.count({
+    where: { workspaceId, deactivatedAt: null },
+  });
+
+  const issue = seatCheck(plan, budgetCapCents, activeMembers);
+  if (issue) {
+    redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}`);
   }
 
-  await prisma.workspace.update({ where: { id: workspaceId }, data: { plan } });
+  await prisma.workspace.update({ where: { id: workspaceId }, data: { plan, budgetCapCents } });
   revalidatePath(`/app/workspaces/${workspaceId}/administration`);
   redirect(`/app/workspaces/${workspaceId}/administration`);
-}
-
-// Fixe le plafond de budget mensuel (en euros, converti en centimes) sur une
-// offre payante. Réservé aux administrateurs. Tant qu'il n'est pas défini,
-// aucun membre ne peut être ajouté (cf. lib/billing/budget).
-const budgetSchema = z.object({
-  workspaceId: z.string().min(1),
-  budgetEuros: z.coerce.number().min(0).max(1_000_000),
-});
-
-export async function setBudgetCap(formData: FormData): Promise<void> {
-  const user = await requireUser();
-  const parsed = budgetSchema.safeParse({
-    workspaceId: formData.get("workspaceId"),
-    budgetEuros: formData.get("budgetEuros"),
-  });
-  if (!parsed.success) return;
-
-  const { workspaceId, budgetEuros } = parsed.data;
-  if (await ensureAdmin(user.id, workspaceId)) return;
-
-  await prisma.workspace.update({
-    where: { id: workspaceId },
-    data: { budgetCapCents: Math.round(budgetEuros * 100) },
-  });
-  revalidatePath(`/app/workspaces/${workspaceId}/administration`);
 }
