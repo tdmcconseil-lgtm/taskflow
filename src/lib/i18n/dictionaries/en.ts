@@ -253,7 +253,7 @@ const en: Dictionary = {
       },
       {
         title: "Prices",
-        body: "Free: €0. PRO: €3 per user per month. BUSINESS: €6. On the annual plan, two months are free.",
+        body: "Free: €0. PRO: €3 per user per month. BUSINESS: €6 per user per month.",
       },
       {
         title: "Free plan",
@@ -576,6 +576,8 @@ const en: Dictionary = {
     billingYearlyNote: "2 months free",
     perMonth: "/ user / month",
     perYear: "/ user / year",
+    upTo: "Up to",
+    perUser: "/ user",
     planFree: "Free",
     planPro: "Pro",
     planBusiness: "Business",

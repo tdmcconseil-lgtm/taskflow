@@ -253,7 +253,7 @@ const es: Dictionary = {
       },
       {
         title: "Los precios",
-        body: "Gratis: 0 €. PRO: 3 € por usuario y mes. BUSINESS: 6 €. En el plan anual, dos meses son gratis.",
+        body: "Gratis: 0 €. PRO: 3 € por usuario y mes. BUSINESS: 6 € por usuario y mes.",
       },
       {
         title: "Plan gratuito",
@@ -576,6 +576,8 @@ const es: Dictionary = {
     billingYearlyNote: "2 meses gratis",
     perMonth: "/ usuario / mes",
     perYear: "/ usuario / año",
+    upTo: "Hasta",
+    perUser: "/ usuario",
     planFree: "Free",
     planPro: "Pro",
     planBusiness: "Business",

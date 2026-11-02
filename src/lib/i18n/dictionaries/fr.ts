@@ -252,7 +252,7 @@ const fr = {
       },
       {
         title: "Les prix",
-        body: "Gratuit : 0 €. PRO : 3 € par utilisateur et par mois. BUSINESS : 6 €. En formule annuelle, deux mois sont offerts.",
+        body: "Gratuit : 0 €. PRO : 3 € par utilisateur et par mois. BUSINESS : 6 € par utilisateur et par mois.",
       },
       {
         title: "Offre gratuite",
@@ -576,6 +576,8 @@ const fr = {
     billingYearlyNote: "2 mois offerts",
     perMonth: "/ utilisateur / mois",
     perYear: "/ utilisateur / an",
+    upTo: "Jusqu'à",
+    perUser: "/ utilisateur",
     planFree: "Free",
     planPro: "Pro",
     planBusiness: "Business",
