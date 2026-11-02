@@ -154,6 +154,7 @@ const en: Dictionary = {
   },
   members: {
     list: "Members of this workspace.",
+    listAdminNote: "Only workspace administrators can add members",
     seatUsage: "{used} / {max} seats reserved",
     perMemberCost: "Each active member: {price} / month",
     invite: "Invite a member",
@@ -229,6 +230,10 @@ const en: Dictionary = {
     desc: "This workspace's usage compared to its plan limits.",
     plan: "Plan",
     changePlan: "Change plan",
+    planErrorCapUnset:
+      "To switch to {plan}, first set a budget cap covering your {n} member(s), below.",
+    planErrorSeatLimit:
+      "Your {n} member(s) would exceed the current cap on {plan}. Raise the cap below (or reduce the number of members).",
     planRecapDesc: "Your current plan and what it includes.",
     includes: "Included in this plan",
     members: "Members",

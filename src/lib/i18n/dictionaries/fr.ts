@@ -153,6 +153,7 @@ const fr = {
   },
   members: {
     list: "Liste des membres associés à cet espace.",
+    listAdminNote: "Seuls les administrateurs de l'espace peuvent ajouter des membres",
     seatUsage: "{used} / {max} sièges réservés",
     perMemberCost: "Chaque membre actif : {price} / mois",
     invite: "Inviter un membre",
@@ -228,6 +229,10 @@ const fr = {
     desc: "Utilisation de cet espace comparée aux limites de sa formule.",
     plan: "Formule",
     changePlan: "Modifier l'abonnement",
+    planErrorCapUnset:
+      "Pour passer à {plan}, définissez d'abord un plafond de budget couvrant vos {n} membre(s), ci-dessous.",
+    planErrorSeatLimit:
+      "Vos {n} membre(s) dépasseraient le plafond actuel sur {plan}. Augmentez le plafond ci-dessous (ou réduisez le nombre de membres).",
     planRecapDesc: "Votre formule actuelle et ce qu'elle comprend.",
     includes: "Compris dans cette formule",
     members: "Membres",

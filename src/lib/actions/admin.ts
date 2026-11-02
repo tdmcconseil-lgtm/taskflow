@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/dal";
 import { ensureAdmin } from "@/lib/auth/guards";
+import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 
 // État de formulaire du volet Identité : erreur localisée, ou succès.
@@ -105,8 +106,23 @@ export async function setWorkspacePlan(formData: FormData): Promise<void> {
   const { workspaceId, plan } = parsed.data;
   if (await ensureAdmin(user.id, workspaceId)) return;
 
+  // Vers une offre payante : les membres actifs doivent tenir sous le plafond de
+  // budget défini. Sinon on bloque et on invite à définir / relever le plafond
+  // d'abord (l'erreur est portée par ?planError, affichée dans l'onglet Formule).
+  if (isPaidPlan(plan)) {
+    const [ws, activeMembers] = await Promise.all([
+      prisma.workspace.findUnique({ where: { id: workspaceId }, select: { budgetCapCents: true } }),
+      prisma.membership.count({ where: { workspaceId, deactivatedAt: null } }),
+    ]);
+    const issue = seatCheck(plan, ws?.budgetCapCents ?? null, activeMembers);
+    if (issue) {
+      redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}`);
+    }
+  }
+
   await prisma.workspace.update({ where: { id: workspaceId }, data: { plan } });
   revalidatePath(`/app/workspaces/${workspaceId}/administration`);
+  redirect(`/app/workspaces/${workspaceId}/administration`);
 }
 
 // Fixe le plafond de budget mensuel (en euros, converti en centimes) sur une

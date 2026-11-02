@@ -11,7 +11,6 @@ import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
-import { BudgetCapForm } from "@/components/BudgetCapForm";
 import {
   archiveWorkspace,
   unarchiveWorkspace,
@@ -37,6 +36,13 @@ export default async function WorkspaceAdminPage({
   const sp = await searchParams;
   const sentTo = typeof sp.sent === "string" ? sp.sent : null;
   const addedTo = typeof sp.added === "string" ? sp.added : null;
+  // Changement de formule bloqué faute de plafond couvrant les membres actuels.
+  const planError =
+    sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
+      ? sp.planError
+      : null;
+  const triedPlan =
+    sp.tried === "FREE" || sp.tried === "PRO" || sp.tried === "BUSINESS" ? sp.tried : null;
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -98,7 +104,10 @@ export default async function WorkspaceAdminPage({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.members.list}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          {t.members.list}{" "}
+          <span className="text-zinc-400 dark:text-zinc-500">· {t.members.listAdminNote}</span>
+        </p>
         <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
           {t.members.invite}
         </ButtonLink>
@@ -304,7 +313,17 @@ export default async function WorkspaceAdminPage({
 
       <AdminTabs
         memberCount={workspace.members.length}
-        formule={<PlanPanel workspaceId={workspace.id} plan={workspace.plan} t={t} />}
+        formule={
+          <PlanPanel
+            workspaceId={workspace.id}
+            plan={workspace.plan}
+            budgetCapCents={workspace.budgetCapCents}
+            activeMembers={usageMetrics.members}
+            planError={planError}
+            triedPlan={triedPlan}
+            t={t}
+          />
+        }
         membres={membresPanel}
         identite={
           <OrganizationProfileForm
@@ -313,17 +332,7 @@ export default async function WorkspaceAdminPage({
           />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
-        facturation={
-          <div className="space-y-6">
-            <BudgetCapForm
-              workspaceId={workspace.id}
-              plan={workspace.plan}
-              budgetCapCents={workspace.budgetCapCents}
-              activeMembers={usageMetrics.members}
-            />
-            <BillingInfo t={t} />
-          </div>
-        }
+        facturation={<BillingInfo t={t} />}
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>

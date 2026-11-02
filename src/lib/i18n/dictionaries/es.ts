@@ -154,6 +154,7 @@ const es: Dictionary = {
   },
   members: {
     list: "Miembros de este espacio.",
+    listAdminNote: "Solo los administradores del espacio pueden añadir miembros",
     seatUsage: "{used} / {max} puestos reservados",
     perMemberCost: "Cada miembro activo: {price} / mes",
     invite: "Invitar a un miembro",
@@ -229,6 +230,10 @@ const es: Dictionary = {
     desc: "Uso de este espacio comparado con los límites de su plan.",
     plan: "Plan",
     changePlan: "Cambiar de plan",
+    planErrorCapUnset:
+      "Para cambiar a {plan}, define primero un tope de presupuesto que cubra tus {n} miembro(s), abajo.",
+    planErrorSeatLimit:
+      "Tus {n} miembro(s) superarían el tope actual en {plan}. Aumenta el tope abajo (o reduce el número de miembros).",
     planRecapDesc: "Tu plan actual y lo que incluye.",
     includes: "Incluido en este plan",
     members: "Miembros",

@@ -135,7 +135,10 @@ export default async function WorkspacePage({
   // (invitations, rôles, désactivation) se fait dans la page Administration.
   const membresPanel = (
     <div className="space-y-6">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.members.list}</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        {t.members.list}{" "}
+        <span className="text-zinc-400 dark:text-zinc-500">· {t.members.listAdminNote}</span>
+      </p>
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
         {workspace.members.map((m) => {
           const deactivated = m.deactivatedAt !== null;
