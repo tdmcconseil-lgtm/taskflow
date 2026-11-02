@@ -163,6 +163,7 @@ const en: Dictionary = {
     creator: "(creator)",
     modify: "Edit",
     doneEditing: "Done",
+    back: "Back",
     roleUser: "User",
     roleAdmin: "Administrator",
     pendingInvitations: "Pending invitations",

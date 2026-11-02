@@ -162,6 +162,7 @@ const fr = {
     creator: "(créateur)",
     modify: "Modifier",
     doneEditing: "Terminer",
+    back: "Retour",
     roleUser: "Utilisateur",
     roleAdmin: "Administrateur",
     pendingInvitations: "Invitations en attente",

@@ -163,6 +163,7 @@ const es: Dictionary = {
     creator: "(creador)",
     modify: "Editar",
     doneEditing: "Listo",
+    back: "Volver",
     roleUser: "Usuario",
     roleAdmin: "Administrador",
     pendingInvitations: "Invitaciones pendientes",

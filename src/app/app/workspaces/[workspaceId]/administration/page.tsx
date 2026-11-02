@@ -152,19 +152,23 @@ export default async function WorkspaceAdminPage({
   // Vue lecture seule : uniquement la liste des membres, sans contrôle.
   const membresReadOnly = renderMembersList(false);
 
-  // Vue édition : ajout de membre, contrôles de rôle/désactivation, invitations.
+  // Note sur les administrateurs : affichée en lecture seule (partie affichage).
+  const membresNote = (
+    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
+      {t.workspace.adminEnoughAdmins}
+    </div>
+  );
+
+  // Bouton d'ajout : rendu par le switch, à droite de « Retour », en édition.
+  const membresInviteButton = (
+    <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
+      {t.members.invite}
+    </ButtonLink>
+  );
+
+  // Vue édition : bannières, contrôles de rôle/désactivation, invitations.
   const membresEditable = (
     <div className="space-y-6">
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
-        {t.workspace.adminEnoughAdmins}
-      </div>
-
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
-          {t.members.invite}
-        </ButtonLink>
-      </div>
-
       {sentTo && (
         <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
           {t.members.invitationSent} {sentTo}.
@@ -237,6 +241,8 @@ export default async function WorkspaceAdminPage({
     <MembersEditSwitch
       readOnly={membresReadOnly}
       editable={membresEditable}
+      note={membresNote}
+      inviteButton={membresInviteButton}
       defaultEditing={Boolean(sentTo || addedTo)}
     />
   );
