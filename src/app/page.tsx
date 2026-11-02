@@ -169,6 +169,12 @@ export default async function Home() {
             <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.landing.footerTagline}</p>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400">
+            <Link
+              href={isAuthed ? "/app" : "/login"}
+              className="font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+            >
+              {isAuthed ? t.landing.openApp : t.landing.signIn}
+            </Link>
             <Link href="/" className="hover:text-zinc-900 dark:hover:text-white">
               {t.landing.footerLegal}
             </Link>
