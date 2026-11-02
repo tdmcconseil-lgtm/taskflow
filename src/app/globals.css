@@ -19,6 +19,14 @@ body {
   height: 100%;
 }
 
+/* Réserve en permanence la place de la barre de défilement verticale : le
+   contenu centré reste à la même position, qu'une page défile (Discussions,
+   Événements remplis…) ou tienne dans l'écran. Sans cela, l'apparition de la
+   barre décale le contenu de quelques pixels d'une page à l'autre. */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Tailwind v4 n'applique plus le curseur « main » par défaut : on le
    rétablit sur toutes les zones cliquables (boutons, etc.). */
 @layer base {
