@@ -57,9 +57,7 @@ export function PlanAndBudgetForm({
   const fmt = (n: number) => (Number.isFinite(n) ? String(n) : t.usage.unlimited);
   const rows = [
     { label: t.usage.members, value: fmt(limits.members) },
-    { label: t.usage.projects, value: fmt(limits.projects) },
-    { label: t.usage.storage, value: formatStorageMb(limits.storageMb) },
-    { label: t.usage.pendingInvites, value: fmt(limits.pendingInvites) },
+    { label: t.usage.storage, value: `${formatStorageMb(limits.storageMb)} ${t.usage.perUser}` },
   ];
 
   const paid = PLAN_DEFS[sel].priceCentsPerUser > 0;
@@ -74,8 +72,14 @@ export function PlanAndBudgetForm({
 
   return (
     <div className="space-y-4">
-      {/* Encart de description de l'abonnement : formule en cours + bouton. */}
+      {/* Encart de description de l'abonnement : plafond choisi, formule en
+          cours + bouton. */}
       <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+        {budgetCapCents != null && (
+          <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+            {t.usage.capChosen.replace("{cap}", formatPrice(budgetCapCents))}
+          </p>
+        )}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.usage.plan}</span>

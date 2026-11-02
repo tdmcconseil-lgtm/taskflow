@@ -241,10 +241,12 @@ const fr = {
     planErrorSeatLimit:
       "Vos {n} membre(s) dépasseraient le plafond actuel sur {plan}. Augmentez le plafond ci-dessous (ou réduisez le nombre de membres).",
     planRecapDesc: "Votre formule actuelle et ce qu'elle comprend.",
+    capChosen: "Vous avez choisi le plafond suivant : {cap} par mois.",
     includes: "Compris dans cette formule",
     members: "Membres",
     projects: "Projets",
     storage: "Stockage",
+    perUser: "par utilisateur",
     pendingInvites: "Invitations en attente",
     unlimited: "illimité",
     nearLimit:
