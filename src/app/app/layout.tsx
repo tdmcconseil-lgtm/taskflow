@@ -106,7 +106,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
       <nav className="flex-1 space-y-6 overflow-y-auto">
         <NavLinks
-          labels={{ home: t.nav.home, discussions: t.nav.discussions, events: t.nav.events }}
+          labels={{ home: t.nav.home, tasks: t.nav.tasks, discussions: t.nav.discussions, events: t.nav.events }}
           unreadCount={unreadCount}
           eventsCount={eventsCount}
         />

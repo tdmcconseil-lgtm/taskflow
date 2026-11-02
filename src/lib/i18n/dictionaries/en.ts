@@ -27,6 +27,7 @@ const en: Dictionary = {
   },
   nav: {
     home: "Home",
+    tasks: "Tasks",
     discussions: "Discussions",
     events: "Events",
     logout: "Log out",

@@ -11,7 +11,7 @@ export function NavLinks({
   unreadCount,
   eventsCount,
 }: {
-  labels: { home: string; discussions: string; events: string };
+  labels: { home: string; tasks: string; discussions: string; events: string };
   unreadCount: number;
   eventsCount: number;
 }) {
@@ -21,6 +21,7 @@ export function NavLinks({
   const activeCls = "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white";
 
   const homeActive = pathname === "/app";
+  const tasksActive = pathname === "/app/tasks";
   const discussionsActive = pathname.startsWith("/app/discussions");
   const eventsActive = pathname.startsWith("/app/evenements");
 
@@ -28,6 +29,9 @@ export function NavLinks({
     <div className="space-y-0.5">
       <Link href="/app" className={`block ${base} ${homeActive ? activeCls : ""}`}>
         🏠 {labels.home}
+      </Link>
+      <Link href="/app/tasks" className={`block ${base} ${tasksActive ? activeCls : ""}`}>
+        📋 {labels.tasks}
       </Link>
       <Link
         href="/app/discussions"

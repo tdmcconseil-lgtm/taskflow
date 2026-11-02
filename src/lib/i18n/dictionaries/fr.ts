@@ -26,6 +26,7 @@ const fr = {
   },
   nav: {
     home: "Accueil",
+    tasks: "Tâches",
     discussions: "Discussions",
     events: "Événements",
     logout: "Déconnexion",

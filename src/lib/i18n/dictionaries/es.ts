@@ -27,6 +27,7 @@ const es: Dictionary = {
   },
   nav: {
     home: "Inicio",
+    tasks: "Tareas",
     discussions: "Discusiones",
     events: "Eventos",
     logout: "Cerrar sesión",
