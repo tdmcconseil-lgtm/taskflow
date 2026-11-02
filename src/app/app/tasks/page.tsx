@@ -36,7 +36,7 @@ export default async function TasksPage() {
       ) : (
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {myTasks.map((task) => (
-            <li key={task.id} className="bg-white p-4 dark:bg-zinc-900">
+            <li key={task.id} className="bg-white px-4 py-2.5 dark:bg-zinc-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="min-w-0">
                   <Link

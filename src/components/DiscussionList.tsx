@@ -27,7 +27,7 @@ export function DiscussionList({
         <li key={r.id}>
           <Link
             href={`/app/tasks/${r.id}`}
-            className="flex items-start gap-3 bg-white p-4 hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
+            className="flex items-start gap-3 bg-white px-4 py-2.5 hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
           >
             <span
               className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
