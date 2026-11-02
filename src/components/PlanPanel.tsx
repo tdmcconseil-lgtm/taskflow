@@ -15,6 +15,7 @@ export function PlanPanel({
   activeMembers,
   planError,
   triedPlan,
+  triedBudgetEuros,
   t,
 }: {
   workspaceId: string;
@@ -23,6 +24,7 @@ export function PlanPanel({
   activeMembers: number;
   planError: SeatIssue | null;
   triedPlan: WorkspacePlan | null;
+  triedBudgetEuros: string | null;
   t: Dictionary;
 }) {
   return (
@@ -41,6 +43,7 @@ export function PlanPanel({
         workspaceId={workspaceId}
         plan={plan}
         triedPlan={triedPlan}
+        triedBudgetEuros={triedBudgetEuros}
         budgetCapCents={budgetCapCents}
         activeMembers={activeMembers}
         defaultOpen={planError != null}

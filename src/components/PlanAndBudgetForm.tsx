@@ -24,6 +24,7 @@ import { useT } from "@/lib/i18n/context";
 export function PlanAndBudgetForm({
   plan,
   triedPlan = null,
+  triedBudgetEuros = null,
   workspaceId,
   budgetCapCents,
   activeMembers,
@@ -33,6 +34,9 @@ export function PlanAndBudgetForm({
   plan: WorkspacePlan;
   // Offre qu'on venait de tenter (présélection du formulaire après un refus).
   triedPlan?: WorkspacePlan | null;
+  // Montant saisi lors d'un changement refusé : le champ se rouvre dessus, pour
+  // que l'alerte porte sur ce qui a été tenté (et non la valeur en base).
+  triedBudgetEuros?: string | null;
   workspaceId: string;
   budgetCapCents: number | null;
   activeMembers: number;
@@ -40,15 +44,15 @@ export function PlanAndBudgetForm({
   defaultOpen?: boolean;
 }) {
   const t = useT();
-  const initialEuros = budgetCapCents == null ? "" : String(budgetCapCents / 100);
+  const dbEuros = budgetCapCents == null ? "" : String(budgetCapCents / 100);
   const [editing, setEditing] = useState(defaultOpen);
   const [sel, setSel] = useState<WorkspacePlan>(triedPlan ?? plan);
-  const [euros, setEuros] = useState(initialEuros);
+  const [euros, setEuros] = useState(triedBudgetEuros ?? dbEuros);
 
-  // Fermer = abandonner les changements, revenir aux valeurs en cours.
+  // Fermer = abandonner les changements, revenir aux valeurs enregistrées.
   const cancel = () => {
-    setSel(triedPlan ?? plan);
-    setEuros(initialEuros);
+    setSel(plan);
+    setEuros(dbEuros);
     setEditing(false);
   };
 
@@ -61,6 +65,8 @@ export function PlanAndBudgetForm({
   const seats = maxSeats(sel, paid ? (validAmount ? cents : null) : null);
   const seatsLabel = Number.isFinite(seats) ? String(seats) : t.usage.unlimited;
   const over = !capMissing && activeMembers > seats;
+  // Plafond minimal requis = membres actifs × prix unitaire de l'offre choisie.
+  const minCapLabel = formatPrice(activeMembers * PLAN_DEFS[sel].priceCentsPerUser);
 
   // Sous-titre de la formule : nombre max d'utilisateurs (limite du palier) et
   // stockage autorisé (« par utilisateur » pour les offres payantes).
@@ -90,17 +96,25 @@ export function PlanAndBudgetForm({
     >
       <input type="hidden" name="workspaceId" value={workspaceId} />
 
-      {/* Message d'erreur éventuel, en haut de l'encart. */}
-      {editing && capMissing && (
-        <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-          {t.usage.capRequired}
-        </p>
-      )}
-      {editing && over && (
-        <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-          {t.usage.seatsOverWarning.replace("{m}", String(activeMembers)).replace("{seats}", seatsLabel)}
-        </p>
-      )}
+      {/* En édition, un bloc de message est toujours présent (hauteur stable,
+          pas de saut de page) : rouge si les paramètres sont incompatibles
+          (validation bloquée), vert sinon. */}
+      {editing &&
+        (capMissing || over ? (
+          <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+            {capMissing
+              ? t.usage.capRequired
+              : t.usage.seatsOverWarning
+                  .replace("{m}", String(activeMembers))
+                  .replace("{min}", minCapLabel)}
+          </p>
+        ) : (
+          <p className="rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-950/50 dark:text-green-300">
+            {t.usage.seatsOk
+              .replace("{m}", String(activeMembers))
+              .replace("{seats}", seatsLabel)}
+          </p>
+        ))}
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
@@ -132,8 +146,9 @@ export function PlanAndBudgetForm({
                 </span>
               )}
             </div>
-            {/* Sous-titre : utilisateurs max + stockage (suit l'offre choisie). */}
-            <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+            {/* Sous-titre : utilisateurs max + stockage (suit l'offre choisie),
+                légèrement décalé à droite et en plus petit. */}
+            <p className="mt-1 pl-3 text-xs text-zinc-500 dark:text-zinc-400">
               {planSubtitle(displayPlan)}
             </p>
           </div>
@@ -178,8 +193,7 @@ export function PlanAndBudgetForm({
       </div>
 
       {editing && (
-        <div className="flex items-center gap-3">
-          <SubmitButton>{t.usage.applyChange}</SubmitButton>
+        <div className="flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={cancel}
@@ -187,6 +201,7 @@ export function PlanAndBudgetForm({
           >
             {t.usage.cancel}
           </button>
+          <SubmitButton disabled={capMissing || over}>{t.usage.applyChange}</SubmitButton>
         </div>
       )}
     </form>

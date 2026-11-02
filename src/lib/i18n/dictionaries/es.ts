@@ -245,7 +245,8 @@ const es: Dictionary = {
     currentMembersLive: "Miembros activos: {n}",
     capRequired: "Indica un tope de presupuesto para este plan de pago.",
     seatsOverWarning:
-      "Tus {m} miembro(s) superan los {seats} asientos permitidos. Aumenta el tope.",
+      "Con tus {m} miembro(s) activos actualmente, tu tope mínimo debería ser de {min} para el plan seleccionado. Aumenta el tope.",
+    seatsOk: "Parámetros válidos — {seats} asientos permitidos para {m} miembro(s) activo(s).",
     planErrorCapUnset:
       "Para cambiar a {plan}, define primero un tope de presupuesto que cubra tus {n} miembro(s), abajo.",
     planErrorSeatLimit:

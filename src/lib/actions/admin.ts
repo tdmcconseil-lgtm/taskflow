@@ -121,7 +121,11 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
 
   const issue = seatCheck(plan, budgetCapCents, activeMembers);
   if (issue) {
-    redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}`);
+    // On renvoie aussi le montant tenté (triedBudget) pour que le formulaire se
+    // rouvre sur ce que l'utilisateur venait de saisir — et non la valeur en
+    // base — afin que l'alerte porte bien sur ce qu'il s'apprête à valider.
+    const tb = budgetEuros == null ? "" : `&triedBudget=${budgetEuros}`;
+    redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}${tb}`);
   }
 
   await prisma.workspace.update({ where: { id: workspaceId }, data: { plan, budgetCapCents } });

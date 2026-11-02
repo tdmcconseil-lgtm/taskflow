@@ -46,6 +46,9 @@ export default async function WorkspaceAdminPage({
       : null;
   const triedPlan =
     sp.tried === "FREE" || sp.tried === "PRO" || sp.tried === "BUSINESS" ? sp.tried : null;
+  // Montant saisi lors d'un changement de formule refusé, pour rouvrir le
+  // formulaire sur cette valeur (l'alerte porte alors sur ce qui a été tenté).
+  const triedBudgetEuros = typeof sp.triedBudget === "string" ? sp.triedBudget : null;
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -345,6 +348,7 @@ export default async function WorkspaceAdminPage({
             activeMembers={usageMetrics.members}
             planError={planError}
             triedPlan={triedPlan}
+            triedBudgetEuros={triedBudgetEuros}
             t={t}
           />
         }
