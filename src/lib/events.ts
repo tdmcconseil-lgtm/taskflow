@@ -2,7 +2,27 @@ import { prisma } from "@/lib/prisma";
 import { ASSIGNEE_SELECT, toAssigneeInfo, type AssigneeInfo, type RawTask } from "@/lib/task-tree";
 import { describeActivity, aspectLabel, joinWithAnd } from "@/lib/activity-text";
 import type { TaskActivityType } from "@/generated/prisma/client";
+import type { TaskTab } from "@/lib/view";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
+
+// Onglet de la fiche de tâche à ouvrir selon le type d'événement (niveau 1 du
+// ciblage : on arrive directement au bon endroit depuis le flux).
+function tabForType(type: TaskActivityType): TaskTab {
+  switch (type) {
+    case "COMMENT_ADDED":
+    case "MENTIONED":
+      return "chat";
+    case "DECISION_ADDED":
+      return "decisions";
+    case "DOCUMENT_ADDED":
+      return "docs";
+    case "SUBTASK_ADDED":
+    case "SUBTASK_REMOVED":
+      return "sous";
+    default:
+      return "activite";
+  }
+}
 
 type ActorInfo = NonNullable<RawTask["assignee"]>;
 
@@ -12,6 +32,7 @@ type EventRow = {
   fromValue: string | null;
   toValue: string | null;
   targetName: string | null;
+  targetId: string | null;
   groupId: string | null;
   createdAt: Date;
   actor: ActorInfo;
@@ -26,6 +47,9 @@ export type EventGroup = {
   createdAt: Date;
   summary: string;
   unread: boolean;
+  // Ciblage : onglet à ouvrir et élément exact à surligner sur la fiche de tâche.
+  tab: TaskTab;
+  targetId: string | null;
 };
 
 const EVENT_SELECT = {
@@ -34,6 +58,7 @@ const EVENT_SELECT = {
   fromValue: true,
   toValue: true,
   targetName: true,
+  targetId: true,
   groupId: true,
   createdAt: true,
   actor: { select: ASSIGNEE_SELECT },
@@ -107,6 +132,8 @@ function groupEvents(rows: EventRow[], readAt: Date | null, t: Dictionary): Even
       createdAt,
       summary: summarize(evs, t),
       unread: !readAt || createdAt > readAt,
+      tab: tabForType(head.type),
+      targetId: head.targetId,
     };
   });
 }

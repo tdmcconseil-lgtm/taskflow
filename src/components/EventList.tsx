@@ -25,7 +25,7 @@ export function EventList({
       {groups.map((g) => (
         <li key={g.key}>
           <Link
-            href={`/app/tasks/${g.task.id}`}
+            href={`/app/tasks/${g.task.id}?tab=${g.tab}${g.targetId ? `&target=${g.targetId}` : ""}`}
             className="flex items-start gap-3 bg-white px-4 py-2.5 hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
           >
             <span

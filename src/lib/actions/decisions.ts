@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { rootTaskId } from "@/lib/actions/documents";
+import { logActivity } from "@/lib/activity";
 import { getDictionary } from "@/lib/i18n/server";
 
 export type DecisionFormState = { error?: string } | undefined;
@@ -65,7 +66,7 @@ export async function createDecision(
     documentId = doc.id;
   }
 
-  await prisma.decision.create({
+  const decision = await prisma.decision.create({
     data: {
       content,
       isProjectDecision,
@@ -73,6 +74,14 @@ export async function createDecision(
       createdById: user.id,
       documentId,
     },
+  });
+
+  // Journal : décision ajoutée (événement de la tâche, ciblé sur la décision).
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "DECISION_ADDED",
+    targetId: decision.id,
   });
 
   await focusDecisionsTab();

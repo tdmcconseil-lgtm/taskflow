@@ -355,6 +355,8 @@ const es: Dictionary = {
     aspectSubtaskAdded: "subtarea añadida",
     aspectSubtaskRemoved: "subtarea eliminada",
     followerAdded: "te añadió como seguidor",
+    decisionAdded: "añadió una decisión",
+    documentAdded: "añadió el documento «{name}»",
   },
   events: {
     title: "Eventos",

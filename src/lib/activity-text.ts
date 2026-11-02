@@ -41,6 +41,10 @@ export function describeActivity(a: ActivityCore, t: Dictionary): string {
       return act.mentioned.replace("{name}", a.targetName ?? act.someone);
     case "FOLLOWER_ADDED":
       return act.followerAdded;
+    case "DECISION_ADDED":
+      return act.decisionAdded;
+    case "DOCUMENT_ADDED":
+      return act.documentAdded.replace("{name}", a.targetName ?? "");
     default:
       return act.modified;
   }

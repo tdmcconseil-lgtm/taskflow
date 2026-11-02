@@ -16,6 +16,7 @@ export async function logActivity(params: {
   targetName?: string | null;
   groupId?: string | null;
   targetUserId?: string | null;
+  targetId?: string | null;
 }): Promise<void> {
   const activity = await prisma.taskActivity.create({
     data: {
@@ -27,6 +28,7 @@ export async function logActivity(params: {
       targetName: params.targetName ?? null,
       groupId: params.groupId ?? null,
       targetUserId: params.targetUserId ?? null,
+      targetId: params.targetId ?? null,
     },
   });
   await notifyActivity(activity.id);

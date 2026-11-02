@@ -47,6 +47,7 @@ export async function addComment(formData: FormData): Promise<void> {
     actorId: user.id,
     type: "COMMENT_ADDED",
     groupId: comment.id,
+    targetId: comment.id,
   });
 
   // Mentions sélectionnées : jetons @[identifiant] insérés par l'éditeur.
@@ -69,6 +70,7 @@ export async function addComment(formData: FormData): Promise<void> {
         targetUserId: uid,
         targetName: mentioned?.name ?? null,
         groupId: comment.id,
+        targetId: comment.id,
       });
     }
   }

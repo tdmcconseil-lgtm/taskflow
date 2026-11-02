@@ -42,7 +42,7 @@ export function EditableComment({
   const mine = comment.authorId === currentUserId;
 
   return (
-    <li className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <li id={`evt-${comment.id}`} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mb-1 flex items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center gap-2">
           <span className="font-medium text-zinc-700 dark:text-zinc-300">

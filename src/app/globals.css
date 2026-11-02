@@ -39,6 +39,22 @@ html {
   }
 }
 
+/* Surbrillance passagère d'un élément ciblé depuis le flux d'événements
+   (commentaire, décision, document). Un halo indigo qui s'estompe, sans toucher
+   au fond de l'élément. */
+@keyframes evtFlash {
+  0% {
+    box-shadow: 0 0 0 2px rgb(99 102 241 / 0.9), 0 0 0 6px rgb(99 102 241 / 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgb(99 102 241 / 0), 0 0 0 6px rgb(99 102 241 / 0);
+  }
+}
+.evt-flash {
+  animation: evtFlash 2.2s ease-out;
+  border-radius: 0.75rem;
+}
+
 /* Barre de défilement masquée (rangées d'onglets défilables sur mobile). */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {

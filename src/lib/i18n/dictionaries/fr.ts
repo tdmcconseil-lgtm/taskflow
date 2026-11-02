@@ -354,6 +354,8 @@ const fr = {
     aspectSubtaskAdded: "sous-tâche ajoutée",
     aspectSubtaskRemoved: "sous-tâche supprimée",
     followerAdded: "vous a ajouté comme suiveur",
+    decisionAdded: "a ajouté une décision",
+    documentAdded: "a ajouté le document « {name} »",
   },
   events: {
     title: "Événements",

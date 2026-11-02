@@ -21,6 +21,12 @@ export async function getTaskTab(): Promise<TaskTab> {
   return TABS.includes(v as TaskTab) ? (v as TaskTab) : "sous";
 }
 
+// Valide un onglet passé en paramètre d'URL (ex. depuis le flux d'événements),
+// pour ouvrir directement le bon onglet. Renvoie undefined si absent/invalide.
+export function parseTaskTab(v: string | undefined): TaskTab | undefined {
+  return v && TABS.includes(v as TaskTab) ? (v as TaskTab) : undefined;
+}
+
 export type WorkspaceTab = "projets" | "membres" | "suivies" | "evenements" | "discussions";
 
 const WS_TABS: WorkspaceTab[] = ["projets", "membres", "suivies", "evenements", "discussions"];

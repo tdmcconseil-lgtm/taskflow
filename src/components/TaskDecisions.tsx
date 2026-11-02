@@ -93,7 +93,7 @@ export function TaskDecisions({
         ) : (
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {decisions.map((d) => (
-              <li key={d.id} className="space-y-2 bg-white p-3 dark:bg-zinc-900">
+              <li key={d.id} id={`evt-${d.id}`} className="space-y-2 bg-white p-3 dark:bg-zinc-900">
                 <p className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
                   {d.content}
                 </p>

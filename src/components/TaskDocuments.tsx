@@ -54,6 +54,7 @@ export function TaskDocuments({
           {items.map((d) => (
             <li
               key={d.id}
+              id={`evt-${d.id}`}
               className="flex items-center justify-between gap-3 bg-white p-3 dark:bg-zinc-900"
             >
               <Link

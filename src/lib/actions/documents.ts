@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary } from "@/lib/i18n/server";
 import { effectiveStorageMb } from "@/lib/plans";
+import { logActivity } from "@/lib/activity";
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
 
@@ -94,6 +95,15 @@ export async function uploadDocument(
   });
   await prisma.documentLink.create({ data: { documentId: doc.id, taskId: task.id } });
 
+  // Journal : document ajouté (événement de la tâche, ciblé sur le document).
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "DOCUMENT_ADDED",
+    targetName: doc.name,
+    targetId: doc.id,
+  });
+
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath(`/app/tasks/${projectTaskId}`);
   redirect(`/app/tasks/${task.id}`);
@@ -141,6 +151,15 @@ export async function createLinkDocument(
     },
   });
   await prisma.documentLink.create({ data: { documentId: doc.id, taskId: task.id } });
+
+  // Journal : lien ajouté (événement de la tâche, ciblé sur le document).
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "DOCUMENT_ADDED",
+    targetName: doc.name,
+    targetId: doc.id,
+  });
 
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath(`/app/tasks/${projectTaskId}`);

@@ -67,6 +67,8 @@ enum TaskActivityType {
   COMMENT_ADDED
   MENTIONED
   FOLLOWER_ADDED // ajouté comme suiveur d'une tâche (événement ciblé)
+  DECISION_ADDED // décision ajoutée à une tâche
+  DOCUMENT_ADDED // document (fichier ou lien) ajouté à une tâche
 }
 
 // Canal de livraison d'une catégorie de notification par email.
@@ -354,6 +356,9 @@ model TaskActivity {
   fromValue  String? // ancienne valeur (statut/priorité/échéance/titre/ancien assigné)
   toValue    String? // nouvelle valeur
   targetName String? // nom d'une entité liée (assigné, sous-tâche…)
+  // Identifiant de l'élément ciblé (commentaire, décision, document) : permet
+  // de pointer précisément depuis le flux d'événements (ouvre l'onglet + surligne).
+  targetId   String?
   // Regroupe les événements écrits en une seule fois (une sauvegarde multi-champs,
   // un commentaire et ses mentions) pour n'afficher qu'une ligne dans le flux.
   groupId    String?

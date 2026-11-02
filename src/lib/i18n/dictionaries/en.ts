@@ -355,6 +355,8 @@ const en: Dictionary = {
     aspectSubtaskAdded: "subtask added",
     aspectSubtaskRemoved: "subtask removed",
     followerAdded: "added you as a follower",
+    decisionAdded: "added a decision",
+    documentAdded: "added the document “{name}”",
   },
   events: {
     title: "Events",

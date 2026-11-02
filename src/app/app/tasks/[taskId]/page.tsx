@@ -9,6 +9,7 @@ import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
 import { DeleteTaskButton } from "@/components/DeleteTaskButton";
 import { TaskTabs } from "@/components/TaskTabs";
+import { ScrollToTarget } from "@/components/ScrollToTarget";
 import { TaskFollowers } from "@/components/TaskFollowers";
 import { DescriptionReveal } from "@/components/DescriptionReveal";
 import { TaskForm } from "@/components/TaskForm";
@@ -23,7 +24,7 @@ import { TaskDecisions } from "@/components/TaskDecisions";
 import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
-import { getTaskView, getTaskTab } from "@/lib/view";
+import { getTaskView, getTaskTab, parseTaskTab } from "@/lib/view";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
@@ -38,7 +39,11 @@ export default async function TaskDetailPage({
   const sp = await searchParams;
   const editing = sp.edit === "1";
   const view = await getTaskView();
-  const initialTab = await getTaskTab();
+  // Onglet : priorité au paramètre d'URL (depuis le flux d'événements), sinon la
+  // préférence conservée en cookie. `target` cible un élément exact à surligner.
+  const initialTab =
+    parseTaskTab(typeof sp.tab === "string" ? sp.tab : undefined) ?? (await getTaskTab());
+  const target = typeof sp.target === "string" ? sp.target : undefined;
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
@@ -409,6 +414,7 @@ export default async function TaskDetailPage({
       </div>
 
       {/* Onglets : Sous-tâches, Documents, Conversation, Suivi, Activité */}
+      <ScrollToTarget targetId={target} />
       <TaskTabs
         taskId={task.id}
         initialTab={initialTab}
