@@ -108,12 +108,12 @@ export function PlanAndBudgetForm({
           {/* Plafond mensuel de paiement : libellé à gauche, valeur à droite
               (champ en édition). */}
           {showCap && (
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <label htmlFor="budgetEuros" className={labelCls}>
                 {t.usage.capMonthlyLabel}
               </label>
               {editing ? (
-                <div className="flex flex-wrap items-center justify-end gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
                   <input
                     id="budgetEuros"
                     name="budgetEuros"
@@ -134,9 +134,9 @@ export function PlanAndBudgetForm({
             </div>
           )}
 
-          {/* Formule : libellé à gauche, pastille/menu à droite (même emplacement). */}
+          {/* Formule : libellé puis pastille/menu à la suite (même emplacement). */}
           <div>
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <label htmlFor="plan" className={labelCls}>
                 {t.usage.plan}
               </label>
@@ -161,7 +161,7 @@ export function PlanAndBudgetForm({
               )}
             </div>
             {/* Sous-titre : utilisateurs max + stockage (suit l'offre choisie). */}
-            <p className="mt-1.5 text-right text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
               {planSubtitle(displayPlan)}
             </p>
           </div>
