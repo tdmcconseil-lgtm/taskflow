@@ -161,6 +161,8 @@ const es: Dictionary = {
     you: "(tú)",
     deactivated: "desactivado",
     creator: "(creador)",
+    modify: "Editar",
+    doneEditing: "Listo",
     roleUser: "Usuario",
     roleAdmin: "Administrador",
     pendingInvitations: "Invitaciones pendientes",

@@ -6,6 +6,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { Button, ButtonLink } from "@/components/Button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
+import { MembersEditSwitch } from "@/components/MembersEditSwitch";
 import { AdminTabs } from "@/components/AdminTabs";
 import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
@@ -97,7 +98,62 @@ export default async function WorkspaceAdminPage({
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
     r === "MEMBER" ? t.members.roleUser : t.members.roleAdmin;
 
-  const membresPanel = (
+  // Liste des membres. `editing` n'affiche les contrôles (rôle, désactivation)
+  // qu'en mode édition ; en lecture seule, seule l'information est visible.
+  const renderMembersList = (editing: boolean) => (
+    <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      {workspace.members.map((m) => {
+        const deactivated = m.deactivatedAt !== null;
+        const canManage = m.role !== "OWNER" && m.user.id !== user.id;
+        return (
+          <li
+            key={m.id}
+            className={`flex flex-wrap items-center justify-between gap-3 p-4 ${
+              deactivated ? "bg-zinc-50 dark:bg-zinc-800/40" : "bg-white dark:bg-zinc-900"
+            }`}
+          >
+            <div className={`flex min-w-0 items-center gap-3 ${deactivated ? "opacity-60" : ""}`}>
+              <UserAvatar user={toAssigneeInfo(m.user)!} className="h-9 w-9" />
+              <div className="min-w-0">
+                <p className="font-medium">
+                  {m.user.name}
+                  {m.user.id === user.id && (
+                    <span className="ml-2 text-xs text-zinc-400 dark:text-zinc-500">{t.members.you}</span>
+                  )}
+                  {deactivated && (
+                    <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700">
+                      {t.members.deactivated}
+                    </span>
+                  )}
+                </p>
+                <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{m.user.email}</p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                {roleLabel(m.role)}
+                {m.role === "OWNER" && ` ${t.members.creator}`}
+              </span>
+              {editing && canManage && (
+                <MemberControls
+                  workspaceId={workspace.id}
+                  memberUserId={m.user.id}
+                  role={m.role === "ADMIN" ? "ADMIN" : "MEMBER"}
+                  deactivated={deactivated}
+                />
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  // Vue lecture seule : uniquement la liste des membres, sans contrôle.
+  const membresReadOnly = renderMembersList(false);
+
+  // Vue édition : ajout de membre, contrôles de rôle/désactivation, invitations.
+  const membresEditable = (
     <div className="space-y-6">
       <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
         {t.workspace.adminEnoughAdmins}
@@ -121,52 +177,7 @@ export default async function WorkspaceAdminPage({
         </p>
       )}
 
-      <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-        {workspace.members.map((m) => {
-          const deactivated = m.deactivatedAt !== null;
-          const canManage = m.role !== "OWNER" && m.user.id !== user.id;
-          return (
-            <li
-              key={m.id}
-              className={`flex flex-wrap items-center justify-between gap-3 p-4 ${
-                deactivated ? "bg-zinc-50 dark:bg-zinc-800/40" : "bg-white dark:bg-zinc-900"
-              }`}
-            >
-              <div className={`flex min-w-0 items-center gap-3 ${deactivated ? "opacity-60" : ""}`}>
-                <UserAvatar user={toAssigneeInfo(m.user)!} className="h-9 w-9" />
-                <div className="min-w-0">
-                  <p className="font-medium">
-                    {m.user.name}
-                    {m.user.id === user.id && (
-                      <span className="ml-2 text-xs text-zinc-400 dark:text-zinc-500">{t.members.you}</span>
-                    )}
-                    {deactivated && (
-                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-xs font-normal text-zinc-600 dark:text-zinc-300 dark:bg-zinc-700">
-                        {t.members.deactivated}
-                      </span>
-                    )}
-                  </p>
-                  <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{m.user.email}</p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-                  {roleLabel(m.role)}
-                  {m.role === "OWNER" && ` ${t.members.creator}`}
-                </span>
-                {canManage && (
-                  <MemberControls
-                    workspaceId={workspace.id}
-                    memberUserId={m.user.id}
-                    role={m.role === "ADMIN" ? "ADMIN" : "MEMBER"}
-                    deactivated={deactivated}
-                  />
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {renderMembersList(true)}
 
       {workspace.invitations.length > 0 && (
         <section className="space-y-2">
@@ -220,6 +231,14 @@ export default async function WorkspaceAdminPage({
         </section>
       )}
     </div>
+  );
+
+  const membresPanel = (
+    <MembersEditSwitch
+      readOnly={membresReadOnly}
+      editable={membresEditable}
+      defaultEditing={Boolean(sentTo || addedTo)}
+    />
   );
 
   // Onglet Archivage (dernier onglet, réservé au propriétaire).

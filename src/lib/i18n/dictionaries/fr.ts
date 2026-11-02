@@ -160,6 +160,8 @@ const fr = {
     you: "(vous)",
     deactivated: "désactivé",
     creator: "(créateur)",
+    modify: "Modifier",
+    doneEditing: "Terminer",
     roleUser: "Utilisateur",
     roleAdmin: "Administrateur",
     pendingInvitations: "Invitations en attente",
