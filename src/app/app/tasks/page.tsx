@@ -24,7 +24,7 @@ export default async function TasksPage() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t.dashboard.myTasks}</h1>
       </div>

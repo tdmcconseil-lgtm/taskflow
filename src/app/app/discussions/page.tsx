@@ -13,7 +13,7 @@ export default async function DiscussionsPage() {
   const rows = await getDiscussionRows(user.id);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">{t.discussionsPage.title}</h1>
       <DiscussionList
         rows={rows}

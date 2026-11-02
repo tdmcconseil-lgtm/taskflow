@@ -8,7 +8,7 @@ export default async function NewWorkspacePage() {
   const t = await getDictionary();
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t.newWorkspace.title}</h1>
       </div>

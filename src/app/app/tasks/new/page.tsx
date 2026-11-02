@@ -74,7 +74,7 @@ export default async function NewTaskPage({
   const currentLabel = isSubtask ? t.task.newSubtask : t.task.newProject;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400">
           <Link href={`/app/workspaces/${workspaceId}`} className="hover:underline">

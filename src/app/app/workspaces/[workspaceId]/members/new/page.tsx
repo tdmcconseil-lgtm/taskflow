@@ -38,7 +38,7 @@ export default async function NewMemberPage({
   const max = maxSeats(workspace.plan, workspace.budgetCapCents);
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <Link
           href={`/app/workspaces/${workspace.id}/administration`}

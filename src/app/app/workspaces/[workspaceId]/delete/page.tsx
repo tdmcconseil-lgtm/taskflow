@@ -41,7 +41,7 @@ export default async function DeleteWorkspacePage({
   ];
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <Link
           href={`/app/workspaces/${workspace.id}`}

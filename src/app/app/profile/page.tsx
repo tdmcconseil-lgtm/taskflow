@@ -59,7 +59,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
               : null;
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t.profile.title}</h1>
       </div>

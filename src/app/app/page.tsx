@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   // commençant par le choix de la formule (page dédiée /workspaces/new).
   if (workspaces.length === 0 && archivedWorkspaces.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-5xl">
         <h1 className="text-2xl font-semibold tracking-tight">
           {t.dashboard.greeting} {user.name} 👋
         </h1>

@@ -49,7 +49,7 @@ export default async function DocumentPage({
   const uploader = toAssigneeInfo(doc.uploadedBy);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <nav className="flex flex-wrap items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400">
         <Link href={`/app/tasks/${doc.projectTask.id}`} className="hover:underline">
           {doc.projectTask.title}
