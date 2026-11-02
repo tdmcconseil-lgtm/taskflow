@@ -44,6 +44,7 @@ export function MembersEditSwitch({
 
   return (
     <div className="space-y-6">
+      {note}
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Button type="button" variant="secondary" onClick={() => setEditing(false)}>
           {t.members.back}
