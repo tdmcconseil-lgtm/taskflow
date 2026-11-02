@@ -420,6 +420,7 @@ const fr = {
   documentPage: {
     file: "Fichier",
     maxSize: "10 Mo maximum.",
+    dropHint: "Glissez un fichier ici, ou choisissez-en un",
     simpleName: "Nom simplifié",
     optional: "(facultatif)",
     namePlaceholder: "Par défaut : le nom du fichier",

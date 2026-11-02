@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { uploadDocument, createLinkDocument } from "@/lib/actions/documents";
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
@@ -27,6 +27,20 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
   const [fileState, fileAction] = useActionState(uploadDocument, undefined);
   const [linkState, linkAction] = useActionState(createLinkDocument, undefined);
 
+  // Glisser-déposer : le fichier déposé alimente le même <input type="file">,
+  // l'action serveur est inchangée. Click « Choisir un fichier » reste possible.
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  function assignFile(file: File | undefined) {
+    if (!file || !fileRef.current) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileRef.current.files = dt.files;
+    setFileName(file.name);
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
@@ -47,7 +61,36 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
             <label className={labelClass} htmlFor="file">
               {t.documentPage.file}
             </label>
-            <input id="file" name="file" type="file" required className={fileInputClass} />
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                assignFile(e.dataTransfer.files[0]);
+              }}
+              className={`flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition ${
+                dragOver
+                  ? "border-indigo-400 bg-indigo-50 dark:border-indigo-600 dark:bg-indigo-950/30"
+                  : "border-zinc-300 dark:border-zinc-700"
+              }`}
+            >
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {fileName ? `📎 ${fileName}` : t.documentPage.dropHint}
+              </p>
+              <input
+                ref={fileRef}
+                id="file"
+                name="file"
+                type="file"
+                required
+                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
+                className={`${fileInputClass} w-auto`}
+              />
+            </div>
             <p className="text-xs text-zinc-400 dark:text-zinc-500">{t.documentPage.maxSize}</p>
           </div>
 

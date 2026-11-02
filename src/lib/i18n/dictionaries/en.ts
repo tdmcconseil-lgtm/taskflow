@@ -421,6 +421,7 @@ const en: Dictionary = {
   documentPage: {
     file: "File",
     maxSize: "10 MB maximum.",
+    dropHint: "Drag a file here, or choose one",
     simpleName: "Simple name",
     optional: "(optional)",
     namePlaceholder: "Default: the file name",
