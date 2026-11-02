@@ -583,6 +583,13 @@ const fr = {
   theme: {
     darkMode: "Mode sombre",
   },
+  shortcuts: {
+    title: "Raccourcis clavier",
+    primary: "Action principale",
+    edit: "Modifier",
+    cancel: "Annuler / fermer",
+    close: "Fermer",
+  },
   appError: {
     title: "Une erreur est survenue",
     desc: "La page n'a pas pu s'afficher. Cela arrive parfois juste après une mise à jour : rechargez la page pour récupérer la dernière version.",

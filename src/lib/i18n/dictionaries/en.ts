@@ -584,6 +584,13 @@ const en: Dictionary = {
   theme: {
     darkMode: "Dark mode",
   },
+  shortcuts: {
+    title: "Keyboard shortcuts",
+    primary: "Primary action",
+    edit: "Edit",
+    cancel: "Cancel / close",
+    close: "Close",
+  },
   appError: {
     title: "Something went wrong",
     desc: "The page could not be displayed. This can happen right after an update: reload the page to get the latest version.",

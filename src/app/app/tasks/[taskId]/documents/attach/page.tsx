@@ -73,7 +73,7 @@ export default async function AttachDocumentPage({
               <form action={attachDocument}>
                 <input type="hidden" name="taskId" value={task.id} />
                 <input type="hidden" name="documentId" value={d.id} />
-                <Button type="submit" variant="primary" className="shrink-0">
+                <Button type="submit" variant="secondary" className="shrink-0">
                   {t.documentPage.attach}
                 </Button>
               </form>

@@ -11,6 +11,7 @@ import { MobileDrawer } from "@/components/MobileDrawer";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { MenuLocaleSwitcher } from "@/components/MenuLocaleSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -126,6 +127,15 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
   return (
     <div className="flex min-h-full flex-1">
+      <KeyboardShortcuts
+        labels={{
+          title: t.shortcuts.title,
+          primary: t.shortcuts.primary,
+          edit: t.shortcuts.edit,
+          cancel: t.shortcuts.cancel,
+          close: t.shortcuts.close,
+        }}
+      />
       {/* Barre latérale (bureau) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-zinc-200 bg-white p-4 md:flex dark:border-zinc-800 dark:bg-zinc-900">
         {nav}

@@ -6,8 +6,10 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 
+// Le sélecteur de fichier reste gris : un seul bouton bleu par écran (le submit
+// « Téléverser »), qui répond à Cmd/Ctrl+Entrée.
 const fileInputClass =
-  "block w-full text-sm text-zinc-600 dark:text-zinc-300 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500";
+  "block w-full text-sm text-zinc-600 dark:text-zinc-300 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-zinc-200 file:px-3 file:py-2 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-300 dark:file:bg-zinc-700 dark:file:text-zinc-200 dark:hover:file:bg-zinc-600";
 
 function tabClass(active: boolean): string {
   return `flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition ${

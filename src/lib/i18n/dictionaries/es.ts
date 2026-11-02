@@ -584,6 +584,13 @@ const es: Dictionary = {
   theme: {
     darkMode: "Modo oscuro",
   },
+  shortcuts: {
+    title: "Atajos de teclado",
+    primary: "Acción principal",
+    edit: "Editar",
+    cancel: "Cancelar / cerrar",
+    close: "Cerrar",
+  },
   appError: {
     title: "Se ha producido un error",
     desc: "No se pudo mostrar la página. Esto puede ocurrir justo después de una actualización: recarga la página para obtener la última versión.",

@@ -369,7 +369,7 @@ export default async function TaskDetailPage({
               {t.task.projectMembers}
             </ButtonLink>
           )}
-          <ButtonLink href={`${detailHref}?edit=1`} variant="primary">
+          <ButtonLink href={`${detailHref}?edit=1`} variant="primary" shortcutKey="e" title={`${t.task.edit} · E`}>
             {t.task.edit}
           </ButtonLink>
         </div>

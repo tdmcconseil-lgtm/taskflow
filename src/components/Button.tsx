@@ -30,22 +30,47 @@ export function buttonClass(variant: Variant = "primary", size: Size = "md", ext
   return `${BASE} ${SIZES[size]} ${VARIANTS[variant]} ${extra}`.trim();
 }
 
-type SharedProps = { variant?: Variant; size?: Size; className?: string };
+// `shortcutKey` branche une touche simple (ex. « e ») sur le bouton, lue par le
+// gestionnaire global de raccourcis. Les boutons primaires (bleus) portent
+// `data-primary-action` : Cmd/Ctrl+Entrée déclenche le bouton bleu de l'écran.
+type SharedProps = { variant?: Variant; size?: Size; className?: string; shortcutKey?: string };
+
+function shortcutAttrs(variant: Variant | undefined, shortcutKey: string | undefined) {
+  const isPrimary = variant === undefined || variant === "primary";
+  return {
+    ...(isPrimary ? { "data-primary-action": "" } : {}),
+    ...(shortcutKey ? { "data-shortcut-key": shortcutKey } : {}),
+  };
+}
 
 export function Button({
   variant,
   size,
   className = "",
+  shortcutKey,
   ...props
 }: Omit<ComponentProps<"button">, "className"> & SharedProps) {
-  return <button className={buttonClass(variant, size, className)} {...props} />;
+  return (
+    <button
+      className={buttonClass(variant, size, className)}
+      {...shortcutAttrs(variant, shortcutKey)}
+      {...props}
+    />
+  );
 }
 
 export function ButtonLink({
   variant,
   size,
   className = "",
+  shortcutKey,
   ...props
 }: Omit<ComponentProps<typeof Link>, "className"> & SharedProps) {
-  return <Link className={buttonClass(variant, size, className)} {...props} />;
+  return (
+    <Link
+      className={buttonClass(variant, size, className)}
+      {...shortcutAttrs(variant, shortcutKey)}
+      {...props}
+    />
+  );
 }
