@@ -1,10 +1,11 @@
 // Contrôle d'accès aux projets (tâches racine) et à leurs données.
 //
-// Règles :
-//  - Un membre a TOUJOURS accès à un projet s'il en est le créateur, ou s'il est
-//    administrateur (OWNER/ADMIN) de l'espace.
-//  - Sinon : accès si le projet est visible par tout l'espace (WORKSPACE), ou
-//    s'il figure dans la liste des membres autorisés (ProjectAccess).
+// Règles (confidentialité stricte) :
+//  - L'OWNER de l'espace garde un accès de plein droit à tous les projets
+//    (secours anti-blocage : il peut toujours se rajouter comme admin de projet).
+//  - Tout autre membre, y compris un ADMIN d'espace, accède à un projet
+//    seulement s'il en est le créateur, s'il figure dans ProjectAccess, ou si le
+//    projet est ouvert à tout l'espace (visibility WORKSPACE).
 //  - Les sous-tâches et données héritent de l'accès de leur projet racine.
 //  - Un membre désactivé (ou non-membre) n'a aucun accès.
 import { prisma } from "@/lib/prisma";
@@ -88,7 +89,8 @@ export async function canAccessProject(
     select: { role: true },
   });
   if (!membership) return false;
-  if (isAdminRole(membership.role)) return true;
+  // Seul l'OWNER conserve un accès de plein droit (les ADMIN d'espace non).
+  if (membership.role === "OWNER") return true;
   if (project.createdById === userId) return true;
   if (project.visibility === "WORKSPACE") return true;
   const entry = await prisma.projectAccess.findUnique({
@@ -103,4 +105,23 @@ export async function canAccessTask(userId: string, taskId: string): Promise<boo
   const root = await getRootProject(taskId);
   if (!root) return false;
   return canAccessProject(userId, root);
+}
+
+// Peut-il GÉRER les membres d'un projet ? L'OWNER de l'espace (secours), ou un
+// membre du projet ayant le rôle ADMIN (le créateur en fait partie).
+export async function canManageProject(
+  userId: string,
+  project: ProjectAccessFields,
+): Promise<boolean> {
+  const membership = await prisma.membership.findFirst({
+    where: { userId, workspaceId: project.workspaceId, deactivatedAt: null },
+    select: { role: true },
+  });
+  if (!membership) return false;
+  if (membership.role === "OWNER") return true;
+  const entry = await prisma.projectAccess.findUnique({
+    where: { taskId_userId: { taskId: project.id, userId } },
+    select: { role: true },
+  });
+  return entry?.role === "ADMIN";
 }

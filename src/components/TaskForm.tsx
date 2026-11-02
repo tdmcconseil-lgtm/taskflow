@@ -24,7 +24,6 @@ export function TaskForm({
   defaults = {},
   submitLabel,
   cancelHref,
-  showAccess = false,
   autoFocusTitle = false,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
@@ -33,8 +32,6 @@ export function TaskForm({
   defaults?: TaskDefaults;
   submitLabel: string;
   cancelHref?: string;
-  // Affiche la section « Accès au projet » (uniquement à la création d'un projet).
-  showAccess?: boolean;
   // Place le curseur dans le champ titre au montage (création d'une tâche).
   autoFocusTitle?: boolean;
 }) {
@@ -123,39 +120,6 @@ export function TaskForm({
           />
         </div>
       </div>
-
-      {showAccess && (
-        <fieldset className="space-y-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
-          <legend className={`${labelClass} px-1`}>{t.task.access}</legend>
-          <label className="flex items-start gap-2 text-sm">
-            <input type="radio" name="visibility" value="RESTRICTED" defaultChecked className="mt-0.5" />
-            <span>
-              <span className="font-medium">{t.task.accessRestricted}</span> —{" "}
-              {t.task.accessRestrictedDesc}
-            </span>
-          </label>
-          <label className="flex items-start gap-2 text-sm">
-            <input type="radio" name="visibility" value="WORKSPACE" className="mt-0.5" />
-            <span>
-              <span className="font-medium">{t.task.accessWorkspace}</span> —{" "}
-              {t.task.accessWorkspaceDesc}
-            </span>
-          </label>
-          {members.length > 0 && (
-            <div className="pt-1">
-              <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-400">{t.task.allowedMembers}</p>
-              <div className="space-y-1">
-                {members.map((m) => (
-                  <label key={m.id} className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="members" value={m.id} />
-                    {m.name}
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-        </fieldset>
-      )}
 
       {state?.error && <p className={errorClass}>{state.error}</p>}
 

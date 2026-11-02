@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
-import { canAccessTask } from "@/lib/access";
+import { canAccessTask, getRootProject, canManageProject } from "@/lib/access";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { PriorityBadge } from "@/components/badges";
@@ -273,6 +273,9 @@ export default async function TaskDetailPage({
   // --- Mode lecture ---
   const overdue = isOverdue(task.dueDate) && task.status !== "DONE";
   const isTopLevel = task.parentId === null;
+  // Projet (tâche racine) : qui peut gérer ses membres (OWNER / admin de projet) ?
+  const projectRoot = isTopLevel ? await getRootProject(task.id) : null;
+  const canManageMembers = projectRoot ? await canManageProject(user.id, projectRoot) : false;
 
   // Décisions propres à la tâche.
   const decisionItems = ownDecisions.map((d) => ({
@@ -361,6 +364,11 @@ export default async function TaskDetailPage({
             </button>
           </form>
           <StatusSelect taskId={task.id} status={task.status} />
+          {canManageMembers && (
+            <ButtonLink href={`/app/tasks/${task.id}/members`} variant="secondary">
+              {t.task.projectMembers}
+            </ButtonLink>
+          )}
           <ButtonLink href={`${detailHref}?edit=1`} variant="primary">
             {t.task.edit}
           </ButtonLink>

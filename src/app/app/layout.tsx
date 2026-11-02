@@ -27,8 +27,10 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
     where: { userId: user.id, deactivatedAt: null },
     select: { workspaceId: true, role: true },
   });
-  const adminWorkspaceIds = memberships
-    .filter((m) => m.role === "OWNER" || m.role === "ADMIN")
+  // Confidentialité stricte : seul l'OWNER voit tous les projets de ses espaces
+  // (les ADMIN d'espace suivent la visibilité par projet comme tout le monde).
+  const ownerWorkspaceIds = memberships
+    .filter((m) => m.role === "OWNER")
     .map((m) => m.workspaceId);
 
   const workspaces = await prisma.workspace.findMany({
@@ -48,7 +50,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             { visibility: "WORKSPACE" },
             { createdById: user.id },
             { access: { some: { userId: user.id } } },
-            { workspaceId: { in: adminWorkspaceIds } },
+            { workspaceId: { in: ownerWorkspaceIds } },
           ],
         },
         orderBy: { createdAt: "asc" },

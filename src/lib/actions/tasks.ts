@@ -36,8 +36,6 @@ const createSchema = z.object({
   description: z.string().trim().max(5000).optional(),
   assigneeId: z.string().optional(),
   priority: z.enum(PRIORITIES).default("MEDIUM"),
-  // Visibilité : utile uniquement pour un projet (tâche de 1er niveau).
-  visibility: z.enum(["WORKSPACE", "RESTRICTED"]).optional(),
   dueDate: z.string().optional(),
 });
 
@@ -51,7 +49,6 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     description: formData.get("description") || undefined,
     assigneeId: formData.get("assigneeId") || undefined,
     priority: formData.get("priority") || undefined,
-    visibility: formData.get("visibility") || undefined,
     dueDate: formData.get("dueDate") || undefined,
   });
   if (!parsed.success) {
@@ -105,10 +102,10 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
     where: parentId ? { parentId } : { workspaceId, parentId: null },
   });
 
-  // Visibilité : seulement pour un projet (tâche racine). Par défaut « restreint ».
+  // Un projet (tâche racine) est toujours créé « restreint ». Son ouverture
+  // éventuelle à tout l'espace se règle ensuite dans le module d'administration
+  // des membres du projet.
   const isProject = parentId === null;
-  const visibility =
-    isProject && parsed.data.visibility === "WORKSPACE" ? "WORKSPACE" : "RESTRICTED";
 
   const task = await prisma.task.create({
     data: {
@@ -121,31 +118,16 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
       dueDate,
       parentId,
       position,
-      ...(isProject ? { visibility } : {}),
+      ...(isProject ? { visibility: "RESTRICTED" } : {}),
     },
   });
 
-  // Projet restreint : accorder l'accès aux membres choisis (membres actifs de
-  // l'espace, hors le créateur qui a toujours accès) et les faire suivre.
-  if (isProject && visibility === "RESTRICTED") {
-    const memberIds = formData
-      .getAll("members")
-      .map((v) => String(v))
-      .filter(Boolean);
-    if (memberIds.length > 0) {
-      const valid = await prisma.membership.findMany({
-        where: { workspaceId, deactivatedAt: null, userId: { in: memberIds } },
-        select: { userId: true },
-      });
-      const grantIds = valid.map((m) => m.userId).filter((id) => id !== user.id);
-      if (grantIds.length > 0) {
-        await prisma.projectAccess.createMany({
-          data: grantIds.map((userId) => ({ taskId: task.id, userId })),
-          skipDuplicates: true,
-        });
-        for (const id of grantIds) await ensureFollow(id, task.id);
-      }
-    }
+  // Le créateur d'un projet en devient l'administrateur (entrée ProjectAccess),
+  // ce qui matérialise son rôle et lui permet d'y gérer les membres.
+  if (isProject) {
+    await prisma.projectAccess.create({
+      data: { taskId: task.id, userId: user.id, role: "ADMIN" },
+    });
   }
 
   // Suivi automatique : le créateur et l'assigné suivent la tâche.

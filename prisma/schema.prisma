@@ -27,7 +27,15 @@ enum WorkspaceRole {
 // portent ; les sous-tâches héritent de celle de leur projet.
 enum ProjectVisibility {
   WORKSPACE // accessible à tous les membres de l'espace
-  RESTRICTED // accessible au créateur, aux administrateurs et aux membres listés
+  RESTRICTED // accessible au créateur, aux membres listés (et à l'OWNER de l'espace)
+}
+
+// Rôle d'une personne AU SEIN d'un projet (distinct des rôles d'espace).
+//  - ADMIN  : gère les membres du projet et son ouverture ;
+//  - MEMBER : accède au projet sans le gérer.
+enum ProjectMemberRole {
+  ADMIN
+  MEMBER
 }
 
 // Formule d'abonnement d'un espace. Les limites associées sont définies en code
@@ -265,6 +273,8 @@ model Task {
 model ProjectAccess {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
+  // Rôle dans le projet. Le créateur est matérialisé comme ADMIN.
+  role      ProjectMemberRole @default(MEMBER)
 
   taskId String
   task   Task   @relation("ProjectAccess", fields: [taskId], references: [id], onDelete: Cascade)

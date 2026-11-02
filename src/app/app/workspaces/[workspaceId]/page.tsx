@@ -88,12 +88,15 @@ export default async function WorkspacePage({
 
   const { roots } = buildTaskIndex(allTasks as RawTask[]);
   const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
+  // Confidentialité stricte : seul l'OWNER voit tous les projets de l'espace.
+  const seesAllProjects = membership.role === "OWNER";
   const isArchived = workspace.archivedAt !== null;
 
-  // Filtrage d'accès : un non-administrateur ne voit que les projets auxquels il
-  // a accès (visibles par tout l'espace, créés par lui, ou partagés avec lui).
+  // Filtrage d'accès : chacun (y compris un ADMIN d'espace) ne voit que les
+  // projets auxquels il a accès — ouverts à tout l'espace, créés par lui, ou
+  // dont il est membre (ProjectAccess).
   let visibleRoots = roots;
-  if (!isAdmin) {
+  if (!seesAllProjects) {
     const allowed = await prisma.task.findMany({
       where: {
         workspaceId,
