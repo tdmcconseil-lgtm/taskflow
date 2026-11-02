@@ -96,26 +96,6 @@ export function PlanAndBudgetForm({
     >
       <input type="hidden" name="workspaceId" value={workspaceId} />
 
-      {/* En édition, un bloc de message est toujours présent (hauteur stable,
-          pas de saut de page) : rouge si les paramètres sont incompatibles
-          (validation bloquée), vert sinon. */}
-      {editing &&
-        (capMissing || over ? (
-          <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-            {capMissing
-              ? t.usage.capRequired
-              : t.usage.seatsOverWarning
-                  .replace("{m}", String(activeMembers))
-                  .replace("{min}", minCapLabel)}
-          </p>
-        ) : (
-          <p className="rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-950/50 dark:text-green-300">
-            {t.usage.seatsOk
-              .replace("{m}", String(activeMembers))
-              .replace("{seats}", seatsLabel)}
-          </p>
-        ))}
-
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
           {/* Formule : libellé puis pastille/menu à la suite (même emplacement).
@@ -191,6 +171,26 @@ export function PlanAndBudgetForm({
           </button>
         )}
       </div>
+
+      {/* Sous le plafond : un bloc de message toujours présent en édition
+          (hauteur stable, pas de saut de page) — rouge si les paramètres sont
+          incompatibles (validation bloquée), vert sinon. */}
+      {editing &&
+        (capMissing || over ? (
+          <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+            {capMissing
+              ? t.usage.capRequired
+              : t.usage.seatsOverWarning
+                  .replace("{m}", String(activeMembers))
+                  .replace("{min}", minCapLabel)}
+          </p>
+        ) : (
+          <p className="rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-950/50 dark:text-green-300">
+            {t.usage.seatsOk
+              .replace("{m}", String(activeMembers))
+              .replace("{seats}", seatsLabel)}
+          </p>
+        ))}
 
       {editing && (
         <div className="flex items-center justify-end gap-3">
