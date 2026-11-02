@@ -679,6 +679,10 @@ const es: Dictionary = {
       "Se alcanzó el tope de presupuesto: no se puede añadir ningún miembro. Súbelo en la pestaña Facturación.",
     budgetCapUnset:
       "Define primero un tope de presupuesto mensual (pestaña Facturación) antes de añadir miembros.",
+    storageQuotaExceeded:
+      "Cuota de almacenamiento alcanzada para este plan: no se puede añadir este archivo.",
+    invitationQuotaExceeded:
+      "Número máximo de invitaciones pendientes alcanzado para este plan.",
     invitationInvalid: "Invitación no válida o ya usada.",
     invitationExpired: "Esta invitación ha caducado.",
     cannotCloseOne: "No se puede cerrar: 1 subtarea sin terminar.",

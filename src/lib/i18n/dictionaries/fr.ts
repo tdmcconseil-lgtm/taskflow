@@ -679,6 +679,10 @@ const fr = {
       "Le plafond de budget est atteint : impossible d'ajouter un membre. Augmentez le plafond dans l'onglet Facturation.",
     budgetCapUnset:
       "Définissez d'abord un plafond de budget mensuel (onglet Facturation) avant d'ajouter des membres.",
+    storageQuotaExceeded:
+      "Quota de stockage atteint pour cette formule : impossible d'ajouter ce fichier.",
+    invitationQuotaExceeded:
+      "Nombre maximum d'invitations en attente atteint pour cette formule.",
     invitationInvalid: "Invitation invalide ou déjà utilisée.",
     invitationExpired: "Cette invitation a expiré.",
     cannotCloseOne: "Impossible de clôturer : 1 sous-tâche non terminée.",

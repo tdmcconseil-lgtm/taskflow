@@ -13,6 +13,7 @@ import { sendMail, invitationEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 import { seatCheck } from "@/lib/billing/budget";
+import { PLAN_LIMITS } from "@/lib/plans";
 
 export type FormState = { error?: string } | undefined;
 
@@ -218,6 +219,11 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
     activeMembers + pendingInvites + 1,
   );
   if (inviteSeatIssue) return { error: t.errors[inviteSeatIssue] };
+
+  // Garde-fou du quota d'invitations en attente (par formule).
+  if (pendingInvites + 1 > PLAN_LIMITS[workspace.plan].pendingInvites) {
+    return { error: t.errors.invitationQuotaExceeded };
+  }
 
   // On s'assure seulement que la personne n'est pas déjà membre. Dans tous les
   // autres cas — y compris si elle a déjà un compte getRIDA — on envoie une

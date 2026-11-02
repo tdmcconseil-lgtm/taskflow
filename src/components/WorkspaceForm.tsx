@@ -37,9 +37,6 @@ export function WorkspaceForm() {
                   <li>
                     {fmt(limits.members)} {t.usage.members.toLowerCase()}
                   </li>
-                  <li>
-                    {fmt(limits.projects)} {t.usage.projects.toLowerCase()}
-                  </li>
                   <li>{formatStorageMb(limits.storageMb)}</li>
                 </ul>
               </label>

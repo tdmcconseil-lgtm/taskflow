@@ -28,10 +28,12 @@ export type PlanDef = {
 };
 
 export const PLAN_DEFS: Record<WorkspacePlan, PlanDef> = {
+  // Les projets ne sont PAS limités (aucun quota de projets, quelle que soit la
+  // formule) : projects = Infinity partout.
   FREE: {
     priceCentsPerUser: 0,
     members: 3,
-    projects: 10,
+    projects: Infinity,
     storageMb: 200,
     storagePerUser: false,
     pendingInvites: 5,
@@ -41,7 +43,7 @@ export const PLAN_DEFS: Record<WorkspacePlan, PlanDef> = {
   PRO: {
     priceCentsPerUser: 300,
     members: Infinity,
-    projects: 50,
+    projects: Infinity,
     storageMb: 5120,
     storagePerUser: true,
     pendingInvites: 20,
@@ -51,7 +53,7 @@ export const PLAN_DEFS: Record<WorkspacePlan, PlanDef> = {
   BUSINESS: {
     priceCentsPerUser: 600,
     members: Infinity,
-    projects: 500,
+    projects: Infinity,
     storageMb: 20480,
     storagePerUser: true,
     pendingInvites: Infinity,

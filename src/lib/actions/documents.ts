@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary } from "@/lib/i18n/server";
+import { effectiveStorageMb } from "@/lib/plans";
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
 
@@ -57,6 +58,21 @@ export async function uploadDocument(
   }
   if (file.size > MAX_SIZE) {
     return { error: t.errors.fileTooLarge };
+  }
+
+  // Garde-fou de stockage : l'usage actuel + ce fichier doivent tenir dans le
+  // quota de la formule (par utilisateur sur les offres payantes, forfait sinon).
+  const [ws, activeMembers, usedAgg] = await Promise.all([
+    prisma.workspace.findUnique({ where: { id: task.workspaceId }, select: { plan: true } }),
+    prisma.membership.count({ where: { workspaceId: task.workspaceId, deactivatedAt: null } }),
+    prisma.document.aggregate({ where: { workspaceId: task.workspaceId }, _sum: { size: true } }),
+  ]);
+  if (ws) {
+    const quotaBytes = effectiveStorageMb(ws.plan, activeMembers) * 1024 * 1024;
+    const used = usedAgg._sum.size ?? 0;
+    if (Number.isFinite(quotaBytes) && used + file.size > quotaBytes) {
+      return { error: t.errors.storageQuotaExceeded };
+    }
   }
 
   const providedName = String(formData.get("name") ?? "").trim();

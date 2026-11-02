@@ -679,6 +679,10 @@ const en: Dictionary = {
       "The budget cap is reached: no new member can be added. Raise the cap in the Billing tab.",
     budgetCapUnset:
       "Set a monthly budget cap first (Billing tab) before adding members.",
+    storageQuotaExceeded:
+      "Storage quota reached for this plan: this file cannot be added.",
+    invitationQuotaExceeded:
+      "Maximum number of pending invitations reached for this plan.",
     invitationInvalid: "Invalid or already used invitation.",
     invitationExpired: "This invitation has expired.",
     cannotCloseOne: "Cannot close: 1 unfinished subtask.",
