@@ -137,6 +137,7 @@ const fr = {
     title: "Mon profil",
     photo: "Photo",
     identity: "Identité",
+    tabLogin: "Connexion",
     language: "Langue",
     email: "Adresse email",
     password: "Mot de passe",

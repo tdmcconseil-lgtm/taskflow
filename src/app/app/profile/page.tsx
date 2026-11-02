@@ -3,8 +3,8 @@ import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { NameForm, EmailForm, PasswordForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { ProfileTabs } from "@/components/ProfileTabs";
 import { getEffectivePreference } from "@/lib/notify";
 import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
@@ -35,6 +35,16 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
 
   const notifPref = await getEffectivePreference(user.id);
 
+  // Onglet d'arrivée : on retombe sur l'onglet concerné par le bandeau de
+  // confirmation après un enregistrement (mot de passe / email → Connexion,
+  // notifications → Notifications, sinon Identité).
+  const initialTab =
+    sp.notifSaved === "1"
+      ? "notifications"
+      : sp.pwChanged === "1" || sp.emailSent === "1" || sp.emailChanged === "1"
+        ? "connexion"
+        : "identite";
+
   const banner =
     sp.saved === "1"
       ? t.profile.savedProfile
@@ -60,61 +70,63 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
         </p>
       )}
 
-      {/* Photo */}
-      <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.photo}
-        </h2>
-        <PhotoCard
-          userId={user.id}
-          initialHasPhoto={user.photoMime !== null}
-          initialX={user.photoX}
-          initialY={user.photoY}
-          initialZoom={user.photoZoom}
-          version={user.photoUpdatedAt?.getTime() ?? 0}
-          fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
-        />
-      </section>
+      <ProfileTabs
+        initialTab={initialTab}
+        identite={
+          <div className="space-y-6">
+            {/* Photo */}
+            <section className={cardClass}>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t.profile.photo}
+              </h2>
+              <PhotoCard
+                userId={user.id}
+                initialHasPhoto={user.photoMime !== null}
+                initialX={user.photoX}
+                initialY={user.photoY}
+                initialZoom={user.photoZoom}
+                version={user.photoUpdatedAt?.getTime() ?? 0}
+                fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
+              />
+            </section>
 
-      {/* Identité */}
-      <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.identity}
-        </h2>
-        <NameForm firstName={user.firstName} lastName={user.lastName} />
-      </section>
+            {/* Nom et prénom */}
+            <section className={cardClass}>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t.profile.identity}
+              </h2>
+              <NameForm firstName={user.firstName} lastName={user.lastName} />
+            </section>
+          </div>
+        }
+        connexion={
+          <div className="space-y-6">
+            {/* Email */}
+            <section className={cardClass}>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t.profile.email}
+              </h2>
+              <EmailForm currentEmail={user.email} />
+            </section>
 
-      {/* Langue */}
-      <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.language}
-        </h2>
-        <LocaleSwitcher />
-      </section>
-
-      {/* Email */}
-      <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.email}
-        </h2>
-        <EmailForm currentEmail={user.email} />
-      </section>
-
-      {/* Mot de passe */}
-      <section className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.password}
-        </h2>
-        <PasswordForm />
-      </section>
-
-      {/* Notifications */}
-      <section id="notifications" className={cardClass}>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          {t.profile.notifications}
-        </h2>
-        <NotificationSettings pref={notifPref} />
-      </section>
+            {/* Mot de passe */}
+            <section className={cardClass}>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t.profile.password}
+              </h2>
+              <PasswordForm />
+            </section>
+          </div>
+        }
+        notifications={
+          <section id="notifications" className={cardClass}>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              {t.profile.notifications}
+            </h2>
+            <NotificationSettings pref={notifPref} />
+          </section>
+        }
+      />
     </div>
   );
 }

@@ -138,6 +138,7 @@ const en: Dictionary = {
     title: "My profile",
     photo: "Photo",
     identity: "Identity",
+    tabLogin: "Sign-in",
     language: "Language",
     email: "Email address",
     password: "Password",
