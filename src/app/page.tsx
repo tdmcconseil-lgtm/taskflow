@@ -85,9 +85,6 @@ export default async function Home() {
                 </>
               )}
             </div>
-            {!isAuthed && (
-              <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">{t.landing.heroNoCard}</p>
-            )}
           </div>
 
           {/* Bandeau confiance */}
