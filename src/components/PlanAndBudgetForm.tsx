@@ -105,14 +105,15 @@ export function PlanAndBudgetForm({
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
-          {/* Plafond mensuel de paiement : valeur en lecture, champ en édition. */}
+          {/* Plafond mensuel de paiement : libellé à gauche, valeur à droite
+              (champ en édition). */}
           {showCap && (
-            <div>
+            <div className="flex items-center justify-between gap-3">
               <label htmlFor="budgetEuros" className={labelCls}>
                 {t.usage.capMonthlyLabel}
               </label>
               {editing ? (
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-wrap items-center justify-end gap-2 text-sm text-zinc-500 dark:text-zinc-400">
                   <input
                     id="budgetEuros"
                     name="budgetEuros"
@@ -126,19 +127,19 @@ export function PlanAndBudgetForm({
                   <span>{t.usage.capChosenEditSuffix}</span>
                 </div>
               ) : (
-                <p className="mt-1 text-sm font-medium">
+                <p className="text-sm font-medium">
                   {`${formatPrice(budgetCapCents!)} ${t.usage.perMonth}`}
                 </p>
               )}
             </div>
           )}
 
-          {/* Formule : pastille en lecture, menu en édition — même emplacement. */}
+          {/* Formule : libellé à gauche, pastille/menu à droite (même emplacement). */}
           <div>
-            <label htmlFor="plan" className={labelCls}>
-              {t.usage.plan}
-            </label>
-            <div className="mt-1">
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor="plan" className={labelCls}>
+                {t.usage.plan}
+              </label>
               {editing ? (
                 <select
                   id="plan"
@@ -160,7 +161,7 @@ export function PlanAndBudgetForm({
               )}
             </div>
             {/* Sous-titre : utilisateurs max + stockage (suit l'offre choisie). */}
-            <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1.5 text-right text-sm text-zinc-500 dark:text-zinc-400">
               {planSubtitle(displayPlan)}
             </p>
           </div>
