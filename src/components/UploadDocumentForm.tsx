@@ -6,6 +6,12 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 
+// Taille maximale acceptée côté client, alignée sur le garde-fou serveur
+// (MAX_SIZE dans actions/documents.ts). On refuse AVANT l'envoi : un fichier
+// trop gros tronquerait le corps de la Server Action (borne transport de Next),
+// ce qui provoque un « Unexpected end of form » au lieu d'un message propre.
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 Mo
+
 // Le sélecteur de fichier reste gris : un seul bouton bleu par écran (le submit
 // « Téléverser »), qui répond à Cmd/Ctrl+Entrée.
 const fileInputClass =
@@ -32,12 +38,27 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [sizeError, setSizeError] = useState<string | null>(null);
 
+  // Rejette un fichier trop volumineux (vide le champ) ; sinon l'accepte.
+  function tooLarge(file: File): boolean {
+    if (file.size > MAX_FILE_BYTES) {
+      setSizeError(t.errors.fileTooLarge);
+      setFileName(null);
+      if (fileRef.current) fileRef.current.value = "";
+      return true;
+    }
+    return false;
+  }
+
+  // Fichier déposé : on le place dans le même <input type="file"> après contrôle.
   function assignFile(file: File | undefined) {
     if (!file || !fileRef.current) return;
+    if (tooLarge(file)) return;
     const dt = new DataTransfer();
     dt.items.add(file);
     fileRef.current.files = dt.files;
+    setSizeError(null);
     setFileName(file.name);
   }
 
@@ -53,9 +74,22 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
       </div>
 
       {mode === "file" ? (
-        <form action={fileAction} className="space-y-4">
+        <form
+          action={fileAction}
+          onSubmit={(e) => {
+            // Garde-fou final : ne jamais soumettre un fichier trop gros.
+            const f = fileRef.current?.files?.[0];
+            if (f && f.size > MAX_FILE_BYTES) {
+              e.preventDefault();
+              tooLarge(f);
+            }
+          }}
+          className="space-y-4"
+        >
           <input type="hidden" name="taskId" value={taskId} />
-          {fileState?.error && <p className={errorClass}>{fileState.error}</p>}
+          {(sizeError ?? fileState?.error) && (
+            <p className={errorClass}>{sizeError ?? fileState?.error}</p>
+          )}
 
           <div className="space-y-1">
             <label className={labelClass} htmlFor="file">
@@ -87,7 +121,12 @@ export function UploadDocumentForm({ taskId }: { taskId: string }) {
                 name="file"
                 type="file"
                 required
-                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f && tooLarge(f)) return;
+                  setSizeError(null);
+                  setFileName(f?.name ?? null);
+                }}
                 className={`${fileInputClass} w-auto`}
               />
             </div>
