@@ -31,12 +31,12 @@ export function MembersEditSwitch({
   if (!editing) {
     return (
       <div className="space-y-6">
+        {note}
         <div className="flex justify-end">
           <Button type="button" variant="primary" onClick={() => setEditing(true)}>
             {t.members.modify}
           </Button>
         </div>
-        {note}
         {readOnly}
       </div>
     );
