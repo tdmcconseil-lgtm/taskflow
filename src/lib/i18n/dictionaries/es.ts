@@ -202,6 +202,12 @@ const es: Dictionary = {
     archiveSectionDesc:
       "Archivar oculta el espacio sin borrar sus datos. Una vez archivado, se puede restaurar o eliminar definitivamente.",
     archivedBanner: "Este espacio está archivado — oculto de tu lista activa.",
+    archiveWarning: "Los espacios archivados se eliminan al cabo de un mes.",
+    archiveConfirmQuestion: "¿Archivar este espacio?",
+    archiveConfirm: "Sí, archivar",
+    archiveCancel: "Cancelar",
+    archivedConfirmation:
+      "Este espacio está archivado. Puedes encontrarlo y reactivarlo en el inicio.",
     unarchive: "Desarchivar",
     deletePermanently: "Eliminar definitivamente",
     followedDesc: "Las tareas de este espacio que sigues (👁).",

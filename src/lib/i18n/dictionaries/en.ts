@@ -202,6 +202,12 @@ const en: Dictionary = {
     archiveSectionDesc:
       "Archiving hides the workspace without deleting its data. Once archived, it can be restored or permanently deleted.",
     archivedBanner: "This workspace is archived — hidden from your active list.",
+    archiveWarning: "Archived workspaces are deleted after one month.",
+    archiveConfirmQuestion: "Archive this workspace?",
+    archiveConfirm: "Yes, archive",
+    archiveCancel: "Cancel",
+    archivedConfirmation:
+      "This workspace is archived. You can find it and reactivate it from the home page.",
     unarchive: "Unarchive",
     deletePermanently: "Delete permanently",
     followedDesc: "Tasks in this workspace that you follow (👁).",

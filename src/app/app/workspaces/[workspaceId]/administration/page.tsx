@@ -13,11 +13,11 @@ import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
 import {
-  archiveWorkspace,
   unarchiveWorkspace,
   resendInvitation,
   cancelInvitation,
 } from "@/lib/actions/workspaces";
+import { ArchiveConfirm } from "@/components/ArchiveConfirm";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -273,12 +273,7 @@ export default async function WorkspaceAdminPage({
           </Link>
         </div>
       ) : (
-        <form action={archiveWorkspace}>
-          <input type="hidden" name="workspaceId" value={workspace.id} />
-          <Button type="submit" variant="secondary">
-            {t.workspace.archive}
-          </Button>
-        </form>
+        <ArchiveConfirm workspaceId={workspace.id} />
       )}
     </section>
   );

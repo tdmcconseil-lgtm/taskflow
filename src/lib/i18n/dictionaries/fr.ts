@@ -201,6 +201,12 @@ const fr = {
     archiveSectionDesc:
       "Archiver masque l'espace sans supprimer ses données. Une fois archivé, il peut être restauré ou supprimé définitivement.",
     archivedBanner: "Cet espace est archivé — masqué de votre liste active.",
+    archiveWarning: "Les espaces archivés seront supprimés au bout d'un mois.",
+    archiveConfirmQuestion: "Confirmer l'archivage de cet espace ?",
+    archiveConfirm: "Oui, archiver",
+    archiveCancel: "Annuler",
+    archivedConfirmation:
+      "Cet espace est archivé, vous pouvez le retrouver et le réactiver dans l'accueil.",
     unarchive: "Désarchiver",
     deletePermanently: "Supprimer définitivement",
     followedDesc: "Les tâches de cet espace auxquelles vous êtes abonné (👁).",
