@@ -105,35 +105,6 @@ export function PlanAndBudgetForm({
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-4">
-          {/* Plafond mensuel de paiement : libellé à gauche, valeur à droite
-              (champ en édition). */}
-          {showCap && (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <label htmlFor="budgetEuros" className={labelCls}>
-                {t.usage.capMonthlyLabel}
-              </label>
-              {editing ? (
-                <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  <input
-                    id="budgetEuros"
-                    name="budgetEuros"
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={euros}
-                    onChange={(e) => setEuros(e.target.value)}
-                    className={`${inputClass} w-28`}
-                  />
-                  <span>{t.usage.capChosenEditSuffix}</span>
-                </div>
-              ) : (
-                <p className="text-sm font-medium">
-                  {`${formatPrice(budgetCapCents!)} ${t.usage.perMonth}`}
-                </p>
-              )}
-            </div>
-          )}
-
           {/* Formule : libellé puis pastille/menu à la suite (même emplacement). */}
           <div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -165,6 +136,33 @@ export function PlanAndBudgetForm({
               {planSubtitle(displayPlan)}
             </p>
           </div>
+
+          {/* Plafond mensuel de paiement, sous l'offre : libellé puis valeur
+              (champ + « € » à droite en édition). */}
+          {showCap && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <label htmlFor="budgetEuros" className={labelCls}>
+                {t.usage.capMonthlyLabel}
+              </label>
+              {editing ? (
+                <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                  <input
+                    id="budgetEuros"
+                    name="budgetEuros"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={euros}
+                    onChange={(e) => setEuros(e.target.value)}
+                    className={`${inputClass} w-28`}
+                  />
+                  <span>€</span>
+                </div>
+              ) : (
+                <p className="text-sm font-medium">{formatPrice(budgetCapCents!)}</p>
+              )}
+            </div>
+          )}
         </div>
 
         {!editing && (
