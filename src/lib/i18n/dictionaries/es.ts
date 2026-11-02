@@ -501,6 +501,11 @@ const es: Dictionary = {
   theme: {
     darkMode: "Modo oscuro",
   },
+  appError: {
+    title: "Se ha producido un error",
+    desc: "No se pudo mostrar la página. Esto puede ocurrir justo después de una actualización: recarga la página para obtener la última versión.",
+    reload: "Recargar la página",
+  },
   landing: {
     signIn: "Iniciar sesión",
     signUp: "Registrarse",

@@ -501,6 +501,11 @@ const en: Dictionary = {
   theme: {
     darkMode: "Dark mode",
   },
+  appError: {
+    title: "Something went wrong",
+    desc: "The page could not be displayed. This can happen right after an update: reload the page to get the latest version.",
+    reload: "Reload the page",
+  },
   landing: {
     signIn: "Sign in",
     signUp: "Sign up",

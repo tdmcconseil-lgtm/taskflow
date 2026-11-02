@@ -500,6 +500,11 @@ const fr = {
   theme: {
     darkMode: "Mode sombre",
   },
+  appError: {
+    title: "Une erreur est survenue",
+    desc: "La page n'a pas pu s'afficher. Cela arrive parfois juste après une mise à jour : rechargez la page pour récupérer la dernière version.",
+    reload: "Recharger la page",
+  },
   landing: {
     signIn: "Se connecter",
     signUp: "S'inscrire",
