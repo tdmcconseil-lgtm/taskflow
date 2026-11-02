@@ -12,7 +12,6 @@ import {
 } from "@/lib/plans";
 import { maxSeats } from "@/lib/billing/budget";
 import { SubmitButton } from "@/components/SubmitButton";
-import { inputClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 
 // Volet Formule : l'encart de description de l'abonnement (formule en cours + ce
@@ -145,7 +144,7 @@ export function PlanAndBudgetForm({
                 {t.usage.capMonthlyLabel}
               </label>
               {editing ? (
-                <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
                   <input
                     id="budgetEuros"
                     name="budgetEuros"
@@ -154,7 +153,7 @@ export function PlanAndBudgetForm({
                     step="1"
                     value={euros}
                     onChange={(e) => setEuros(e.target.value)}
-                    className={`${inputClass} w-28`}
+                    className="w-28 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900"
                   />
                   <span>€</span>
                 </div>
