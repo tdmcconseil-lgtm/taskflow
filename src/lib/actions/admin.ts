@@ -108,3 +108,29 @@ export async function setWorkspacePlan(formData: FormData): Promise<void> {
   await prisma.workspace.update({ where: { id: workspaceId }, data: { plan } });
   revalidatePath(`/app/workspaces/${workspaceId}/administration`);
 }
+
+// Fixe le plafond de budget mensuel (en euros, converti en centimes) sur une
+// offre payante. Réservé aux administrateurs. Tant qu'il n'est pas défini,
+// aucun membre ne peut être ajouté (cf. lib/billing/budget).
+const budgetSchema = z.object({
+  workspaceId: z.string().min(1),
+  budgetEuros: z.coerce.number().min(0).max(1_000_000),
+});
+
+export async function setBudgetCap(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const parsed = budgetSchema.safeParse({
+    workspaceId: formData.get("workspaceId"),
+    budgetEuros: formData.get("budgetEuros"),
+  });
+  if (!parsed.success) return;
+
+  const { workspaceId, budgetEuros } = parsed.data;
+  if (await ensureAdmin(user.id, workspaceId)) return;
+
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { budgetCapCents: Math.round(budgetEuros * 100) },
+  });
+  revalidatePath(`/app/workspaces/${workspaceId}/administration`);
+}

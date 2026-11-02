@@ -153,6 +153,8 @@ const es: Dictionary = {
   },
   members: {
     list: "Miembros de este espacio.",
+    seatUsage: "{used} / {max} puestos reservados",
+    perMemberCost: "Cada miembro activo: {price} / mes",
     invite: "Invitar a un miembro",
     you: "(tú)",
     deactivated: "desactivado",
@@ -548,6 +550,16 @@ const es: Dictionary = {
     desc: "No se pudo mostrar la página. Esto puede ocurrir justo después de una actualización: recarga la página para obtener la última versión.",
     reload: "Recargar la página",
   },
+  budgetCap: {
+    title: "Tope de presupuesto mensual",
+    hint: "En un plan de pago, defines tú mismo un máximo mensual. Puestos permitidos = este tope ÷ el precio por usuario. Mientras no esté definido, no se puede añadir ningún miembro.",
+    label: "Tope mensual (€)",
+    save: "Guardar el tope",
+    current: "Tope: {amount} / mes → {seats} puestos permitidos",
+    active: "{n} miembro(s) activo(s)",
+    unsetWarning: "Tope no definido: defínelo para poder añadir miembros.",
+    unitNote: "Precio unitario: {price} por usuario y mes.",
+  },
   landing: {
     signIn: "Iniciar sesión",
     signUp: "Registrarse",
@@ -663,6 +675,10 @@ const es: Dictionary = {
     legalNameMin: "La razón social debe tener al menos 2 caracteres.",
     siretInvalid: "El SIRET debe tener 14 dígitos.",
     alreadyMember: "Esta persona ya es miembro del espacio.",
+    seatLimitReached:
+      "Se alcanzó el tope de presupuesto: no se puede añadir ningún miembro. Súbelo en la pestaña Facturación.",
+    budgetCapUnset:
+      "Define primero un tope de presupuesto mensual (pestaña Facturación) antes de añadir miembros.",
     invitationInvalid: "Invitación no válida o ya usada.",
     invitationExpired: "Esta invitación ha caducado.",
     cannotCloseOne: "No se puede cerrar: 1 subtarea sin terminar.",

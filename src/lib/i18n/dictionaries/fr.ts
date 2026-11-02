@@ -152,6 +152,8 @@ const fr = {
   },
   members: {
     list: "Liste des membres associés à cet espace.",
+    seatUsage: "{used} / {max} sièges réservés",
+    perMemberCost: "Chaque membre actif : {price} / mois",
     invite: "Inviter un membre",
     you: "(vous)",
     deactivated: "désactivé",
@@ -547,6 +549,16 @@ const fr = {
     desc: "La page n'a pas pu s'afficher. Cela arrive parfois juste après une mise à jour : rechargez la page pour récupérer la dernière version.",
     reload: "Recharger la page",
   },
+  budgetCap: {
+    title: "Plafond de budget mensuel",
+    hint: "Sur une offre payante, vous fixez vous-même un montant mensuel maximum. Les sièges autorisés = ce plafond ÷ le prix par utilisateur. Tant qu'il n'est pas défini, aucun membre ne peut être ajouté.",
+    label: "Plafond mensuel (€)",
+    save: "Enregistrer le plafond",
+    current: "Plafond : {amount} / mois → {seats} sièges autorisés",
+    active: "{n} membre(s) actif(s)",
+    unsetWarning: "Plafond non défini : définissez-le pour pouvoir ajouter des membres.",
+    unitNote: "Prix unitaire : {price} par utilisateur et par mois.",
+  },
   landing: {
     signIn: "Se connecter",
     signUp: "S'inscrire",
@@ -663,6 +675,10 @@ const fr = {
     legalNameMin: "La raison sociale doit faire au moins 2 caractères.",
     siretInvalid: "Le SIRET doit comporter 14 chiffres.",
     alreadyMember: "Cette personne est déjà membre de l'espace.",
+    seatLimitReached:
+      "Le plafond de budget est atteint : impossible d'ajouter un membre. Augmentez le plafond dans l'onglet Facturation.",
+    budgetCapUnset:
+      "Définissez d'abord un plafond de budget mensuel (onglet Facturation) avant d'ajouter des membres.",
     invitationInvalid: "Invitation invalide ou déjà utilisée.",
     invitationExpired: "Cette invitation a expiré.",
     cannotCloseOne: "Impossible de clôturer : 1 sous-tâche non terminée.",

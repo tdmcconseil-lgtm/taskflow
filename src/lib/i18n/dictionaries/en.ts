@@ -153,6 +153,8 @@ const en: Dictionary = {
   },
   members: {
     list: "Members of this workspace.",
+    seatUsage: "{used} / {max} seats reserved",
+    perMemberCost: "Each active member: {price} / month",
     invite: "Invite a member",
     you: "(you)",
     deactivated: "deactivated",
@@ -548,6 +550,16 @@ const en: Dictionary = {
     desc: "The page could not be displayed. This can happen right after an update: reload the page to get the latest version.",
     reload: "Reload the page",
   },
+  budgetCap: {
+    title: "Monthly budget cap",
+    hint: "On a paid plan, you set your own monthly maximum. Allowed seats = this cap ÷ price per user. Until it is set, no member can be added.",
+    label: "Monthly cap (€)",
+    save: "Save cap",
+    current: "Cap: {amount} / month → {seats} seats allowed",
+    active: "{n} active member(s)",
+    unsetWarning: "No cap set: set it to be able to add members.",
+    unitNote: "Unit price: {price} per user per month.",
+  },
   landing: {
     signIn: "Sign in",
     signUp: "Sign up",
@@ -663,6 +675,10 @@ const en: Dictionary = {
     legalNameMin: "The legal name must be at least 2 characters.",
     siretInvalid: "The SIRET must be 14 digits.",
     alreadyMember: "This person is already a member of the workspace.",
+    seatLimitReached:
+      "The budget cap is reached: no new member can be added. Raise the cap in the Billing tab.",
+    budgetCapUnset:
+      "Set a monthly budget cap first (Billing tab) before adding members.",
     invitationInvalid: "Invalid or already used invitation.",
     invitationExpired: "This invitation has expired.",
     cannotCloseOne: "Cannot close: 1 unfinished subtask.",

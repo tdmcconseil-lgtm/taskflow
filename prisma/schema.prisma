@@ -136,6 +136,10 @@ model Workspace {
   name       String
   // Formule d'abonnement (limites définies en code). Défaut : FREE.
   plan       WorkspacePlan @default(FREE)
+  // Plafond de budget mensuel (centimes) fixé par l'admin sur une offre payante.
+  // null = non défini → aucun membre ne peut être ajouté (cf. lib/billing/budget).
+  // Les sièges autorisés = budgetCapCents / prix unitaire de la formule.
+  budgetCapCents Int?
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt

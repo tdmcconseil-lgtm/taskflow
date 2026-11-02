@@ -12,8 +12,23 @@ import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
+import { seatCheck } from "@/lib/billing/budget";
 
 export type FormState = { error?: string } | undefined;
+
+// Sièges actifs + 1 : renvoie une clé d'erreur i18n (t.errors.*) si l'ajout d'un
+// membre dépasserait le plafond de budget (ou si, sur une offre payante, le
+// plafond n'est pas défini), sinon null.
+async function seatIssueForAdd(
+  workspaceId: string,
+  plan: "FREE" | "PRO" | "BUSINESS",
+  budgetCapCents: number | null,
+) {
+  const active = await prisma.membership.count({
+    where: { workspaceId, deactivatedAt: null },
+  });
+  return seatCheck(plan, budgetCapCents, active + 1);
+}
 
 const workspaceSchema = z.object({
   name: z.string().trim().min(2, "nameMin2"),
@@ -75,6 +90,15 @@ export async function setMemberActive(
     where: { userId: targetUserId, workspaceId },
   });
   if (!target || target.role === "OWNER") return;
+
+  // Réactiver un membre reconsomme un siège : même garde-fou que l'ajout.
+  if (active) {
+    const ws = await prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      select: { plan: true, budgetCapCents: true },
+    });
+    if (ws && (await seatIssueForAdd(workspaceId, ws.plan, ws.budgetCapCents))) return;
+  }
 
   await prisma.membership.update({
     where: { id: target.id },
@@ -177,9 +201,23 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
 
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
-    select: { name: true },
+    select: { name: true, plan: true, budgetCapCents: true },
   });
   if (!workspace) return { error: t.errors.workspaceNotFound };
+
+  // Garde-fou plafond de budget / sièges : les sièges déjà réservés = membres
+  // actifs + invitations en attente. On refuse si ce nouvel ajout dépasserait le
+  // plafond, ou si le plafond n'est pas défini sur une offre payante.
+  const [activeMembers, pendingInvites] = await Promise.all([
+    prisma.membership.count({ where: { workspaceId, deactivatedAt: null } }),
+    prisma.invitation.count({ where: { workspaceId, acceptedAt: null } }),
+  ]);
+  const inviteSeatIssue = seatCheck(
+    workspace.plan,
+    workspace.budgetCapCents,
+    activeMembers + pendingInvites + 1,
+  );
+  if (inviteSeatIssue) return { error: t.errors[inviteSeatIssue] };
 
   // On s'assure seulement que la personne n'est pas déjà membre. Dans tous les
   // autres cas — y compris si elle a déjà un compte getRIDA — on envoie une
@@ -326,11 +364,27 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
     return { error: t.errors.invitationExpired };
   }
 
+  // Plan + plafond de l'espace, pour le garde-fou de sièges au moment de
+  // l'acceptation (les sièges ont pu se remplir depuis l'envoi de l'invitation).
+  const invWorkspace = await prisma.workspace.findUnique({
+    where: { id: invitation.workspaceId },
+    select: { plan: true, budgetCapCents: true },
+  });
+  if (!invWorkspace) return { error: t.errors.invitationInvalid };
+
   // Compte déjà existant pour cet email : on l'ajoute à l'espace (s'il n'y est
   // pas déjà) et on le renvoie se connecter — aucun mot de passe requis.
   const existingUser = await prisma.user.findUnique({ where: { email: invitation.email } });
   if (existingUser) {
     const already = await getMembership(existingUser.id, invitation.workspaceId);
+    if (!already) {
+      const issue = await seatIssueForAdd(
+        invitation.workspaceId,
+        invWorkspace.plan,
+        invWorkspace.budgetCapCents,
+      );
+      if (issue) return { error: t.errors[issue] };
+    }
     await prisma.$transaction([
       ...(already
         ? []
@@ -362,6 +416,13 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
   if (!parsed.success) {
     return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
+
+  const newUserSeatIssue = await seatIssueForAdd(
+    invitation.workspaceId,
+    invWorkspace.plan,
+    invWorkspace.budgetCapCents,
+  );
+  if (newUserSeatIssue) return { error: t.errors[newUserSeatIssue] };
 
   const passwordHash = await hashPassword(parsed.data.password);
   const newUser = await prisma.user.create({

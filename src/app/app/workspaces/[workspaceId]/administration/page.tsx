@@ -11,6 +11,7 @@ import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
+import { BudgetCapForm } from "@/components/BudgetCapForm";
 import {
   archiveWorkspace,
   unarchiveWorkspace,
@@ -49,6 +50,7 @@ export default async function WorkspaceAdminPage({
       id: true,
       name: true,
       plan: true,
+      budgetCapCents: true,
       archivedAt: true,
       organizationProfile: true,
       members: {
@@ -304,7 +306,17 @@ export default async function WorkspaceAdminPage({
           />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
-        facturation={<BillingInfo t={t} />}
+        facturation={
+          <div className="space-y-6">
+            <BudgetCapForm
+              workspaceId={workspace.id}
+              plan={workspace.plan}
+              budgetCapCents={workspace.budgetCapCents}
+              activeMembers={usageMetrics.members}
+            />
+            <BillingInfo t={t} />
+          </div>
+        }
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>
