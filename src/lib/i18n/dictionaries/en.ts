@@ -197,7 +197,6 @@ const en: Dictionary = {
     adminMode: "Administration mode",
     exitAdmin: "Exit administration mode",
     exit: "Exit",
-    comingSoon: "Coming soon.",
     archiveSectionTitle: "Archiving",
     archiveSectionDesc:
       "Archiving hides the workspace without deleting its data. Once archived, it can be restored or permanently deleted.",
@@ -246,6 +245,8 @@ const en: Dictionary = {
     capRequired: "Enter a budget cap for this paid plan.",
     seatsOverWarning:
       "With your {m} currently active member(s), your minimum cap should be {min} for the selected plan. Please raise the cap, choose a lower plan, or remove active users.",
+    seatsOverWarningFree:
+      "The FREE plan is limited to {seats} user(s), but you have {m} active member(s). Switch to a paid plan or remove active users.",
     seatsOk: "Valid settings — {seats} seats allowed for {m} active member(s).",
     planErrorCapUnset:
       "To switch to {plan}, first set a budget cap covering your {n} member(s), below.",

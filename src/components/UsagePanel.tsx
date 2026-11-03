@@ -3,9 +3,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 
 type Metrics = {
   members: number;
-  projects: number;
   storageBytes: number;
-  pendingInvites: number;
 };
 
 // Barre de jauge : verte < 70 %, ambre 70-90 %, rouge > 90 %. Une limite

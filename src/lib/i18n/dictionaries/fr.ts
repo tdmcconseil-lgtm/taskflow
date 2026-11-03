@@ -196,7 +196,6 @@ const fr = {
     adminMode: "Mode administration",
     exitAdmin: "Quitter le mode administration",
     exit: "Sortir",
-    comingSoon: "Bientôt disponible.",
     archiveSectionTitle: "Archivage",
     archiveSectionDesc:
       "Archiver masque l'espace sans supprimer ses données. Une fois archivé, il peut être restauré ou supprimé définitivement.",
@@ -245,6 +244,8 @@ const fr = {
     capRequired: "Indiquez un plafond de budget pour cette offre payante.",
     seatsOverWarning:
       "Avec vos {m} membre(s) actuellement actifs, votre plafond minimal devrait être de {min} pour l'offre sélectionnée. Veuillez augmenter le plafond, diminuer l'offre ou supprimer des utilisateurs actifs.",
+    seatsOverWarningFree:
+      "L'offre FREE est limitée à {seats} utilisateur(s), or vous avez {m} membre(s) actif(s). Passez à une offre payante ou retirez des utilisateurs actifs.",
     seatsOk: "Paramètres valides — {seats} sièges autorisés pour {m} membre(s) actif(s).",
     planErrorCapUnset:
       "Pour passer à {plan}, définissez d'abord un plafond de budget couvrant vos {n} membre(s), ci-dessous.",

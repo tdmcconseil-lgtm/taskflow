@@ -180,9 +180,13 @@ export function PlanAndBudgetForm({
           <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
             {capMissing
               ? t.usage.capRequired
-              : t.usage.seatsOverWarning
-                  .replace("{m}", String(activeMembers))
-                  .replace("{min}", minCapLabel)}
+              : paid
+                ? t.usage.seatsOverWarning
+                    .replace("{m}", String(activeMembers))
+                    .replace("{min}", minCapLabel)
+                : t.usage.seatsOverWarningFree
+                    .replace("{m}", String(activeMembers))
+                    .replace("{seats}", seatsLabel)}
           </p>
         ) : (
           <p className="rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-950/50 dark:text-green-300">

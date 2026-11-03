@@ -84,19 +84,15 @@ export default async function WorkspaceAdminPage({
   });
   if (!workspace) notFound();
 
-  // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée).
-  const [projectCount, pendingInviteCount, storageAgg] = await Promise.all([
-    prisma.task.count({ where: { workspaceId, parentId: null } }),
-    prisma.invitation.count({
-      where: { workspaceId, acceptedAt: null, expiresAt: { gt: new Date() } },
-    }),
-    prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
-  ]);
+  // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée) :
+  // le volet n'affiche que les membres actifs et le stockage effectif.
+  const storageAgg = await prisma.document.aggregate({
+    where: { workspaceId },
+    _sum: { size: true },
+  });
   const usageMetrics = {
     members: workspace.members.filter((m) => m.deactivatedAt === null).length,
-    projects: projectCount,
     storageBytes: storageAgg._sum.size ?? 0,
-    pendingInvites: pendingInviteCount,
   };
 
   const isArchived = workspace.archivedAt !== null;

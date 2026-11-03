@@ -197,7 +197,6 @@ const es: Dictionary = {
     adminMode: "Modo administración",
     exitAdmin: "Salir del modo administración",
     exit: "Salir",
-    comingSoon: "Próximamente.",
     archiveSectionTitle: "Archivado",
     archiveSectionDesc:
       "Archivar oculta el espacio sin borrar sus datos. Una vez archivado, se puede restaurar o eliminar definitivamente.",
@@ -246,6 +245,8 @@ const es: Dictionary = {
     capRequired: "Indica un tope de presupuesto para este plan de pago.",
     seatsOverWarning:
       "Con tus {m} miembro(s) activos actualmente, tu tope mínimo debería ser de {min} para el plan seleccionado. Aumenta el tope, elige un plan inferior o elimina usuarios activos.",
+    seatsOverWarningFree:
+      "El plan FREE está limitado a {seats} usuario(s), pero tienes {m} miembro(s) activo(s). Cambia a un plan de pago o elimina usuarios activos.",
     seatsOk: "Parámetros válidos — {seats} asientos permitidos para {m} miembro(s) activo(s).",
     planErrorCapUnset:
       "Para cambiar a {plan}, define primero un tope de presupuesto que cubra tus {n} miembro(s), abajo.",
