@@ -13,6 +13,7 @@ import { sendMail, invitationEmail, workspaceAddedEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
 import { seatCheck } from "@/lib/billing/budget";
+import { logMembershipEvent } from "@/lib/billing/membership-events";
 import { PLAN_LIMITS } from "@/lib/plans";
 
 export type FormState = { error?: string } | undefined;
@@ -54,6 +55,8 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
       members: { create: { userId: user.id, role: "OWNER" } },
     },
   });
+  // Le créateur occupe un siège actif dès la création : on l'inscrit au journal.
+  await logMembershipEvent(ws.id, user.id, "ACTIVATED");
 
   revalidatePath("/app");
   // Après création, on arrive sur l'administration du nouvel espace.
@@ -102,10 +105,16 @@ export async function setMemberActive(
     if (ws && (await seatIssueForAdd(workspaceId, ws.plan, ws.budgetCapCents))) return;
   }
 
-  await prisma.membership.update({
-    where: { id: target.id },
-    data: { deactivatedAt: active ? null : new Date() },
-  });
+  // Changement d'état + journal dans une même transaction (atomique).
+  await prisma.$transaction([
+    prisma.membership.update({
+      where: { id: target.id },
+      data: { deactivatedAt: active ? null : new Date() },
+    }),
+    prisma.membershipEvent.create({
+      data: { workspaceId, userId: targetUserId, type: active ? "ACTIVATED" : "DEACTIVATED" },
+    }),
+  ]);
   revalidatePath(`/app/workspaces/${workspaceId}`);
 }
 
@@ -239,6 +248,11 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
         create: { userId: existingUser.id, workspaceId, role },
       }),
       prisma.invitation.deleteMany({ where: { email, workspaceId, acceptedAt: null } }),
+      // L'upsert aboutit toujours à un membre actif (créé ou réactivé) : on
+      // n'arrive ici que si la personne n'est pas déjà membre active (cf. plus haut).
+      prisma.membershipEvent.create({
+        data: { workspaceId, userId: existingUser.id, type: "ACTIVATED" },
+      }),
     ]);
 
     // Prévient la personne : accès direct, rien à accepter.
@@ -426,6 +440,13 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
                 role: invitation.role,
               },
             }),
+            prisma.membershipEvent.create({
+              data: {
+                workspaceId: invitation.workspaceId,
+                userId: existingUser.id,
+                type: "ACTIVATED",
+              },
+            }),
           ]),
       prisma.invitation.update({
         where: { id: invitation.id },
@@ -474,6 +495,8 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
       },
     },
   });
+  // Nouveau compte créé et rattaché à l'espace : son siège devient actif.
+  await logMembershipEvent(invitation.workspaceId, newUser.id, "ACTIVATED");
 
   await prisma.invitation.update({
     where: { id: invitation.id },

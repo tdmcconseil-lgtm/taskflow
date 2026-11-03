@@ -126,6 +126,7 @@ model User {
   emailChanges  EmailChangeRequest[]
   passwordResets PasswordResetRequest[]
   memberships   Membership[]
+  membershipEvents MembershipEvent[]
   createdTasks  Task[]       @relation("TaskCreatedBy")
   assignedTasks Task[]       @relation("TaskAssignee")
   sentInvitations Invitation[] @relation("InvitationInvitedBy")
@@ -155,6 +156,7 @@ model Workspace {
   updatedAt  DateTime      @updatedAt
 
   members     Membership[]
+  membershipEvents MembershipEvent[]
   tasks       Task[]
   invitations Invitation[]
   documents   Document[]
@@ -217,6 +219,33 @@ model Membership {
 
   @@unique([userId, workspaceId])
   @@index([workspaceId])
+}
+
+// Type d'événement du journal d'appartenance (facturation à l'usage).
+enum MembershipEventType {
+  ACTIVATED // membre ajouté / invitation acceptée / membre réactivé
+  DEACTIVATED // membre désactivé
+}
+
+// --- Journal d'appartenance (append-only) ---
+// Source de vérité de la facturation à l'usage « utilisateur-mois » : chaque
+// activation ou désactivation d'un membre y est consignée, horodatée. Jamais de
+// mise à jour ni de suppression (hors cascade si l'utilisateur ou l'espace
+// disparaît). Le `deactivatedAt` de Membership reste l'état courant ; ce journal
+// en porte l'historique, nécessaire pour reconstituer les périodes d'activité.
+model MembershipEvent {
+  id          String              @id @default(cuid())
+  type        MembershipEventType
+  at          DateTime            @default(now())
+
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([workspaceId, at])
 }
 
 // --- Tâche ---
