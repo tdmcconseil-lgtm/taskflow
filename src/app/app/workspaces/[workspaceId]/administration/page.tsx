@@ -21,6 +21,7 @@ import {
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
 import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
 import { unitPriceCents } from "@/lib/billing/budget";
+import { isStripeConfigured } from "@/lib/billing/stripe";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -71,6 +72,7 @@ export default async function WorkspaceAdminPage({
       budgetCapCents: true,
       billingCycleStart: true,
       pendingPlan: true,
+      stripeDefaultPaymentMethodId: true,
       archivedAt: true,
       organizationProfile: true,
       members: {
@@ -418,6 +420,8 @@ export default async function WorkspaceAdminPage({
             workspaceId={workspace.id}
             invoices={invoices}
             locale={locale}
+            stripeEnabled={isStripeConfigured()}
+            cardOnFile={workspace.stripeDefaultPaymentMethodId !== null}
           />
         }
         modeEmploi={<BillingGuide t={t} />}

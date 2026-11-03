@@ -321,6 +321,14 @@ const en: Dictionary = {
     estimateHint:
       "Estimate as of now; it may rise if new members are active before the end of the month.",
     estimateFree: "Free plan: nothing is billed.",
+    paymentTitle: "Payment method",
+    paymentNoCard: "No card on file to charge your monthly invoices.",
+    paymentCardOnFile:
+      "A card is on file; your monthly invoices are charged automatically.",
+    paymentAdd: "Add a card",
+    paymentUpdate: "Change card",
+    paymentHint:
+      "You'll be redirected to Stripe's secure page; no card details pass through getRIDA.",
   },
   billing: {
     planChangePending: "Your plan change will take effect tonight.",

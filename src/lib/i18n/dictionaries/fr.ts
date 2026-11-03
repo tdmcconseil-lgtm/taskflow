@@ -320,6 +320,15 @@ const fr = {
     estimateHint:
       "Estimation à l'instant présent ; elle peut augmenter si de nouveaux membres sont actifs d'ici la fin du mois.",
     estimateFree: "Offre gratuite : aucun montant n'est facturé.",
+    paymentTitle: "Moyen de paiement",
+    paymentNoCard:
+      "Aucune carte enregistrée pour le prélèvement des factures mensuelles.",
+    paymentCardOnFile:
+      "Une carte est enregistrée ; les factures mensuelles y sont prélevées automatiquement.",
+    paymentAdd: "Enregistrer une carte",
+    paymentUpdate: "Changer de carte",
+    paymentHint:
+      "Vous êtes redirigé vers la page sécurisée de Stripe ; aucune donnée de carte ne transite par getRIDA.",
   },
   billing: {
     planChangePending: "Votre changement d'offre sera pris en compte cette nuit.",

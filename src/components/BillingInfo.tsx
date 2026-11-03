@@ -4,6 +4,7 @@ import { type Locale } from "@/lib/i18n/config";
 import { formatDate, formatMonth } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
+import { startCardSetup } from "@/lib/actions/stripe";
 
 // Une facture présentée dans la liste : le mois en cours (montant estimé, pas
 // encore facturé) ou une facture mensuelle émise (montant figé, statut + échéance).
@@ -30,6 +31,8 @@ export function BillingInfo({
   workspaceId,
   invoices,
   locale,
+  stripeEnabled,
+  cardOnFile,
 }: {
   t: Dictionary;
   plan: WorkspacePlan;
@@ -41,6 +44,10 @@ export function BillingInfo({
   // Factures (mois en cours + factures mensuelles émises) ; chacune ouvre son détail.
   invoices: InvoiceListItem[];
   locale: Locale;
+  // Encaissement Stripe configuré (clé ou mock) : affiche le bloc moyen de paiement.
+  stripeEnabled: boolean;
+  // Une carte est enregistrée pour cet espace (Workspace.stripeDefaultPaymentMethodId).
+  cardOnFile: boolean;
 }) {
   const b = t.billingInfo;
   const v = t.invoices;
@@ -74,6 +81,29 @@ export function BillingInfo({
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{b.estimateFree}</p>
         )}
       </section>
+
+      {/* Moyen de paiement : carte enregistrée via Stripe (offres payantes). Le
+          débit réel passe par Stripe ; aucun bouton « payé » côté app. */}
+      {paid && stripeEnabled && (
+        <section className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            {b.paymentTitle}
+          </h3>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+            {cardOnFile ? b.paymentCardOnFile : b.paymentNoCard}
+          </p>
+          <form action={startCardSetup} className="mt-3">
+            <input type="hidden" name="workspaceId" value={workspaceId} />
+            <button
+              type="submit"
+              className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500"
+            >
+              {cardOnFile ? b.paymentUpdate : b.paymentAdd}
+            </button>
+          </form>
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{b.paymentHint}</p>
+        </section>
+      )}
 
       {/* Factures : mois en cours (montant estimé) + factures mensuelles émises.
           Chaque ligne ouvre le détail des utilisateurs qui composent le montant. */}

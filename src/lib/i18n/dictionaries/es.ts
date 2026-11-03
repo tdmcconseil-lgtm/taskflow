@@ -321,6 +321,14 @@ const es: Dictionary = {
     estimateHint:
       "Estimación en este momento; puede aumentar si hay nuevos miembros activos antes de fin de mes.",
     estimateFree: "Plan gratuito: no se factura ningún importe.",
+    paymentTitle: "Método de pago",
+    paymentNoCard: "No hay ninguna tarjeta registrada para cobrar tus facturas mensuales.",
+    paymentCardOnFile:
+      "Hay una tarjeta registrada; tus facturas mensuales se cobran automáticamente.",
+    paymentAdd: "Registrar una tarjeta",
+    paymentUpdate: "Cambiar de tarjeta",
+    paymentHint:
+      "Se te redirigirá a la página segura de Stripe; ningún dato de tarjeta pasa por getRIDA.",
   },
   billing: {
     planChangePending: "El cambio de oferta se aplicará esta noche.",
