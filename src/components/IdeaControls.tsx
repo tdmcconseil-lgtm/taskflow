@@ -43,7 +43,7 @@ export function IdeaControls({ sort, filter }: { sort: IdeaSort; filter: IdeaFil
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+    <div className="flex flex-col items-start gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
           {t.ideas.sortLabel}
