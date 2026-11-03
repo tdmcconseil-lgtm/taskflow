@@ -324,6 +324,27 @@ const en: Dictionary = {
   billing: {
     planChangePending: "Your plan change will take effect tonight.",
   },
+  invoices: {
+    listTitle: "Invoices",
+    currentCycleRow: "Current cycle",
+    ongoing: "ongoing",
+    usersCount: "{n} user(s) billed",
+    estimatedAmount: "{amount} estimated",
+    viewDetail: "View details",
+    backToBilling: "Back to billing",
+    currentCycleTitle: "Current cycle",
+    invoiceTitle: "Invoice",
+    planLabel: "Plan",
+    amountLabel: "Amount",
+    amountEstimatedLabel: "Estimated amount",
+    usersLabel: "Billed users",
+    currentEstimateNote:
+      "Estimate as of now: the final amount is set when the cycle closes.",
+    usersSectionTitle: "Billed users",
+    empty: "No user billed for this period.",
+    anonymized: "Anonymized account",
+    stillActive: "still active",
+  },
   documents: {
     projectDocuments: "Project documents",
     taskDocuments: "Documents",

@@ -323,6 +323,27 @@ const fr = {
   billing: {
     planChangePending: "Votre changement d'offre sera pris en compte cette nuit.",
   },
+  invoices: {
+    listTitle: "Factures",
+    currentCycleRow: "Cycle en cours",
+    ongoing: "en cours",
+    usersCount: "{n} utilisateur(s) facturé(s)",
+    estimatedAmount: "{amount} estimé",
+    viewDetail: "Voir le détail",
+    backToBilling: "Retour à la facturation",
+    currentCycleTitle: "Cycle en cours",
+    invoiceTitle: "Facture",
+    planLabel: "Formule",
+    amountLabel: "Montant",
+    amountEstimatedLabel: "Montant estimé",
+    usersLabel: "Utilisateurs facturés",
+    currentEstimateNote:
+      "Estimation à l'instant présent : le montant définitif est arrêté à la clôture du cycle.",
+    usersSectionTitle: "Utilisateurs facturés",
+    empty: "Aucun utilisateur facturé sur cette période.",
+    anonymized: "Compte anonymisé",
+    stillActive: "encore actif",
+  },
   documents: {
     projectDocuments: "Documents du projet",
     taskDocuments: "Documents",

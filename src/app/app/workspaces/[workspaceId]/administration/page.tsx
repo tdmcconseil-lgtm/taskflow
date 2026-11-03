@@ -19,6 +19,7 @@ import {
 } from "@/lib/actions/workspaces";
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
 import { billableUserCount, currentCyclePeriod } from "@/lib/billing/usage";
+import { unitPriceCents } from "@/lib/billing/budget";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -95,14 +96,47 @@ export default async function WorkspaceAdminPage({
   // pour le coût estimé affiché dans l'onglet Facturation. Hors cycle payant (FREE),
   // rien à estimer → 0.
   const cycle = currentCyclePeriod(workspace.billingCycleStart);
-  const [storageAgg, billableUsers] = await Promise.all([
+  const [storageAgg, billableUsers, segments] = await Promise.all([
     prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
     cycle ? billableUserCount(workspaceId, cycle.start, cycle.end) : Promise.resolve(0),
+    prisma.billingSegment.findMany({
+      where: { workspaceId },
+      orderBy: { endedAt: "desc" },
+      select: { id: true, plan: true, startedAt: true, endedAt: true, amountCents: true, billableUsers: true },
+    }),
   ]);
   const usageMetrics = {
     members: workspace.members.filter((m) => m.deactivatedAt === null).length,
     storageBytes: storageAgg._sum.size ?? 0,
   };
+
+  // Factures présentées dans l'onglet Facturation : le cycle en cours (montant
+  // estimé, recalculé) en tête s'il y en a un, puis les segments clôturés
+  // (montants figés). Chaque entrée ouvre sa page de détail.
+  const invoices = [
+    ...(cycle
+      ? [
+          {
+            id: "current",
+            plan: workspace.plan,
+            startedAt: cycle.start,
+            endedAt: null as Date | null,
+            amountCents: billableUsers * unitPriceCents(workspace.plan),
+            billableUsers,
+            isCurrent: true,
+          },
+        ]
+      : []),
+    ...segments.map((s) => ({
+      id: s.id,
+      plan: s.plan,
+      startedAt: s.startedAt,
+      endedAt: s.endedAt as Date | null,
+      amountCents: s.amountCents,
+      billableUsers: s.billableUsers,
+      isCurrent: false,
+    })),
+  ];
 
   const isArchived = workspace.archivedAt !== null;
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
@@ -378,6 +412,9 @@ export default async function WorkspaceAdminPage({
             plan={workspace.plan}
             pendingPlan={workspace.pendingPlan}
             billableUsers={billableUsers}
+            workspaceId={workspace.id}
+            invoices={invoices}
+            locale={locale}
           />
         }
         archivage={isOwner ? archivagePanel : undefined}
