@@ -352,8 +352,13 @@ const es: Dictionary = {
     statusPaid: "Pagada",
     statusOverdue: "Vencida",
     due: "Vence el {date}",
-    payByTransfer:
-      "Esta factura se paga por transferencia. El acceso se restablece una vez confirmado el pago.",
+    pay: "Pagar esta factura",
+    payPageTitle: "Pago de la factura",
+    paySimulation:
+      "Demostración: el pago está simulado. No se cobra ningún importe; el pago con tarjeta se conectará a Stripe más adelante.",
+    payIntro: "Confirma el pago de esta factura.",
+    payConfirm: "Pagar {amount}",
+    payCancel: "Cancelar",
     lateFeeNotice:
       "Todo retraso en el pago conlleva intereses de demora al tipo legal vigente, más una indemnización fija de 40 € por gastos de cobro (clientes profesionales).",
     currentEstimateNote:

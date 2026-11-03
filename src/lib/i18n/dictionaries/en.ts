@@ -352,8 +352,13 @@ const en: Dictionary = {
     statusPaid: "Paid",
     statusOverdue: "Overdue",
     due: "Due {date}",
-    payByTransfer:
-      "This invoice is settled by bank transfer. Access is restored once the payment is confirmed.",
+    pay: "Pay this invoice",
+    payPageTitle: "Invoice payment",
+    paySimulation:
+      "Demo: this payment is simulated. No amount is charged — card payment will be wired to Stripe later.",
+    payIntro: "Confirm payment of this invoice.",
+    payConfirm: "Pay {amount}",
+    payCancel: "Cancel",
     lateFeeNotice:
       "Late payment incurs late-payment interest at the statutory rate, plus a fixed €40 recovery fee (business customers).",
     currentEstimateNote:

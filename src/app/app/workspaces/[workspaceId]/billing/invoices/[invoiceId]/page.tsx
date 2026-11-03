@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { type Locale } from "@/lib/i18n/config";
 import { cardClass } from "@/components/ui";
+import { ButtonLink } from "@/components/Button";
 import { formatDate, formatMonth } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
@@ -41,6 +42,7 @@ export default async function InvoiceDetailPage({
     return (
       <InvoiceView
         workspaceId={workspaceId}
+        invoiceId={null}
         v={v}
         locale={locale}
         title={v.currentCycleTitle}
@@ -80,6 +82,7 @@ export default async function InvoiceDetailPage({
   return (
     <InvoiceView
       workspaceId={workspaceId}
+      invoiceId={invoiceId}
       v={v}
       locale={locale}
       title={`${v.invoiceTitle} · ${formatMonth(invoice.periodStart, locale)}`}
@@ -98,6 +101,7 @@ export default async function InvoiceDetailPage({
 
 function InvoiceView({
   workspaceId,
+  invoiceId,
   v,
   locale,
   title,
@@ -112,6 +116,8 @@ function InvoiceView({
   users,
 }: {
   workspaceId: string;
+  // id de la facture émise, ou null pour le mois en cours (non payable).
+  invoiceId: string | null;
   v: Awaited<ReturnType<typeof getDictionary>>["invoices"];
   locale: Locale;
   title: string;
@@ -185,12 +191,16 @@ function InvoiceView({
         </p>
       )}
 
-      {/* Le règlement se fait par virement (hors-bande) ; une fois constaté, le
-          superadmin lève la coupure. Pas de paiement en self-service dans l'app. */}
-      {!isCurrent && status === "PENDING" && (
-        <p className="rounded-lg border border-dashed border-zinc-300 px-4 py-3 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-          {v.payByTransfer}
-        </p>
+      {/* Facture en attente : paiement in-app (bouton → page de paiement dédiée). */}
+      {!isCurrent && status === "PENDING" && invoiceId && (
+        <div>
+          <ButtonLink
+            href={`/app/workspaces/${workspaceId}/billing/invoices/${invoiceId}/pay`}
+            variant="primary"
+          >
+            {v.pay}
+          </ButtonLink>
+        </div>
       )}
 
       {!isCurrent && (

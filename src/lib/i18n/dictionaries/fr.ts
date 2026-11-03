@@ -352,8 +352,13 @@ const fr = {
     statusPaid: "Payée",
     statusOverdue: "En retard",
     due: "Échéance le {date}",
-    payByTransfer:
-      "Cette facture se règle par virement. L'accès est rétabli une fois le paiement constaté.",
+    pay: "Payer cette facture",
+    payPageTitle: "Paiement de la facture",
+    paySimulation:
+      "Démonstration : le paiement est simulé. Aucun montant n'est débité — le règlement par carte sera branché sur Stripe ultérieurement.",
+    payIntro: "Confirmez le règlement de cette facture.",
+    payConfirm: "Payer {amount}",
+    payCancel: "Annuler",
     lateFeeNotice:
       "Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement (clients professionnels).",
     currentEstimateNote:

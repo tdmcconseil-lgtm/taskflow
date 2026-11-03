@@ -1,36 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { requireStripe } from "@/lib/billing/stripe";
+import { settleInvoice } from "@/lib/billing/suspension";
 
 // Synchronisation Stripe → base, appelée par le webhook. Idempotent.
 
-// Marque notre facture (retrouvée par son id Stripe) comme payée, puis lève la
-// coupure de l'espace s'il ne reste plus AUCUNE facture échue impayée — même
-// règle que le script superadmin (scripts/recouvrement.ts). Sans effet si l'id
-// Stripe n'est pas connu (facture d'un autre système / déjà traitée).
+// Retrouve notre facture par son id Stripe et la constate payée (passage PAID +
+// levée de coupure éventuelle, via settleInvoice). Sans effet si l'id Stripe est
+// inconnu (facture d'un autre système / déjà traitée).
 export async function markStripeInvoicePaid(stripeInvoiceId: string): Promise<void> {
   const invoice = await prisma.invoice.findUnique({
     where: { stripeInvoiceId },
-    select: { id: true, workspaceId: true, status: true },
+    select: { id: true },
   });
   if (!invoice) return;
-
-  if (invoice.status !== "PAID") {
-    await prisma.invoice.update({
-      where: { id: invoice.id },
-      data: { status: "PAID", paidAt: new Date() },
-    });
-  }
-
-  const now = new Date();
-  const stillOverdue = await prisma.invoice.count({
-    where: { workspaceId: invoice.workspaceId, status: "PENDING", dueAt: { lt: now } },
-  });
-  if (stillOverdue === 0) {
-    await prisma.workspace.updateMany({
-      where: { id: invoice.workspaceId, suspendedAt: { not: null } },
-      data: { suspendedAt: null },
-    });
-  }
+  await settleInvoice(invoice.id);
 }
 
 // Enregistre le moyen de paiement par défaut d'un espace (après un Checkout en
