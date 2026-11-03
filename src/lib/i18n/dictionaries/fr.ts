@@ -341,13 +341,29 @@ const fr = {
     statusLabel: "Statut",
     statusPending: "En attente",
     statusPaid: "Payée",
+    statusOverdue: "En retard",
     due: "Échéance le {date}",
+    pay: "Payer la facture",
+    lateFeeNotice:
+      "Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement (clients professionnels).",
     currentEstimateNote:
       "Estimation à l'instant présent : le montant définitif est arrêté à la clôture du mois.",
     usersSectionTitle: "Utilisateurs facturés",
     empty: "Aucun utilisateur facturé sur cette période.",
     anonymized: "Compte anonymisé",
     stillActive: "encore actif",
+  },
+  suspended: {
+    title: "Espace suspendu",
+    adminLead:
+      "Une ou plusieurs factures sont échues. Réglez-les pour rétablir l'accès de votre équipe. En attendant, seul le règlement des factures est possible.",
+    memberLead:
+      "L'accès à cet espace est temporairement suspendu en raison d'une facture impayée. Un administrateur de l'espace doit régulariser la situation.",
+    invoicesTitle: "Factures à régler",
+    overdueSince: "échéance dépassée le {date}",
+    pay: "Payer",
+    payNote:
+      "Le paiement est adossé à la facture : une fois la dernière facture échue réglée, l'accès est rétabli immédiatement.",
   },
   documents: {
     projectDocuments: "Documents du projet",

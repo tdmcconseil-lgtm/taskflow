@@ -97,15 +97,23 @@ export function BillingInfo({
                           {v.ongoing}
                         </span>
                       ) : (
-                        <span
-                          className={`ml-2 rounded-full px-2 py-0.5 text-xs font-normal ${
+                        (() => {
+                          const overdue =
+                            inv.status === "PENDING" && inv.dueAt !== null && inv.dueAt.getTime() < Date.now();
+                          const cls =
                             inv.status === "PAID"
                               ? "bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300"
-                              : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
-                          }`}
-                        >
-                          {inv.status === "PAID" ? v.statusPaid : v.statusPending}
-                        </span>
+                              : overdue
+                                ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
+                                : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300";
+                          const label =
+                            inv.status === "PAID" ? v.statusPaid : overdue ? v.statusOverdue : v.statusPending;
+                          return (
+                            <span className={`ml-2 rounded-full px-2 py-0.5 text-xs font-normal ${cls}`}>
+                              {label}
+                            </span>
+                          );
+                        })()
                       )}
                     </p>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">

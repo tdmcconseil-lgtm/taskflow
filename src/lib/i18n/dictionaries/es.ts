@@ -342,13 +342,29 @@ const es: Dictionary = {
     statusLabel: "Estado",
     statusPending: "Pendiente",
     statusPaid: "Pagada",
+    statusOverdue: "Vencida",
     due: "Vence el {date}",
+    pay: "Pagar la factura",
+    lateFeeNotice:
+      "Todo retraso en el pago conlleva intereses de demora al tipo legal vigente, más una indemnización fija de 40 € por gastos de cobro (clientes profesionales).",
     currentEstimateNote:
       "Estimación en este momento: el importe definitivo se fija al cierre del mes.",
     usersSectionTitle: "Usuarios facturados",
     empty: "Ningún usuario facturado en este periodo.",
     anonymized: "Cuenta anonimizada",
     stillActive: "aún activo",
+  },
+  suspended: {
+    title: "Espacio suspendido",
+    adminLead:
+      "Una o varias facturas están vencidas. Págalas para restablecer el acceso de tu equipo. Mientras tanto, solo es posible pagar las facturas.",
+    memberLead:
+      "El acceso a este espacio está suspendido temporalmente por una factura impagada. Un administrador del espacio debe regularizar la situación.",
+    invoicesTitle: "Facturas por pagar",
+    overdueSince: "vencida el {date}",
+    pay: "Pagar",
+    payNote:
+      "El pago está vinculado a la factura: una vez pagada la última factura vencida, el acceso se restablece de inmediato.",
   },
   documents: {
     projectDocuments: "Documentos del proyecto",

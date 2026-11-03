@@ -342,13 +342,29 @@ const en: Dictionary = {
     statusLabel: "Status",
     statusPending: "Pending",
     statusPaid: "Paid",
+    statusOverdue: "Overdue",
     due: "Due {date}",
+    pay: "Pay invoice",
+    lateFeeNotice:
+      "Late payment incurs late-payment interest at the statutory rate, plus a fixed €40 recovery fee (business customers).",
     currentEstimateNote:
       "Estimate as of now: the final amount is set when the month closes.",
     usersSectionTitle: "Billed users",
     empty: "No user billed for this period.",
     anonymized: "Anonymized account",
     stillActive: "still active",
+  },
+  suspended: {
+    title: "Workspace suspended",
+    adminLead:
+      "One or more invoices are overdue. Pay them to restore access for your team. Until then, paying invoices is the only available action.",
+    memberLead:
+      "Access to this workspace is temporarily suspended because of an unpaid invoice. A workspace administrator needs to settle it.",
+    invoicesTitle: "Invoices to settle",
+    overdueSince: "overdue since {date}",
+    pay: "Pay",
+    payNote:
+      "Payment is tied to the invoice: once the last overdue invoice is settled, access is restored immediately.",
   },
   documents: {
     projectDocuments: "Project documents",
