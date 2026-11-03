@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/context";
+import { InlineScript } from "@/components/InlineScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <InlineScript html={THEME_SCRIPT} />
         <I18nProvider locale={locale} messages={messages}>
           {children}
         </I18nProvider>
