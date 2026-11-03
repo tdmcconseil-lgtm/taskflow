@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/dal";
 import { ensureAdmin } from "@/lib/auth/guards";
 import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
+import { currentBillingDay } from "@/lib/billing/cycle";
 import { type WorkspacePlan } from "@/lib/plans";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 
@@ -154,9 +155,16 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
   }
 
   // Changement d'offre : mis en attente, effectif au prochain traitement de nuit.
+  // On estampille lastBilledOn au jour courant pour garantir que le changement
+  // n'est JAMAIS appliqué le jour même (le traitement de nuit ignore un espace
+  // déjà estampillé aujourd'hui) — d'où « pris en compte cette nuit ».
   await prisma.workspace.update({
     where: { id: workspaceId },
-    data: { pendingPlan: plan, pendingBudgetCapCents: budgetCapCents },
+    data: {
+      pendingPlan: plan,
+      pendingBudgetCapCents: budgetCapCents,
+      lastBilledOn: currentBillingDay(),
+    },
   });
   revalidatePath(base);
   redirect(`${base}?planPending=1`);

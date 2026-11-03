@@ -187,6 +187,14 @@ export function billingDay(now: Date, tz: string): Date {
   return new Date(Date.UTC(y, m - 1, d));
 }
 
+// Jour de facturation courant dans le fuseau configuré (défaut Europe/Paris).
+// Sert à estampiller une mise en attente pour garantir qu'un changement demandé
+// aujourd'hui ne sera appliqué qu'au traitement de nuit SUIVANT (« cette nuit »),
+// jamais le jour même (cf. lastBilledOn).
+export function currentBillingDay(now: Date = new Date()): Date {
+  return billingDay(now, process.env.BILLING_TZ ?? "Europe/Paris");
+}
+
 const globalForNightly = globalThis as unknown as { billingNightlyRunning?: boolean };
 
 // Traitement de nuit (quotidien) : pour chaque espace sur offre payante ou avec
@@ -206,6 +214,9 @@ export async function runNightly(now: Date = new Date()): Promise<void> {
   globalForNightly.billingNightlyRunning = true;
   try {
     const today = billingDay(now, tz);
+    // Les espaces dont la mise en attente date d'aujourd'hui portent
+    // lastBilledOn = aujourd'hui (estampille posée à la demande) : ils sont donc
+    // ignorés ce jour et traités au passage de nuit suivant.
     const candidates = await prisma.workspace.findMany({
       where: {
         OR: [{ plan: { not: "FREE" } }, { pendingPlan: { not: null } }],
