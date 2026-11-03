@@ -167,5 +167,7 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
     },
   });
   revalidatePath(base);
-  redirect(`${base}?planPending=1`);
+  // L'offre en attente est désormais signalée dans l'onglet Formule (pendingPlanNotice),
+  // inutile d'ajouter une bannière de confirmation en haut de page.
+  redirect(base);
 }

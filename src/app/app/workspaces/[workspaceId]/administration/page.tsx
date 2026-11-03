@@ -43,8 +43,6 @@ export default async function WorkspaceAdminPage({
   const addedTo = typeof sp.added === "string" ? sp.added : null;
   // Confirmation affichée après l'archivage (on reste dans l'espace).
   const justArchived = sp.archived === "1";
-  // Changement d'offre enregistré : il sera appliqué au prochain traitement de nuit.
-  const planPending = sp.planPending === "1";
   // Changement de formule bloqué faute de plafond couvrant les membres actuels.
   const planError =
     sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
@@ -395,12 +393,6 @@ export default async function WorkspaceAdminPage({
       {justArchived && (
         <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
           {t.workspace.archivedConfirmation}
-        </div>
-      )}
-
-      {planPending && (
-        <div className="rounded-xl border border-indigo-300 bg-indigo-50 p-4 text-sm text-indigo-800 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300">
-          {t.billing.planChangePending}
         </div>
       )}
 
