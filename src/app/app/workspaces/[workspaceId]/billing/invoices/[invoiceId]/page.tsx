@@ -9,7 +9,6 @@ import { formatDate, formatMonth } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 import { billableUsersDetailed, currentMonthPeriod } from "@/lib/billing/usage";
-import { payInvoice } from "@/lib/actions/billing";
 
 // Détail d'une facture (réservé aux administrateurs) : la liste des utilisateurs
 // qui composent le montant, avec pour chacun sa dernière période prise en compte.
@@ -81,7 +80,6 @@ export default async function InvoiceDetailPage({
   return (
     <InvoiceView
       workspaceId={workspaceId}
-      invoiceId={invoiceId}
       v={v}
       locale={locale}
       title={`${v.invoiceTitle} · ${formatMonth(invoice.periodStart, locale)}`}
@@ -100,7 +98,6 @@ export default async function InvoiceDetailPage({
 
 function InvoiceView({
   workspaceId,
-  invoiceId,
   v,
   locale,
   title,
@@ -115,7 +112,6 @@ function InvoiceView({
   users,
 }: {
   workspaceId: string;
-  invoiceId?: string;
   v: Awaited<ReturnType<typeof getDictionary>>["invoices"];
   locale: Locale;
   title: string;
@@ -189,20 +185,12 @@ function InvoiceView({
         </p>
       )}
 
-      {/* Règlement adossé à la facture : marquer payée EST la constatation du
-          paiement (pas de rapprochement manuel). Réservé aux factures émises et
-          encore dues ; la page n'est accessible qu'aux administrateurs. */}
-      {!isCurrent && status === "PENDING" && invoiceId && (
-        <form action={payInvoice} className="flex items-center gap-3">
-          <input type="hidden" name="workspaceId" value={workspaceId} />
-          <input type="hidden" name="invoiceId" value={invoiceId} />
-          <button
-            type="submit"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
-          >
-            {v.pay}
-          </button>
-        </form>
+      {/* Le règlement se fait par virement (hors-bande) ; une fois constaté, le
+          superadmin lève la coupure. Pas de paiement en self-service dans l'app. */}
+      {!isCurrent && status === "PENDING" && (
+        <p className="rounded-lg border border-dashed border-zinc-300 px-4 py-3 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          {v.payByTransfer}
+        </p>
       )}
 
       {!isCurrent && (

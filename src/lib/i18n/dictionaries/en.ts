@@ -344,7 +344,8 @@ const en: Dictionary = {
     statusPaid: "Paid",
     statusOverdue: "Overdue",
     due: "Due {date}",
-    pay: "Pay invoice",
+    payByTransfer:
+      "This invoice is settled by bank transfer. Access is restored once the payment is confirmed.",
     lateFeeNotice:
       "Late payment incurs late-payment interest at the statutory rate, plus a fixed €40 recovery fee (business customers).",
     currentEstimateNote:
@@ -357,14 +358,11 @@ const en: Dictionary = {
   suspended: {
     title: "Workspace suspended",
     adminLead:
-      "One or more invoices are overdue. Pay them to restore access for your team. Until then, paying invoices is the only available action.",
+      "One or more invoices are overdue. Settle them by bank transfer to restore access for your team: the workspace is reactivated once the payment is confirmed.",
     memberLead:
       "Access to this workspace is temporarily suspended because of an unpaid invoice. A workspace administrator needs to settle it.",
-    invoicesTitle: "Invoices to settle",
+    invoicesTitle: "Overdue invoices",
     overdueSince: "overdue since {date}",
-    pay: "Pay",
-    payNote:
-      "Payment is tied to the invoice: once the last overdue invoice is settled, access is restored immediately.",
   },
   documents: {
     projectDocuments: "Project documents",

@@ -2,24 +2,22 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 import { type Locale } from "@/lib/i18n/config";
 import { formatPrice } from "@/lib/plans";
 import { formatDate, formatMonth } from "@/lib/labels";
-import { cardClass } from "@/components/ui";
-import { payInvoice } from "@/lib/actions/billing";
 import type { OverdueInvoice } from "@/lib/billing/suspension";
 
-// Écran affiché à la place de tout l'espace quand celui-ci est suspendu (facture
-// échue impayée). Pour un administrateur : la liste des factures à régler, avec un
-// bouton « Payer » par facture — la seule action possible tant que la coupure dure.
-// Pour un membre : un message indiquant qu'un administrateur doit régulariser.
+// Écran affiché à la place de tout l'espace quand celui-ci est suspendu (coupure
+// administrative pour facture échue impayée). AUCUN paiement en self-service :
+//   - administrateur → explication + liste (lecture seule) des factures échues à
+//     régler par virement ; l'accès sera rétabli une fois le paiement constaté par
+//     le superadmin (scripts/recouvrement.ts) ;
+//   - membre → message indiquant qu'un administrateur doit régulariser.
 export function SuspendedNotice({
   t,
   locale,
-  workspaceId,
   isAdmin,
   invoices,
 }: {
   t: Dictionary;
   locale: Locale;
-  workspaceId: string;
   isAdmin: boolean;
   invoices: OverdueInvoice[];
 }) {
@@ -46,28 +44,16 @@ export function SuspendedNotice({
                 key={inv.id}
                 className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900"
               >
-                <div className="min-w-0">
-                  <p className="font-medium">
-                    {formatMonth(inv.periodStart, locale)} · {formatPrice(inv.amountCents)}
-                  </p>
-                  <p className="text-xs text-red-600 dark:text-red-400">
+                <span className="font-medium">{formatMonth(inv.periodStart, locale)}</span>
+                <span className="text-sm">
+                  <span className="font-medium">{formatPrice(inv.amountCents)}</span>
+                  <span className="ml-2 text-xs text-red-600 dark:text-red-400">
                     {s.overdueSince.replace("{date}", formatDate(inv.dueAt, locale) ?? "")}
-                  </p>
-                </div>
-                <form action={payInvoice}>
-                  <input type="hidden" name="workspaceId" value={workspaceId} />
-                  <input type="hidden" name="invoiceId" value={inv.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                  >
-                    {s.pay}
-                  </button>
-                </form>
+                  </span>
+                </span>
               </li>
             ))}
           </ul>
-          <p className={`${cardClass} text-xs text-zinc-500 dark:text-zinc-400`}>{s.payNote}</p>
         </section>
       )}
     </div>

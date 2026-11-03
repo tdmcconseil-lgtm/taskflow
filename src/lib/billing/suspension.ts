@@ -1,15 +1,17 @@
 // Coupure administrative sur facture impayée (recouvrement v1).
 //
-// Décision produit (Thibaut, 2026-11-03) : en cas de facture ÉCHUE IMPAYÉE,
-// l'espace n'est pas totalement fermé — les membres sont bloqués, mais les
-// administrateurs gardent accès à une seule chose : régler les factures. Le
-// paiement est adossé à la facture (pas de rapprochement manuel) et, dès que la
-// dernière facture échue est réglée, la coupure se lève D'ELLE-MÊME.
+// Décision produit (Thibaut, 2026-11-03) : PAS de paiement self-service dans
+// l'app ni de réouverture automatique. Le flux v1 est :
+//   1. une facture échue impayée (dueAt < aujourd'hui, status PENDING) ;
+//   2. la boucle de recouvrement du traitement de nuit pose Workspace.suspendedAt
+//      → l'espace est suspendu (membres ET admins bloqués ; données conservées) ;
+//   3. le virement réel se fait hors-bande ; une fois constaté, le SUPERADMIN
+//      lance scripts/recouvrement.ts qui marque la facture payée et lève la
+//      coupure. L'admin de l'espace ne peut ni payer ni rouvrir.
 //
-// La suspension est donc un état DÉRIVÉ (pas un champ en base) : un espace est
-// suspendu tant qu'il reste au moins une facture échue (dueAt < maintenant) et
-// impayée (status PENDING). Ainsi un paiement rétablit l'accès immédiatement,
-// sans attendre le traitement de nuit ni l'intervention d'un superadmin.
+// La suspension est donc un ÉTAT STOCKÉ (Workspace.suspendedAt), posé par la nuit
+// et levé uniquement par le script — pas un état dérivé. Cette fonction sert à la
+// boucle de recouvrement et à l'affichage (écran de suspension, script).
 
 import { prisma } from "@/lib/prisma";
 
@@ -31,15 +33,4 @@ export async function overdueInvoices(
     orderBy: { periodStart: "asc" },
     select: { id: true, periodStart: true, periodEnd: true, amountCents: true, dueAt: true },
   });
-}
-
-// Un espace est suspendu dès qu'il a au moins une facture échue impayée.
-export async function isWorkspaceSuspended(
-  workspaceId: string,
-  now: Date = new Date(),
-): Promise<boolean> {
-  const n = await prisma.invoice.count({
-    where: { workspaceId, status: "PENDING", dueAt: { lt: now } },
-  });
-  return n > 0;
 }

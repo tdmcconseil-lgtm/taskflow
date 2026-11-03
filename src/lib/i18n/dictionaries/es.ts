@@ -344,7 +344,8 @@ const es: Dictionary = {
     statusPaid: "Pagada",
     statusOverdue: "Vencida",
     due: "Vence el {date}",
-    pay: "Pagar la factura",
+    payByTransfer:
+      "Esta factura se paga por transferencia. El acceso se restablece una vez confirmado el pago.",
     lateFeeNotice:
       "Todo retraso en el pago conlleva intereses de demora al tipo legal vigente, más una indemnización fija de 40 € por gastos de cobro (clientes profesionales).",
     currentEstimateNote:
@@ -357,14 +358,11 @@ const es: Dictionary = {
   suspended: {
     title: "Espacio suspendido",
     adminLead:
-      "Una o varias facturas están vencidas. Págalas para restablecer el acceso de tu equipo. Mientras tanto, solo es posible pagar las facturas.",
+      "Una o varias facturas están vencidas. Págalas por transferencia para restablecer el acceso de tu equipo: el espacio se reactiva una vez confirmado el pago.",
     memberLead:
       "El acceso a este espacio está suspendido temporalmente por una factura impagada. Un administrador del espacio debe regularizar la situación.",
-    invoicesTitle: "Facturas por pagar",
+    invoicesTitle: "Facturas vencidas",
     overdueSince: "vencida el {date}",
-    pay: "Pagar",
-    payNote:
-      "El pago está vinculado a la factura: una vez pagada la última factura vencida, el acceso se restablece de inmediato.",
   },
   documents: {
     projectDocuments: "Documentos del proyecto",

@@ -343,7 +343,8 @@ const fr = {
     statusPaid: "Payée",
     statusOverdue: "En retard",
     due: "Échéance le {date}",
-    pay: "Payer la facture",
+    payByTransfer:
+      "Cette facture se règle par virement. L'accès est rétabli une fois le paiement constaté.",
     lateFeeNotice:
       "Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement (clients professionnels).",
     currentEstimateNote:
@@ -356,14 +357,11 @@ const fr = {
   suspended: {
     title: "Espace suspendu",
     adminLead:
-      "Une ou plusieurs factures sont échues. Réglez-les pour rétablir l'accès de votre équipe. En attendant, seul le règlement des factures est possible.",
+      "Une ou plusieurs factures sont échues. Réglez-les par virement pour rétablir l'accès de votre équipe : l'espace sera réactivé une fois le paiement constaté.",
     memberLead:
       "L'accès à cet espace est temporairement suspendu en raison d'une facture impayée. Un administrateur de l'espace doit régulariser la situation.",
-    invoicesTitle: "Factures à régler",
+    invoicesTitle: "Factures échues",
     overdueSince: "échéance dépassée le {date}",
-    pay: "Payer",
-    payNote:
-      "Le paiement est adossé à la facture : une fois la dernière facture échue réglée, l'accès est rétabli immédiatement.",
   },
   documents: {
     projectDocuments: "Documents du projet",

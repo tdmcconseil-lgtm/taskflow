@@ -315,7 +315,31 @@ export async function runNightly(now: Date = new Date()): Promise<void> {
         console.error(`[billing] runNightly ${ws.id}`, err);
       }
     }
+
+    // Recouvrement : couper les espaces dont une facture est échue et impayée.
+    // Indépendant du garde-fou lastBilledOn (un espace déjà facturé aujourd'hui
+    // doit quand même pouvoir être coupé le jour où sa facture devient échue).
+    await runRecovery(today);
   } finally {
     globalForNightly.billingNightlyRunning = false;
   }
+}
+
+// Boucle de recouvrement : pose la coupure administrative (Workspace.suspendedAt)
+// sur tout espace ACTIF (non encore suspendu) ayant au moins une facture échue
+// (dueAt < today) impayée (status PENDING). Idempotente et ne LÈVE jamais la
+// coupure : la réouverture est réservée au superadmin (scripts/recouvrement.ts).
+// Renvoie le nombre d'espaces nouvellement suspendus.
+export async function runRecovery(today: Date): Promise<number> {
+  const toSuspend = await prisma.workspace.findMany({
+    where: {
+      suspendedAt: null,
+      invoices: { some: { status: "PENDING", dueAt: { lt: today } } },
+    },
+    select: { id: true },
+  });
+  for (const ws of toSuspend) {
+    await prisma.workspace.update({ where: { id: ws.id }, data: { suspendedAt: today } });
+  }
+  return toSuspend.length;
 }

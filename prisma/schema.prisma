@@ -104,6 +104,11 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
+  // Rôle superadmin applicatif (niveau plateforme, distinct des rôles d'espace).
+  // Préparé pour l'avenir : aucune UI ne l'utilise encore en v1 (le recouvrement
+  // se fait via scripts/recouvrement.ts, lancé par le superadmin). Peut aussi être
+  // octroyé par l'allowlist d'emails SUPERADMIN_EMAILS (cf. lib/auth/superadmin).
+  isSuperAdmin Boolean  @default(false)
   // Photo de profil (stockée en base ; servie par /api/avatar/[userId]).
   // Cadrage non destructif par point focal (x, y ∈ [0,100]) + zoom (≥ 100).
   photoData      Bytes?
@@ -169,6 +174,11 @@ model Workspace {
   // Jour (minuit) du dernier traitement de nuit appliqué : garde-fou d'idempotence
   // pour n'évaluer l'état de facturation qu'une fois par jour.
   lastBilledOn          DateTime?
+  // Coupure administrative (recouvrement) : non null = espace suspendu pour
+  // facture échue impayée. Posé par la boucle de recouvrement du traitement de
+  // nuit ; levé UNIQUEMENT par le superadmin (scripts/recouvrement.ts), jamais en
+  // self-service ni automatiquement. Données conservées (pas de suppression).
+  suspendedAt           DateTime?
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt

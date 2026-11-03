@@ -21,7 +21,7 @@
 
 import "dotenv/config";
 import { prisma } from "@/lib/prisma";
-import { runNightlyForWorkspace } from "@/lib/billing/cycle";
+import { runNightlyForWorkspace, runRecovery } from "@/lib/billing/cycle";
 
 function parseDay(s: string): Date {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
@@ -41,6 +41,7 @@ async function list() {
       billingCycleStart: true,
       pendingPlan: true,
       lastBilledOn: true,
+      suspendedAt: true,
       _count: { select: { billingSegments: true, invoices: true } },
     },
   });
@@ -50,7 +51,7 @@ async function list() {
         w.pendingPlan ?? "—"
       } lastBilled=${day(w.lastBilledOn)} factures=${w._count.invoices} segments=${
         w._count.billingSegments
-      }  « ${w.name} »`,
+      }${w.suspendedAt ? ` SUSPENDU(${day(w.suspendedAt)})` : ""}  « ${w.name} »`,
     );
   }
 }
@@ -115,6 +116,9 @@ async function run(dateStr: string, workspaceId?: string) {
     const n = await runNightlyForWorkspace(ws, today);
     console.log(`  « ${ws.name} » : ${n} facture(s) mensuelle(s) émise(s)`);
   }
+  // Boucle de recouvrement : suspend les espaces à facture échue impayée.
+  const cut = await runRecovery(today);
+  console.log(`  recouvrement : ${cut} espace(s) nouvellement suspendu(s)`);
 }
 
 async function main() {
