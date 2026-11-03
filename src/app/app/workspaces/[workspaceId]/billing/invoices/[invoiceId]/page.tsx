@@ -5,16 +5,16 @@ import { prisma } from "@/lib/prisma";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { type Locale } from "@/lib/i18n/config";
 import { cardClass } from "@/components/ui";
-import { formatDate } from "@/lib/labels";
+import { formatDate, formatMonth } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
-import { billableUsersDetailed } from "@/lib/billing/usage";
+import { billableUsersDetailed, currentMonthPeriod } from "@/lib/billing/usage";
 
 // Détail d'une facture (réservé aux administrateurs) : la liste des utilisateurs
 // qui composent le montant, avec pour chacun sa dernière période prise en compte.
-// invoiceId = "current" (cycle en cours, montant estimé, recalculé à l'instant)
-// ou l'id d'un BillingSegment passé (montant/nombre FIGÉS à la clôture ; la liste
-// des utilisateurs est recalculée à la demande — option A, sans snapshot).
+// invoiceId = "current" (mois en cours, montant estimé, recalculé à l'instant) ou
+// l'id d'une facture mensuelle émise (montant/statut/échéance FIGÉS ; la liste des
+// utilisateurs est recalculée à la demande — option A, sans snapshot).
 export default async function InvoiceDetailPage({
   params,
 }: {
@@ -30,77 +30,67 @@ export default async function InvoiceDetailPage({
   if (!membership) notFound();
   if (membership.role !== "OWNER" && membership.role !== "ADMIN") notFound();
 
-  // Données de la facture : soit le cycle en cours, soit un segment clôturé.
-  let plan: WorkspacePlan;
-  let periodStart: Date;
-  let periodEnd: Date;
-  let amountCents: number;
-  let billedUsers: number;
-  let isCurrent: boolean;
-
   if (invoiceId === "current") {
     const workspace = await prisma.workspace.findUnique({
       where: { id: workspaceId },
       select: { plan: true, billingCycleStart: true },
     });
     if (!workspace || !isPaidPlan(workspace.plan) || !workspace.billingCycleStart) notFound();
-    plan = workspace.plan;
-    periodStart = workspace.billingCycleStart;
-    periodEnd = new Date();
-    isCurrent = true;
-    const users = await billableUsersDetailed(workspaceId, periodStart, periodEnd);
-    billedUsers = users.length;
-    // Estimation à l'instant présent (montant arrêté à la clôture).
-    amountCents = users.length * unitPriceCents(plan);
+    const month = currentMonthPeriod(workspace.billingCycleStart)!;
+    const users = await billableUsersDetailed(workspaceId, month.start, month.end);
     return (
       <InvoiceView
         workspaceId={workspaceId}
         v={v}
         locale={locale}
-        plan={plan}
-        periodStart={periodStart}
-        periodEnd={periodEnd}
-        amountCents={amountCents}
-        billedUsers={billedUsers}
-        isCurrent={isCurrent}
+        title={v.currentCycleTitle}
+        plans={[workspace.plan]}
+        periodStart={month.start}
+        periodEnd={month.end}
+        amountCents={users.length * unitPriceCents(workspace.plan)}
+        billedUsers={users.length}
+        isCurrent={true}
+        status={null}
+        dueAt={null}
         users={users}
       />
     );
   }
 
-  const segment = await prisma.billingSegment.findFirst({
+  const invoice = await prisma.invoice.findFirst({
     where: { id: invoiceId, workspaceId },
     select: {
-      plan: true,
-      startedAt: true,
-      endedAt: true,
+      periodStart: true,
+      periodEnd: true,
       amountCents: true,
-      billableUsers: true,
+      status: true,
+      dueAt: true,
+      segments: { select: { plan: true } },
     },
   });
-  if (!segment) notFound();
-  plan = segment.plan;
-  periodStart = segment.startedAt;
-  periodEnd = segment.endedAt;
-  amountCents = segment.amountCents;
-  billedUsers = segment.billableUsers;
-  isCurrent = false;
+  if (!invoice) notFound();
 
-  // Liste recalculée sur la période du segment (le montant/nombre restent ceux
-  // figés à la clôture, qui font foi).
-  const users = await billableUsersDetailed(workspaceId, periodStart, periodEnd);
+  // Formules couvertes par la facture (plusieurs si changement d'offre dans le mois).
+  const plans = [...new Set(invoice.segments.map((s) => s.plan))] as WorkspacePlan[];
+
+  // Liste recalculée sur la période de la facture (le montant/statut restent ceux
+  // figés à l'émission, qui font foi).
+  const users = await billableUsersDetailed(workspaceId, invoice.periodStart, invoice.periodEnd);
 
   return (
     <InvoiceView
       workspaceId={workspaceId}
       v={v}
       locale={locale}
-      plan={plan}
-      periodStart={periodStart}
-      periodEnd={periodEnd}
-      amountCents={amountCents}
-      billedUsers={billedUsers}
-      isCurrent={isCurrent}
+      title={`${v.invoiceTitle} · ${formatMonth(invoice.periodStart, locale)}`}
+      plans={plans}
+      periodStart={invoice.periodStart}
+      periodEnd={invoice.periodEnd}
+      amountCents={invoice.amountCents}
+      billedUsers={users.length}
+      isCurrent={false}
+      status={invoice.status}
+      dueAt={invoice.dueAt}
       users={users}
     />
   );
@@ -110,28 +100,34 @@ function InvoiceView({
   workspaceId,
   v,
   locale,
-  plan,
+  title,
+  plans,
   periodStart,
   periodEnd,
   amountCents,
   billedUsers,
   isCurrent,
+  status,
+  dueAt,
   users,
 }: {
   workspaceId: string;
   v: Awaited<ReturnType<typeof getDictionary>>["invoices"];
   locale: Locale;
-  plan: WorkspacePlan;
+  title: string;
+  plans: WorkspacePlan[];
   periodStart: Date;
   periodEnd: Date;
   amountCents: number;
   billedUsers: number;
   isCurrent: boolean;
+  status: "PENDING" | "PAID" | null;
+  dueAt: Date | null;
   users: Awaited<ReturnType<typeof billableUsersDetailed>>;
 }) {
-  const period = `${formatDate(periodStart, locale)} → ${
-    isCurrent ? v.ongoing : formatDate(periodEnd, locale)
-  }`;
+  const period = isCurrent
+    ? `${formatDate(periodStart, locale)} → ${v.ongoing}`
+    : formatMonth(periodStart, locale);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -143,18 +139,16 @@ function InvoiceView({
       </Link>
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {isCurrent ? v.currentCycleTitle : v.invoiceTitle}
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{period}</p>
       </div>
 
-      <section className={`${cardClass} grid grid-cols-1 gap-4 sm:grid-cols-3`}>
+      <section className={`${cardClass} grid grid-cols-1 gap-4 sm:grid-cols-4`}>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
             {v.planLabel}
           </p>
-          <p className="mt-1 text-sm font-medium">{plan}</p>
+          <p className="mt-1 text-sm font-medium">{plans.join(" · ") || "—"}</p>
         </div>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
@@ -168,6 +162,21 @@ function InvoiceView({
           </p>
           <p className="mt-1 text-sm font-medium">{billedUsers}</p>
         </div>
+        {!isCurrent && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+              {v.statusLabel}
+            </p>
+            <p className="mt-1 text-sm font-medium">
+              {status === "PAID" ? v.statusPaid : v.statusPending}
+              {status !== "PAID" && dueAt && (
+                <span className="block text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                  {v.due.replace("{date}", formatDate(dueAt, locale) ?? "")}
+                </span>
+              )}
+            </p>
+          </div>
+        )}
       </section>
 
       {isCurrent && (

@@ -60,6 +60,15 @@ export function formatDate(
   }).format(date);
 }
 
+// Mois + année (ex. « novembre 2026 »), pour l'intitulé d'une facture mensuelle.
+export function formatMonth(date: Date, locale: Locale = "fr"): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
 export function formatDateTime(date: Date, locale: Locale = "fr"): string {
   return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
     day: "numeric",

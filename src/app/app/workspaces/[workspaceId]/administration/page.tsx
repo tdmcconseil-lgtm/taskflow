@@ -19,7 +19,7 @@ import {
   cancelInvitation,
 } from "@/lib/actions/workspaces";
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
-import { billableUserCount, currentCyclePeriod } from "@/lib/billing/usage";
+import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
 import { unitPriceCents } from "@/lib/billing/budget";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
@@ -93,17 +93,17 @@ export default async function WorkspaceAdminPage({
 
   // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée) :
   // le volet n'affiche que les membres actifs et le stockage effectif.
-  // En parallèle : utilisateurs facturables du CYCLE en cours (journal d'appartenance),
-  // pour le coût estimé affiché dans l'onglet Facturation. Hors cycle payant (FREE),
+  // En parallèle : utilisateurs facturables du MOIS en cours (journal d'appartenance),
+  // pour le coût estimé affiché dans l'onglet Facturation. Hors offre payante (FREE),
   // rien à estimer → 0.
-  const cycle = currentCyclePeriod(workspace.billingCycleStart);
-  const [storageAgg, billableUsers, segments] = await Promise.all([
+  const month = currentMonthPeriod(workspace.billingCycleStart);
+  const [storageAgg, billableUsers, pastInvoices] = await Promise.all([
     prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
-    cycle ? billableUserCount(workspaceId, cycle.start, cycle.end) : Promise.resolve(0),
-    prisma.billingSegment.findMany({
+    month ? billableUserCount(workspaceId, month.start, month.end) : Promise.resolve(0),
+    prisma.invoice.findMany({
       where: { workspaceId },
-      orderBy: { endedAt: "desc" },
-      select: { id: true, plan: true, startedAt: true, endedAt: true, amountCents: true, billableUsers: true },
+      orderBy: { periodStart: "desc" },
+      select: { id: true, periodStart: true, periodEnd: true, amountCents: true, status: true, dueAt: true },
     }),
   ]);
   const usageMetrics = {
@@ -111,31 +111,33 @@ export default async function WorkspaceAdminPage({
     storageBytes: storageAgg._sum.size ?? 0,
   };
 
-  // Factures présentées dans l'onglet Facturation : le cycle en cours (montant
-  // estimé, recalculé) en tête s'il y en a un, puis les segments clôturés
-  // (montants figés). Chaque entrée ouvre sa page de détail.
+  // Factures présentées dans l'onglet Facturation : le mois en cours (montant
+  // estimé, recalculé) en tête s'il y en a un, puis les factures mensuelles
+  // émises (montants figés, statut + échéance). Chaque entrée ouvre son détail.
   const invoices = [
-    ...(cycle
+    ...(month
       ? [
           {
             id: "current",
-            plan: workspace.plan,
-            startedAt: cycle.start,
-            endedAt: null as Date | null,
+            isCurrent: true,
+            periodStart: month.start,
+            periodEnd: null as Date | null,
             amountCents: billableUsers * unitPriceCents(workspace.plan),
             billableUsers,
-            isCurrent: true,
+            status: null,
+            dueAt: null as Date | null,
           },
         ]
       : []),
-    ...segments.map((s) => ({
-      id: s.id,
-      plan: s.plan,
-      startedAt: s.startedAt,
-      endedAt: s.endedAt as Date | null,
-      amountCents: s.amountCents,
-      billableUsers: s.billableUsers,
+    ...pastInvoices.map((inv) => ({
+      id: inv.id,
       isCurrent: false,
+      periodStart: inv.periodStart,
+      periodEnd: inv.periodEnd as Date | null,
+      amountCents: inv.amountCents,
+      billableUsers: null,
+      status: inv.status,
+      dueAt: inv.dueAt as Date | null,
     })),
   ];
 

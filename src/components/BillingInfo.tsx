@@ -1,20 +1,21 @@
 import Link from "next/link";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 import { type Locale } from "@/lib/i18n/config";
-import { formatDate } from "@/lib/labels";
+import { formatDate, formatMonth } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 
-// Une facture présentée dans la liste : cycle en cours (montant estimé) ou
-// segment clôturé (montant figé). endedAt null = cycle en cours.
+// Une facture présentée dans la liste : le mois en cours (montant estimé, pas
+// encore facturé) ou une facture mensuelle émise (montant figé, statut + échéance).
 export type InvoiceListItem = {
-  id: string;
-  plan: WorkspacePlan;
-  startedAt: Date;
-  endedAt: Date | null;
-  amountCents: number;
-  billableUsers: number;
+  id: string; // "current" (mois en cours) ou l'id de la facture mensuelle
   isCurrent: boolean;
+  periodStart: Date; // 1er du mois
+  periodEnd: Date | null; // 1er du mois suivant (null pour le mois en cours)
+  amountCents: number;
+  billableUsers: number | null; // uniquement pour le mois en cours
+  status: "PENDING" | "PAID" | null; // null pour le mois en cours
+  dueAt: Date | null;
 };
 
 // Onglet « Facturation » de l'administration : la partie OPÉRATIONNELLE — l'offre
@@ -34,10 +35,10 @@ export function BillingInfo({
   plan: WorkspacePlan;
   // Offre choisie en attente du prochain traitement de nuit (null = aucune).
   pendingPlan: WorkspacePlan | null;
-  // Utilisateurs facturables du cycle en cours (cf. lib/billing/usage).
+  // Utilisateurs facturables du mois en cours (cf. lib/billing/usage).
   billableUsers: number;
   workspaceId: string;
-  // Factures (cycle en cours + segments clôturés) ; chacune ouvre son détail.
+  // Factures (mois en cours + factures mensuelles émises) ; chacune ouvre son détail.
   invoices: InvoiceListItem[];
   locale: Locale;
 }) {
@@ -74,7 +75,7 @@ export function BillingInfo({
         )}
       </section>
 
-      {/* Factures : cycle en cours (montant estimé) + segments clôturés.
+      {/* Factures : mois en cours (montant estimé) + factures mensuelles émises.
           Chaque ligne ouvre le détail des utilisateurs qui composent le montant. */}
       {invoices.length > 0 && (
         <section className="space-y-3">
@@ -90,21 +91,35 @@ export function BillingInfo({
                 >
                   <div className="min-w-0">
                     <p className="font-medium">
-                      {inv.isCurrent ? v.currentCycleRow : `${formatPrice(inv.amountCents)} · ${inv.plan}`}
-                      {inv.isCurrent && (
+                      {inv.isCurrent ? v.currentCycleRow : formatMonth(inv.periodStart, locale)}
+                      {inv.isCurrent ? (
                         <span className="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-normal text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
                           {v.ongoing}
+                        </span>
+                      ) : (
+                        <span
+                          className={`ml-2 rounded-full px-2 py-0.5 text-xs font-normal ${
+                            inv.status === "PAID"
+                              ? "bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300"
+                              : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                          }`}
+                        >
+                          {inv.status === "PAID" ? v.statusPaid : v.statusPending}
                         </span>
                       )}
                     </p>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {formatDate(inv.startedAt, locale)} →{" "}
-                      {inv.endedAt ? formatDate(inv.endedAt, locale) : v.ongoing} ·{" "}
-                      {v.usersCount.replace("{n}", String(inv.billableUsers))}
+                      {inv.isCurrent
+                        ? v.usersCount.replace("{n}", String(inv.billableUsers ?? 0))
+                        : inv.dueAt
+                          ? v.due.replace("{date}", formatDate(inv.dueAt, locale) ?? "")
+                          : null}
                     </p>
                   </div>
                   <span className="shrink-0 text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                    {inv.isCurrent ? v.estimatedAmount.replace("{amount}", formatPrice(inv.amountCents)) : v.viewDetail}
+                    {inv.isCurrent
+                      ? v.estimatedAmount.replace("{amount}", formatPrice(inv.amountCents))
+                      : formatPrice(inv.amountCents)}
                   </span>
                 </Link>
               </li>

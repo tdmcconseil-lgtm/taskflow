@@ -121,13 +121,14 @@ export async function billableUsersDetailed(
   return out;
 }
 
-// Bornes du cycle de facturation en cours, pour l'estimation affichée dans
-// l'administration : de la date d'ancrage du cycle jusqu'à maintenant. null si
-// l'espace n'a pas de cycle payant en cours (ex. FREE) — rien à estimer.
-export function currentCyclePeriod(
-  billingCycleStart: Date | null,
+// Bornes du mois de facturation en cours, pour l'estimation affichée dans
+// l'administration : du début du segment courant (1er du mois, ou jour de
+// souscription en cours de mois) jusqu'à maintenant. null si l'espace n'a pas de
+// segment payant en cours (ex. FREE) — rien à estimer.
+export function currentMonthPeriod(
+  segmentStart: Date | null,
   now: Date = new Date(),
 ): { start: Date; end: Date } | null {
-  if (!billingCycleStart) return null;
-  return { start: billingCycleStart, end: now };
+  if (!segmentStart) return null;
+  return { start: segmentStart, end: now };
 }

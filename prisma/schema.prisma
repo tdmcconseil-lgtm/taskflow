@@ -156,9 +156,10 @@ model Workspace {
   // null = non défini → aucun membre ne peut être ajouté (cf. lib/billing/budget).
   // Les sièges autorisés = budgetCapCents / prix unitaire de la formule.
   budgetCapCents Int?
-  // --- Facturation à l'usage : cycle ancré sur la date d'abonnement ---
-  // Date d'ancrage du cycle courant (null = pas de cycle payant en cours, ex. FREE).
-  // Le renouvellement et le prorata se calculent depuis cette date (cf. lib/billing/cycle).
+  // --- Facturation à l'usage au mois civil (une facture par mois) ---
+  // Début du segment de facturation courant (null = pas de segment payant en
+  // cours, ex. FREE). Remis au 1er du mois à chaque passage de mois ; porte le
+  // jour de souscription tant que le premier mois n'est pas clôturé (cf. lib/billing/cycle).
   billingCycleStart DateTime?
   // Changement d'offre choisi dans l'UI mais PAS encore appliqué : il devient
   // effectif au prochain « traitement de nuit » (null = aucun changement en attente).
@@ -175,6 +176,7 @@ model Workspace {
   members     Membership[]
   membershipEvents MembershipEvent[]
   billingSegments BillingSegment[]
+  invoices    Invoice[]
   tasks       Task[]
   invitations Invitation[]
   documents   Document[]
@@ -266,16 +268,17 @@ model MembershipEvent {
   @@index([workspaceId, at])
 }
 
-// --- Segment de facturation clôturé (facture interne, append-only) ---
+// --- Segment de facturation clôturé (comptabilité interne, append-only) ---
 // Une ligne par segment d'offre clôturé : changement d'offre, passage à FREE, ou
-// renouvellement de cycle. Le montant est proraté base 30 (plafonné à un mois
-// plein) sur les jours du segment. Jamais mis à jour (hors cascade). Reconstitue
-// l'historique de facturation et alimentera l'encaissement réel (Stripe) plus tard.
+// passage de mois civil. Le montant est proraté base 30 (plafonné à un mois
+// plein) sur les jours du segment. Jamais mis à jour (hors le rattachement à une
+// facture et la cascade). La facture mensuelle (modèle Invoice) encaissée est
+// l'AGRÉGAT des segments d'un mois.
 model BillingSegment {
   id             String        @id @default(cuid())
   plan           WorkspacePlan // offre facturée sur ce segment
-  startedAt      DateTime      // début du segment (date d'ancrage du cycle)
-  endedAt        DateTime      // clôture (changement effectif ou fin de cycle)
+  startedAt      DateTime      // début du segment (début de mois ou souscription)
+  endedAt        DateTime      // clôture (changement effectif ou fin de mois)
   days           Int           // jours attribués au segment
   billableUsers  Int           // utilisateurs facturables sur la période du segment
   unitPriceCents Int           // prix unitaire de l'offre au moment de la clôture
@@ -284,7 +287,41 @@ model BillingSegment {
 
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  // Facture mensuelle qui agrège ce segment (null tant qu'il n'est pas facturé).
+  invoiceId   String?
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 
+  @@index([workspaceId])
+  @@index([invoiceId])
+}
+
+// Statut d'une facture mensuelle.
+enum InvoiceStatus {
+  PENDING // émise, en attente de paiement (échéance à 30 j)
+  PAID // paiement constaté
+}
+
+// --- Facture mensuelle (une par espace et par mois civil) ---
+// Agrégat des BillingSegment d'un mois civil terminé. Émise au traitement de nuit
+// du 1er du mois suivant, terme échu, avec une échéance de paiement à 30 jours.
+// Le détail nominatif des utilisateurs est recalculé à la demande depuis le
+// journal d'appartenance (pas de snapshot) ; le montant, lui, est figé ici.
+model Invoice {
+  id          String        @id @default(cuid())
+  periodStart DateTime      // 1er du mois facturé (minuit UTC)
+  periodEnd   DateTime      // 1er du mois suivant (borne exclusive)
+  amountCents Int           // agrégat des segments du mois
+  status      InvoiceStatus @default(PENDING)
+  issuedAt    DateTime      @default(now())
+  dueAt       DateTime      // échéance de paiement (fin de mois + 30 j)
+  paidAt      DateTime?     // horodatage du paiement constaté (null tant qu'impayé)
+  createdAt   DateTime      @default(now())
+
+  workspaceId String
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  segments    BillingSegment[]
+
+  @@unique([workspaceId, periodStart]) // une seule facture par espace et par mois
   @@index([workspaceId])
 }
 
