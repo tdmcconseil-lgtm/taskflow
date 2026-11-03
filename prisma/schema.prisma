@@ -179,6 +179,14 @@ model Workspace {
   // nuit ; levé UNIQUEMENT par le superadmin (scripts/recouvrement.ts), jamais en
   // self-service ni automatiquement. Données conservées (pas de suppression).
   suspendedAt           DateTime?
+  // --- Stripe (encaissement des factures mensuelles) ---
+  // Customer Stripe de l'espace (null = pas encore créé). Créé à la 1re mise en
+  // place du paiement. Unique : un espace ↔ un Customer.
+  stripeCustomerId             String? @unique
+  // Moyen de paiement par défaut enregistré via Checkout (mode setup). Stocké pour
+  // l'affichage « carte enregistrée » sans appel Stripe ; la source de vérité reste
+  // le Customer côté Stripe (invoice_settings.default_payment_method).
+  stripeDefaultPaymentMethodId String?
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
@@ -326,6 +334,9 @@ model Invoice {
   dueAt       DateTime      // échéance de paiement (fin de mois + 30 j)
   paidAt      DateTime?     // horodatage du paiement constaté (null tant qu'impayé)
   createdAt   DateTime      @default(now())
+  // Facture Stripe miroir (null = pas encore créée côté Stripe, ou espace sans
+  // paiement Stripe configuré). Le webhook Stripe synchronise status/paidAt ici.
+  stripeInvoiceId String? @unique
 
   workspaceId String
   workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
