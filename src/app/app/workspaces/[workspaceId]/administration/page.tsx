@@ -150,7 +150,10 @@ export default async function WorkspaceAdminPage({
   // Liste des membres. `editing` n'affiche les contrôles (rôle, désactivation)
   // qu'en mode édition ; en lecture seule, seule l'information est visible.
   const renderMembersList = (editing: boolean) => (
-    <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+    <ul
+      key="members-list"
+      className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800"
+    >
       {workspace.members.map((m) => {
         const deactivated = m.deactivatedAt !== null;
         const canManage = m.role !== "OWNER" && m.user.id !== user.id;
@@ -202,30 +205,43 @@ export default async function WorkspaceAdminPage({
   const membresReadOnly = renderMembersList(false);
 
   // Note sur les administrateurs : affichée en lecture seule (partie affichage).
+  // NB : ces éléments (note, liste, bouton, vue édition) sont créés ici, dans le
+  // Server Component, puis passés en props au Client Component MembersEditSwitch
+  // qui les rend comme frères d'une même liste. React (RSC) exige alors une `key`
+  // stable sur chacun, sinon avertissement « unique key prop » au rendu client.
   const membresNote = (
-    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
+    <div
+      key="members-note"
+      className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300"
+    >
       {t.workspace.adminEnoughAdmins}
     </div>
   );
 
   // Bouton d'ajout : rendu par le switch, à droite de « Retour », en édition.
   const membresInviteButton = (
-    <ButtonLink href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
+    <ButtonLink key="members-invite" href={`/app/workspaces/${workspace.id}/members/new`} variant="primary">
       {t.members.invite}
     </ButtonLink>
   );
 
   // Vue édition : bannières, contrôles de rôle/désactivation, invitations.
   const membresEditable = (
-    <div className="space-y-6">
+    <div key="members-editable" className="space-y-6">
       {sentTo && (
-        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+        <p
+          key="members-sent"
+          className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300"
+        >
           {t.members.invitationSent} {sentTo}.
         </p>
       )}
 
       {addedTo && (
-        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300">
+        <p
+          key="members-added"
+          className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950/50 dark:text-green-300"
+        >
           {t.members.memberAdded} {addedTo}.
         </p>
       )}
@@ -233,7 +249,7 @@ export default async function WorkspaceAdminPage({
       {renderMembersList(true)}
 
       {workspace.invitations.length > 0 && (
-        <section className="space-y-2">
+        <section key="members-invitations" className="space-y-2">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {t.members.pendingInvitations}
           </h3>
