@@ -196,6 +196,7 @@ const fr = {
     tabIdentity: "Identité",
     tabUsage: "Consommation",
     tabBilling: "Facturation",
+    tabGuide: "Mode d'emploi",
     adminMode: "Mode administration",
     exitAdmin: "Quitter le mode administration",
     exit: "Sortir",

@@ -12,6 +12,7 @@ import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
+import { BillingGuide } from "@/components/BillingGuide";
 import {
   unarchiveWorkspace,
   resendInvitation,
@@ -417,6 +418,7 @@ export default async function WorkspaceAdminPage({
             locale={locale}
           />
         }
+        modeEmploi={<BillingGuide t={t} />}
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>

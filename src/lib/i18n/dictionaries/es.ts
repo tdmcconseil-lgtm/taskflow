@@ -197,6 +197,7 @@ const es: Dictionary = {
     tabIdentity: "Identidad",
     tabUsage: "Consumo",
     tabBilling: "Facturación",
+    tabGuide: "Modo de empleo",
     adminMode: "Modo administración",
     exitAdmin: "Salir del modo administración",
     exit: "Salir",

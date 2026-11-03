@@ -197,6 +197,7 @@ const en: Dictionary = {
     tabIdentity: "Identity",
     tabUsage: "Usage",
     tabBilling: "Billing",
+    tabGuide: "User guide",
     adminMode: "Administration mode",
     exitAdmin: "Exit administration mode",
     exit: "Exit",

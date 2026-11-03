@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 import { type Locale } from "@/lib/i18n/config";
-import { cardClass } from "@/components/ui";
 import { formatDate } from "@/lib/labels";
 import { formatPrice, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
@@ -18,11 +17,10 @@ export type InvoiceListItem = {
   isCurrent: boolean;
 };
 
-// Onglet « Facturation » de l'administration : explique aux administrateurs le
-// modèle de facturation à l'usage (utilisateur-mois) et, surtout, le plafond de
-// budget qu'ils fixent eux-mêmes. Affiche en tête le coût estimé du mois en cours
-// (utilisateurs facturables × prix unitaire) ; le reste est informatif — la
-// facturation n'est pas encore encaissée (cf. la note en bas).
+// Onglet « Facturation » de l'administration : la partie OPÉRATIONNELLE — l'offre
+// en attente éventuelle, le coût estimé du cycle en cours et la liste des factures
+// (cycle en cours + segments clôturés). Les explications du modèle sont dans
+// l'onglet « Mode d'emploi » (cf. BillingGuide).
 export function BillingInfo({
   t,
   plan,
@@ -49,11 +47,6 @@ export function BillingInfo({
   const estimate = formatPrice(billableUsers * unitPriceCents(plan));
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold tracking-tight">{b.title}</h2>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{b.intro}</p>
-      </div>
-
       {/* Offre en attente : rappel que le changement s'appliquera cette nuit. */}
       {pendingPlan && (
         <p className="rounded-lg border border-indigo-200 bg-indigo-50/60 px-4 py-3 text-sm text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
@@ -119,27 +112,6 @@ export function BillingInfo({
           </ul>
         </section>
       )}
-
-      {/* Le plafond de budget est le point central côté admin : mis en avant. */}
-      <section className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-5 dark:border-indigo-900 dark:bg-indigo-950/30">
-        <h3 className="font-semibold text-indigo-900 dark:text-indigo-200">{b.budgetTitle}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-indigo-900/80 dark:text-indigo-200/80">
-          {b.budgetBody}
-        </p>
-      </section>
-
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {b.points.map((p) => (
-          <li key={p.title} className={`${cardClass} space-y-1.5`}>
-            <h3 className="text-sm font-semibold">{p.title}</h3>
-            <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{p.body}</p>
-          </li>
-        ))}
-      </ul>
-
-      <p className="rounded-lg border border-dashed border-zinc-300 px-4 py-3 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-        {b.notActive}
-      </p>
     </div>
   );
 }
