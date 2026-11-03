@@ -319,6 +319,20 @@ const en: Dictionary = {
       "Estimate as of now; it may rise if new members are active before the end of the month.",
     estimateFree: "Free plan: nothing is billed this month.",
   },
+  checkout: {
+    title: "Subscription payment",
+    simulationBadge: "Simulation — no real payment is made.",
+    intro:
+      "Simulated payment step: online payment will be connected later. No card is requested and no amount is charged.",
+    recapPlanLabel: "Plan",
+    recapAmountLabel: "Estimated monthly amount",
+    recapAmountValue: "{amount} for {n} active member(s)",
+    payButton: "Simulate a successful payment",
+    failButton: "Simulate a failed payment",
+    cancel: "Cancel",
+    successBanner: "Subscription active — your paid plan is now in effect.",
+    failBanner: "Payment declined (simulation) — the plan was not changed.",
+  },
   documents: {
     projectDocuments: "Project documents",
     taskDocuments: "Documents",

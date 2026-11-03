@@ -40,6 +40,9 @@ export default async function WorkspaceAdminPage({
   const addedTo = typeof sp.added === "string" ? sp.added : null;
   // Confirmation affichée après l'archivage (on reste dans l'espace).
   const justArchived = sp.archived === "1";
+  // Retours de l'étape de paiement (simulée) : abonnement activé / paiement refusé.
+  const justSubscribed = sp.subscribed === "1";
+  const paymentFailed = sp.payment === "failed";
   // Changement de formule bloqué faute de plafond couvrant les membres actuels.
   const planError =
     sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
@@ -335,6 +338,18 @@ export default async function WorkspaceAdminPage({
       {justArchived && (
         <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
           {t.workspace.archivedConfirmation}
+        </div>
+      )}
+
+      {justSubscribed && (
+        <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
+          {t.checkout.successBanner}
+        </div>
+      )}
+
+      {paymentFailed && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+          {t.checkout.failBanner}
         </div>
       )}
 

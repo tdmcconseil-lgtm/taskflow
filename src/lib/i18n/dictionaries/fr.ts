@@ -318,6 +318,20 @@ const fr = {
       "Estimation à l'instant présent ; elle peut augmenter si de nouveaux membres sont actifs d'ici la fin du mois.",
     estimateFree: "Offre gratuite : aucun montant n'est facturé ce mois-ci.",
   },
+  checkout: {
+    title: "Paiement de l'abonnement",
+    simulationBadge: "Simulation — aucun paiement réel n'est effectué.",
+    intro:
+      "Étape de paiement simulée : le paiement en ligne sera branché ultérieurement. Aucune carte n'est demandée et aucun montant n'est débité.",
+    recapPlanLabel: "Formule",
+    recapAmountLabel: "Montant mensuel estimé",
+    recapAmountValue: "{amount} pour {n} membre(s) actif(s)",
+    payButton: "Simuler un paiement réussi",
+    failButton: "Simuler un échec de paiement",
+    cancel: "Annuler",
+    successBanner: "Abonnement activé — votre formule payante est en service.",
+    failBanner: "Paiement refusé (simulation) — la formule n'a pas été modifiée.",
+  },
   documents: {
     projectDocuments: "Documents du projet",
     taskDocuments: "Documents",

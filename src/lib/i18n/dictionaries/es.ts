@@ -319,6 +319,20 @@ const es: Dictionary = {
       "Estimación en este momento; puede aumentar si hay nuevos miembros activos antes de fin de mes.",
     estimateFree: "Plan gratuito: no se factura ningún importe este mes.",
   },
+  checkout: {
+    title: "Pago de la suscripción",
+    simulationBadge: "Simulación — no se realiza ningún pago real.",
+    intro:
+      "Paso de pago simulado: el pago en línea se conectará más adelante. No se solicita ninguna tarjeta y no se cobra ningún importe.",
+    recapPlanLabel: "Plan",
+    recapAmountLabel: "Importe mensual estimado",
+    recapAmountValue: "{amount} para {n} miembro(s) activo(s)",
+    payButton: "Simular un pago correcto",
+    failButton: "Simular un pago fallido",
+    cancel: "Cancelar",
+    successBanner: "Suscripción activa — tu plan de pago está en vigor.",
+    failBanner: "Pago rechazado (simulación) — no se modificó el plan.",
+  },
   documents: {
     projectDocuments: "Documentos del proyecto",
     taskDocuments: "Documentos",
