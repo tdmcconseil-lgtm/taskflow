@@ -11,6 +11,27 @@ import {
   changePassword,
   type FormState,
 } from "@/lib/actions/profile";
+import { setPseudo } from "@/lib/actions/ideas";
+
+// Pseudo affiché dans le module Idées (à la place du nom réel). Modifiable ici ;
+// les idées déjà postées gardent l'ancien pseudo (figé au moment du post).
+export function PseudoForm({ pseudo }: { pseudo: string }) {
+  const t = useT();
+  const [state, action] = useActionState<FormState, FormData>(setPseudo, undefined);
+  return (
+    <form action={action} className="space-y-3">
+      <div className="space-y-1">
+        <label htmlFor="pseudo" className={labelClass}>
+          {t.ideas.pseudoField}
+        </label>
+        <input id="pseudo" name="pseudo" defaultValue={pseudo} className={inputClass} />
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.ideas.pseudoPrompt}</p>
+      </div>
+      {state?.error && <p className={errorClass}>{state.error}</p>}
+      <SubmitButton>{t.profileForms.save}</SubmitButton>
+    </form>
+  );
+}
 
 export function NameForm({
   firstName,

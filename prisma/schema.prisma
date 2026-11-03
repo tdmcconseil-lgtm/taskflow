@@ -118,6 +118,9 @@ model User {
   lastDigestAt   DateTime?
   // Langue d'interface préférée (fr | en | es) ; sert de défaut à la connexion.
   locale         String?
+  // Pseudo affiché dans le module Idées (choisi une fois puis réutilisé).
+  // null = pas encore choisi ; demandé à la première idée ou au premier pouce.
+  pseudo         String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -137,6 +140,8 @@ model User {
   uploadedDocuments Document[]   @relation("DocumentUploader")
   decisions     Decision[]   @relation("DecisionAuthor")
   projectAccess ProjectAccess[] @relation("ProjectAccessUser")
+  authoredIdeas Idea[]       @relation("IdeaAuthor")
+  ideaVotes     IdeaVote[]
 
   @@index([email])
 }
@@ -511,4 +516,43 @@ model EmailChangeRequest {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// --- Idée d'amélioration (module transverse à l'application) ---
+// Chaque utilisateur propose une idée et vote (pouce) pour celles des autres.
+// L'interface n'affiche jamais que le pseudo ; le lien vers le compte (authorId)
+// reste en base pour la fiabilité du vote mais n'est jamais renvoyé à la liste.
+model Idea {
+  id        String     @id @default(cuid())
+  title     String
+  body      String? // description optionnelle
+  // Pseudo affiché de l'auteur, figé au moment du post (stable même si l'auteur
+  // change de pseudo ensuite).
+  pseudo    String
+  // Lien interne vers l'auteur, jamais affiché dans l'interface.
+  authorId  String
+  author    User       @relation("IdeaAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  votes     IdeaVote[]
+
+  @@index([authorId])
+}
+
+// --- Pouce (vote) sur une idée ---
+// Une ligne par (idée, utilisateur) : la contrainte d'unicité garantit un seul
+// pouce par personne. L'identité n'est jamais exposée (on ne compte que les
+// lignes ; personne ne voit qui a voté).
+model IdeaVote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  // Lien interne vers le votant, jamais affiché.
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([ideaId, userId]) // un pouce par personne
+  @@index([ideaId])
 }

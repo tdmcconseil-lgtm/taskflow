@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
-import { NameForm, EmailForm, PasswordForm } from "@/components/ProfileForms";
+import { NameForm, EmailForm, PasswordForm, PseudoForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { ProfileTabs } from "@/components/ProfileTabs";
@@ -29,6 +29,7 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
       photoY: true,
       photoZoom: true,
       photoUpdatedAt: true,
+      pseudo: true,
     },
   });
   if (!user) return null;
@@ -96,6 +97,14 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
                 {t.profile.identity}
               </h2>
               <NameForm firstName={user.firstName} lastName={user.lastName} />
+            </section>
+
+            {/* Pseudo (module Idées) */}
+            <section className={cardClass}>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {t.ideas.pseudoField}
+              </h2>
+              <PseudoForm pseudo={user.pseudo ?? ""} />
             </section>
           </div>
         }
