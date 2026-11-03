@@ -7,9 +7,11 @@ import { inputClass, labelClass, errorClass } from "@/components/ui";
 import { createIdea, type FormState } from "@/lib/actions/ideas";
 import { useT } from "@/lib/i18n/context";
 
-// Formulaire de création d'une idée. Le champ pseudo n'apparaît que si
-// l'utilisateur n'en a pas encore (il devient alors son pseudo persistant).
-export function IdeaForm({ hasPseudo }: { hasPseudo: boolean }) {
+// Formulaire de création d'une idée. Le pseudo est demandé (champ éditable)
+// uniquement si l'utilisateur n'en a pas encore ; une fois défini, il est
+// affiché en lecture seule (non modifiable depuis le module — seulement depuis
+// le profil) et réutilisé automatiquement.
+export function IdeaForm({ pseudo }: { pseudo: string | null }) {
   const t = useT();
   const [state, formAction] = useActionState<FormState, FormData>(createIdea, undefined);
 
@@ -42,7 +44,18 @@ export function IdeaForm({ hasPseudo }: { hasPseudo: boolean }) {
         />
       </div>
 
-      {!hasPseudo && (
+      {pseudo ? (
+        // Pseudo déjà défini : affiché, non modifiable ici (seulement au profil).
+        <div className="space-y-1">
+          <span className={labelClass}>{t.ideas.pseudoField}</span>
+          <p className="text-sm">
+            <span className="font-medium">{pseudo}</span>{" "}
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              · {t.ideas.pseudoEditProfile}
+            </span>
+          </p>
+        </div>
+      ) : (
         <div className="space-y-1">
           <label htmlFor="pseudo" className={labelClass}>
             {t.ideas.pseudoField}

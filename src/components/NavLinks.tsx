@@ -11,7 +11,7 @@ export function NavLinks({
   unreadCount,
   eventsCount,
 }: {
-  labels: { home: string; tasks: string; discussions: string; events: string; ideas: string };
+  labels: { home: string; tasks: string; discussions: string; events: string };
   unreadCount: number;
   eventsCount: number;
 }) {
@@ -24,7 +24,6 @@ export function NavLinks({
   const tasksActive = pathname === "/app/tasks";
   const discussionsActive = pathname.startsWith("/app/discussions");
   const eventsActive = pathname.startsWith("/app/evenements");
-  const ideasActive = pathname.startsWith("/app/idees");
 
   return (
     <div className="space-y-0.5">
@@ -55,9 +54,6 @@ export function NavLinks({
             {eventsCount > 99 ? "99+" : eventsCount}
           </span>
         )}
-      </Link>
-      <Link href="/app/idees" className={`block ${base} ${ideasActive ? activeCls : ""}`}>
-        💡 {labels.ideas}
       </Link>
     </div>
   );

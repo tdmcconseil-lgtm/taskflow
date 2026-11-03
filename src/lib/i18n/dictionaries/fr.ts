@@ -800,6 +800,16 @@ const fr = {
     by: "proposé par {pseudo}",
     delete: "Supprimer",
     deleteConfirm: "Supprimer définitivement cette idée ?",
+    sortLabel: "Trier",
+    sortVotes: "Pouces",
+    sortRecent: "Plus récentes",
+    sortOldest: "Plus anciennes",
+    filterLabel: "Afficher",
+    filterAll: "Toutes",
+    filterMine: "Mes idées",
+    filterOthers: "Sauf les miennes",
+    yourPseudo: "Votre pseudo : {pseudo}.",
+    pseudoEditProfile: "Modifiable depuis votre profil.",
   },
 };
 

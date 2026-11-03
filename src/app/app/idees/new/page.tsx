@@ -18,7 +18,7 @@ export default async function NewIdeaPage() {
     where: { id: user.id },
     select: { pseudo: true },
   });
-  const hasPseudo = Boolean(dbUser?.pseudo);
+  const pseudo = dbUser?.pseudo ?? null;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -33,7 +33,7 @@ export default async function NewIdeaPage() {
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t.ideas.new}</h1>
       </div>
       <div className={cardClass}>
-        <IdeaForm hasPseudo={hasPseudo} />
+        <IdeaForm pseudo={pseudo} />
       </div>
     </div>
   );

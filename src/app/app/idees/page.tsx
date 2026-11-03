@@ -4,20 +4,43 @@ import { prisma } from "@/lib/prisma";
 import { getDictionary } from "@/lib/i18n/server";
 import { ButtonLink } from "@/components/Button";
 import { IdeaList } from "@/components/IdeaList";
+import { IdeaControls, type IdeaSort, type IdeaFilter } from "@/components/IdeaControls";
 import { toggleIdeaVote, deleteIdea } from "@/lib/actions/ideas";
 
 export const metadata: Metadata = { title: "Idées — getRIDA" };
 
-// Module Idées : liste transverse à l'application, triée par nombre de pouces
-// (décroissant). On ne renvoie jamais l'identité réelle de l'auteur — seulement
-// son pseudo et les compteurs. `mine` (calculé côté serveur) permet à l'auteur
-// de supprimer sa propre idée sans exposer qui l'a écrite.
-export default async function IdeasPage() {
+// Module Idées : liste transverse à l'application. Tri (pouces / récentes /
+// anciennes) et filtre (toutes / miennes / sauf miennes) via l'URL. On ne
+// renvoie jamais l'identité réelle de l'auteur — seulement son pseudo et les
+// compteurs ; `mine` (calculé côté serveur) sert à la suppression et au filtre.
+export default async function IdeasPage({ searchParams }: PageProps<"/app/idees">) {
   const user = await requireUser();
   const t = await getDictionary();
+  const sp = await searchParams;
+
+  const sort: IdeaSort =
+    sp.sort === "recent" || sp.sort === "oldest" ? sp.sort : "votes";
+  const filter: IdeaFilter =
+    sp.filter === "mine" || sp.filter === "others" ? sp.filter : "all";
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { pseudo: true },
+  });
 
   const ideas = await prisma.idea.findMany({
-    orderBy: [{ votes: { _count: "desc" } }, { createdAt: "desc" }],
+    where:
+      filter === "mine"
+        ? { authorId: user.id }
+        : filter === "others"
+          ? { authorId: { not: user.id } }
+          : {},
+    orderBy:
+      sort === "recent"
+        ? [{ createdAt: "desc" }]
+        : sort === "oldest"
+          ? [{ createdAt: "asc" }]
+          : [{ votes: { _count: "desc" } }, { createdAt: "desc" }],
     select: {
       id: true,
       title: true,
@@ -46,11 +69,19 @@ export default async function IdeasPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{t.ideas.title}</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.ideas.desc}</p>
+          {dbUser?.pseudo && (
+            <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+              {t.ideas.yourPseudo.replace("{pseudo}", dbUser.pseudo)}{" "}
+              <span className="text-zinc-400 dark:text-zinc-500">{t.ideas.pseudoEditProfile}</span>
+            </p>
+          )}
         </div>
         <ButtonLink href="/app/idees/new" className="shrink-0">
           {t.ideas.new}
         </ButtonLink>
       </div>
+
+      <IdeaControls sort={sort} filter={filter} />
 
       <IdeaList
         ideas={items}

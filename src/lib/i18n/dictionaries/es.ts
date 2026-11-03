@@ -799,6 +799,16 @@ const es: Dictionary = {
     by: "propuesta por {pseudo}",
     delete: "Eliminar",
     deleteConfirm: "¿Eliminar definitivamente esta idea?",
+    sortLabel: "Ordenar",
+    sortVotes: "Me gusta",
+    sortRecent: "Más recientes",
+    sortOldest: "Más antiguas",
+    filterLabel: "Mostrar",
+    filterAll: "Todas",
+    filterMine: "Mis ideas",
+    filterOthers: "Excepto las mías",
+    yourPseudo: "Tu seudónimo: {pseudo}.",
+    pseudoEditProfile: "Editable desde tu perfil.",
   },
 };
 
