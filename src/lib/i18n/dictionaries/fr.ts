@@ -157,6 +157,8 @@ const fr = {
     listAdminNote: "Seuls les administrateurs de l'espace peuvent ajouter des membres",
     seatUsage: "{used} / {max} sièges réservés",
     perMemberCost: "Chaque membre actif : {price} / mois",
+    billedUserMonthWarning:
+      "Attention : tout membre ajouté compte pour un utilisateur-mois facturé au prix plein, même actif un court instant et même désactivé juste après.",
     invite: "Inviter un membre",
     you: "(vous)",
     deactivated: "désactivé",
@@ -284,7 +286,7 @@ const fr = {
       },
       {
         title: "L'unité : l'utilisateur-mois",
-        body: "Toute personne ayant eu un siège au moins un jour dans le mois compte pour une unité, au prix plein (pas de prorata). Un même utilisateur ne compte qu'une fois, même ajouté puis retiré plusieurs fois.",
+        body: "Toute personne ayant eu un siège, ne serait-ce qu'un instant dans le mois, compte pour une unité, au prix plein (pas de prorata). Un même utilisateur ne compte qu'une fois, même ajouté puis retiré plusieurs fois.",
       },
       {
         title: "Les prix",

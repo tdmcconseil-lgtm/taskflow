@@ -158,6 +158,8 @@ const en: Dictionary = {
     listAdminNote: "Only workspace administrators can add members",
     seatUsage: "{used} / {max} seats reserved",
     perMemberCost: "Each active member: {price} / month",
+    billedUserMonthWarning:
+      "Heads-up: any member you add counts as one full user-month billed at full price, even if active only briefly and even if deactivated right after.",
     invite: "Invite a member",
     you: "(you)",
     deactivated: "deactivated",
@@ -285,7 +287,7 @@ const en: Dictionary = {
       },
       {
         title: "The unit: the user-month",
-        body: "Anyone who held a seat for at least one day in the month counts as one unit, at full price (no proration). The same user only counts once, even if added and removed several times.",
+        body: "Anyone who held a seat, even briefly during the month, counts as one unit, at full price (no proration). The same user only counts once, even if added and removed several times.",
       },
       {
         title: "Prices",

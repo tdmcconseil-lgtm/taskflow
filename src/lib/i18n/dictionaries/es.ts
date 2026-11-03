@@ -158,6 +158,8 @@ const es: Dictionary = {
     listAdminNote: "Solo los administradores del espacio pueden añadir miembros",
     seatUsage: "{used} / {max} puestos reservados",
     perMemberCost: "Cada miembro activo: {price} / mes",
+    billedUserMonthWarning:
+      "Atención: cualquier miembro que añadas cuenta como un usuario-mes facturado a precio completo, aunque esté activo solo un instante y aunque lo desactives justo después.",
     invite: "Invitar a un miembro",
     you: "(tú)",
     deactivated: "desactivado",
@@ -285,7 +287,7 @@ const es: Dictionary = {
       },
       {
         title: "La unidad: el usuario-mes",
-        body: "Toda persona que haya tenido un asiento al menos un día del mes cuenta como una unidad, a precio completo (sin prorrateo). Un mismo usuario cuenta una sola vez, aunque se añada y se quite varias veces.",
+        body: "Toda persona que haya tenido un asiento, aunque sea un instante del mes, cuenta como una unidad, a precio completo (sin prorrateo). Un mismo usuario cuenta una sola vez, aunque se añada y se quite varias veces.",
       },
       {
         title: "Los precios",

@@ -65,6 +65,11 @@ export default async function NewMemberPage({
               {t.members.perMemberCost.replace("{price}", formatPrice(unitPriceCents(workspace.plan)))}
             </p>
           )}
+          {paid && (
+            <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">
+              {t.members.billedUserMonthWarning}
+            </p>
+          )}
         </div>
       )}
 
