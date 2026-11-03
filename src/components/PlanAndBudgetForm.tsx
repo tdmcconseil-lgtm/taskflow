@@ -196,6 +196,14 @@ export function PlanAndBudgetForm({
           </p>
         ))}
 
+      {/* Changement d'offre (≠ offre courante) : il ne sera pas appliqué tout de
+          suite mais au traitement de nuit — on le dit avant de valider. */}
+      {editing && sel !== plan && (
+        <p className="text-sm text-indigo-700 dark:text-indigo-300">
+          {t.billing.planChangePending}
+        </p>
+      )}
+
       {editing && (
         <div className="flex items-center justify-end gap-3">
           <button

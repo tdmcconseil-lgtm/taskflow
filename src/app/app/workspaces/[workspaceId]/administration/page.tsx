@@ -18,7 +18,7 @@ import {
   cancelInvitation,
 } from "@/lib/actions/workspaces";
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
-import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
+import { billableUserCount, currentCyclePeriod } from "@/lib/billing/usage";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -40,9 +40,8 @@ export default async function WorkspaceAdminPage({
   const addedTo = typeof sp.added === "string" ? sp.added : null;
   // Confirmation affichée après l'archivage (on reste dans l'espace).
   const justArchived = sp.archived === "1";
-  // Retours de l'étape de paiement (simulée) : abonnement activé / paiement refusé.
-  const justSubscribed = sp.subscribed === "1";
-  const paymentFailed = sp.payment === "failed";
+  // Changement d'offre enregistré : il sera appliqué au prochain traitement de nuit.
+  const planPending = sp.planPending === "1";
   // Changement de formule bloqué faute de plafond couvrant les membres actuels.
   const planError =
     sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
@@ -68,6 +67,8 @@ export default async function WorkspaceAdminPage({
       name: true,
       plan: true,
       budgetCapCents: true,
+      billingCycleStart: true,
+      pendingPlan: true,
       archivedAt: true,
       organizationProfile: true,
       members: {
@@ -90,12 +91,13 @@ export default async function WorkspaceAdminPage({
 
   // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée) :
   // le volet n'affiche que les membres actifs et le stockage effectif.
-  // En parallèle : utilisateurs facturables du mois en cours (journal d'appartenance),
-  // pour le coût estimé affiché dans l'onglet Facturation.
-  const { start: monthStart, end: monthEnd } = currentMonthPeriod();
+  // En parallèle : utilisateurs facturables du CYCLE en cours (journal d'appartenance),
+  // pour le coût estimé affiché dans l'onglet Facturation. Hors cycle payant (FREE),
+  // rien à estimer → 0.
+  const cycle = currentCyclePeriod(workspace.billingCycleStart);
   const [storageAgg, billableUsers] = await Promise.all([
     prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
-    billableUserCount(workspaceId, monthStart, monthEnd),
+    cycle ? billableUserCount(workspaceId, cycle.start, cycle.end) : Promise.resolve(0),
   ]);
   const usageMetrics = {
     members: workspace.members.filter((m) => m.deactivatedAt === null).length,
@@ -341,15 +343,9 @@ export default async function WorkspaceAdminPage({
         </div>
       )}
 
-      {justSubscribed && (
-        <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300">
-          {t.checkout.successBanner}
-        </div>
-      )}
-
-      {paymentFailed && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
-          {t.checkout.failBanner}
+      {planPending && (
+        <div className="rounded-xl border border-indigo-300 bg-indigo-50 p-4 text-sm text-indigo-800 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300">
+          {t.billing.planChangePending}
         </div>
       )}
 
@@ -359,6 +355,7 @@ export default async function WorkspaceAdminPage({
           <PlanPanel
             workspaceId={workspace.id}
             plan={workspace.plan}
+            pendingPlan={workspace.pendingPlan}
             budgetCapCents={workspace.budgetCapCents}
             activeMembers={usageMetrics.members}
             planError={planError}
@@ -375,7 +372,14 @@ export default async function WorkspaceAdminPage({
           />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
-        facturation={<BillingInfo t={t} plan={workspace.plan} billableUsers={billableUsers} />}
+        facturation={
+          <BillingInfo
+            t={t}
+            plan={workspace.plan}
+            pendingPlan={workspace.pendingPlan}
+            billableUsers={billableUsers}
+          />
+        }
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>

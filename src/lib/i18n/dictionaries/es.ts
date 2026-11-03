@@ -272,6 +272,8 @@ const es: Dictionary = {
     unlimited: "ilimitado",
     nearLimit:
       "Te acercas al límite de tu plan en: {items}. Considera mejorar la suscripción.",
+    pendingPlanNotice:
+      "Cambio a {plan} registrado: se aplicará en el próximo proceso nocturno.",
   },
   billingInfo: {
     title: "Cómo funciona la facturación",
@@ -312,26 +314,15 @@ const es: Dictionary = {
     ],
     notActive:
       "La facturación aún no está activada: esta página describe su funcionamiento.",
-    estimateTitle: "Coste estimado del mes en curso",
-    estimateAmount: "{amount} este mes",
+    estimateTitle: "Coste estimado del ciclo en curso",
+    estimateAmount: "{amount} este ciclo",
     estimateUsers: "{n} usuario(s) facturado(s) hasta ahora",
     estimateHint:
-      "Estimación en este momento; puede aumentar si hay nuevos miembros activos antes de fin de mes.",
-    estimateFree: "Plan gratuito: no se factura ningún importe este mes.",
+      "Estimación en este momento; puede aumentar si hay nuevos miembros activos antes de fin del ciclo.",
+    estimateFree: "Plan gratuito: no se factura ningún importe.",
   },
-  checkout: {
-    title: "Pago de la suscripción",
-    simulationBadge: "Simulación — no se realiza ningún pago real.",
-    intro:
-      "Paso de pago simulado: el pago en línea se conectará más adelante. No se solicita ninguna tarjeta y no se cobra ningún importe.",
-    recapPlanLabel: "Plan",
-    recapAmountLabel: "Importe mensual estimado",
-    recapAmountValue: "{amount} para {n} miembro(s) activo(s)",
-    payButton: "Simular un pago correcto",
-    failButton: "Simular un pago fallido",
-    cancel: "Cancelar",
-    successBanner: "Suscripción activa — tu plan de pago está en vigor.",
-    failBanner: "Pago rechazado (simulación) — no se modificó el plan.",
+  billing: {
+    planChangePending: "El cambio de oferta se aplicará esta noche.",
   },
   documents: {
     projectDocuments: "Documentos del proyecto",

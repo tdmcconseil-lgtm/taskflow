@@ -11,11 +11,14 @@ import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 export function BillingInfo({
   t,
   plan,
+  pendingPlan,
   billableUsers,
 }: {
   t: Dictionary;
   plan: WorkspacePlan;
-  // Utilisateurs facturables du mois en cours (cf. lib/billing/usage).
+  // Offre choisie en attente du prochain traitement de nuit (null = aucune).
+  pendingPlan: WorkspacePlan | null;
+  // Utilisateurs facturables du cycle en cours (cf. lib/billing/usage).
   billableUsers: number;
 }) {
   const b = t.billingInfo;
@@ -27,6 +30,13 @@ export function BillingInfo({
         <h2 className="text-lg font-semibold tracking-tight">{b.title}</h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{b.intro}</p>
       </div>
+
+      {/* Offre en attente : rappel que le changement s'appliquera cette nuit. */}
+      {pendingPlan && (
+        <p className="rounded-lg border border-indigo-200 bg-indigo-50/60 px-4 py-3 text-sm text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+          {t.usage.pendingPlanNotice.replace("{plan}", pendingPlan)}
+        </p>
+      )}
 
       {/* Coût estimé du mois en cours, en tête (l'info la plus concrète). */}
       <section className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">

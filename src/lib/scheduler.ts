@@ -9,6 +9,7 @@
 // Désactivable avec NOTIFY_SCHEDULER=off.
 
 import { drainInstant, runDigests } from "@/lib/notify-dispatch";
+import { runNightly } from "@/lib/billing/cycle";
 
 const globalForScheduler = globalThis as unknown as { notifySchedulerStarted?: boolean };
 
@@ -22,6 +23,12 @@ export function startScheduler(): void {
     process.env.NOTIFY_DIGEST_INTERVAL_MS ?? String(60 * 60 * 1000),
     10,
   );
+  // Traitement de nuit de la facturation : on vérifie régulièrement s'il est dû
+  // (runNightly ne fait rien avant l'heure configurée ni deux fois le même jour).
+  const billingMs = Number.parseInt(
+    process.env.BILLING_NIGHTLY_CHECK_MS ?? String(15 * 60 * 1000),
+    10,
+  );
 
   setInterval(() => {
     drainInstant().catch((err) => console.error("[notify] drainInstant", err));
@@ -31,7 +38,13 @@ export function startScheduler(): void {
     runDigests().catch((err) => console.error("[notify] runDigests", err));
   }, digestMs);
 
+  if (process.env.BILLING_SCHEDULER !== "off") {
+    setInterval(() => {
+      runNightly().catch((err) => console.error("[billing] runNightly", err));
+    }, billingMs);
+  }
+
   console.log(
-    `[notify] scheduler démarré (drain ${instantMs} ms, digest ${digestMs} ms)`,
+    `[notify] scheduler démarré (drain ${instantMs} ms, digest ${digestMs} ms, billing ${billingMs} ms)`,
   );
 }

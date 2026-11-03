@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/dal";
 import { ensureAdmin } from "@/lib/auth/guards";
 import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
-import { checkoutPath } from "@/lib/billing/payment";
 import { type WorkspacePlan } from "@/lib/plans";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 
@@ -89,11 +88,18 @@ export async function updateOrganizationProfile(
   return { ok: true };
 }
 
-// Change la formule ET le plafond de budget en une seule opération (version
-// pré-Stripe, réservée aux administrateurs). Le plafond ne s'applique qu'aux
-// offres payantes ; pour FREE il est remis à null. Les membres actifs doivent
-// tenir dans les sièges autorisés par (offre, plafond) : sinon on bloque et on
-// renvoie sur l'onglet Formule avec un message (annuler ou augmenter le plafond).
+// Change la formule et/ou le plafond de budget (réservé aux administrateurs).
+//
+// Facturation à l'usage, cycle ancré (cf. lib/billing/cycle) :
+//   - un CHANGEMENT D'OFFRE n'est jamais appliqué tout de suite. Il est mis en
+//     attente (pendingPlan + pendingBudgetCapCents) et devient effectif au
+//     traitement de nuit ; l'UI affiche « pris en compte cette nuit ». Choisir
+//     à nouveau l'offre courante annule le changement en attente (aller-retour).
+//   - un simple AJUSTEMENT DU PLAFOND (même offre) reste immédiat : c'est un
+//     garde-fou de sièges, pas un changement d'offre facturable.
+// Dans tous les cas, les membres actifs doivent tenir dans les sièges autorisés
+// par (offre visée, plafond visé) : sinon on bloque et on renvoie sur l'onglet
+// Formule avec un message (annuler ou augmenter le plafond).
 const planBudgetSchema = z.object({
   workspaceId: z.string().min(1),
   plan: z.enum(["FREE", "PRO", "BUSINESS"]),
@@ -104,16 +110,6 @@ const planBudgetSchema = z.object({
 function capFor(plan: WorkspacePlan, budgetEuros: number | undefined): number | null {
   if (!isPaidPlan(plan)) return null;
   return budgetEuros == null ? null : Math.round(budgetEuros * 100);
-}
-
-// Applique réellement la formule + le plafond (après validation / paiement).
-async function applyPlanAndBudget(
-  workspaceId: string,
-  plan: WorkspacePlan,
-  budgetCapCents: number | null,
-): Promise<void> {
-  await prisma.workspace.update({ where: { id: workspaceId }, data: { plan, budgetCapCents } });
-  revalidatePath(`/app/workspaces/${workspaceId}/administration`);
 }
 
 export async function setPlanAndBudget(formData: FormData): Promise<void> {
@@ -143,61 +139,25 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
     redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}${tb}`);
   }
 
-  // Souscription : passer d'une offre gratuite à une offre payante déclenche
-  // l'étape de paiement (simulée tant que Stripe n'est pas branché). La formule
-  // n'est appliquée qu'après paiement confirmé (cf. resolveSimulatedCheckout).
-  // Les autres changements (vers FREE, entre offres payantes, plafond seul)
-  // s'appliquent directement.
-  const subscribing = isPaidPlan(plan) && !isPaidPlan(workspace?.plan ?? "FREE");
-  if (subscribing) {
-    redirect(checkoutPath({ workspaceId, plan, budgetEuros }));
-  }
-
-  await applyPlanAndBudget(workspaceId, plan, budgetCapCents);
-  redirect(`/app/workspaces/${workspaceId}/administration`);
-}
-
-// Résout l'étape de paiement SIMULÉE (page billing/checkout). Succès → on
-// re-vérifie les sièges puis on applique la formule ; échec → retour sur
-// l'administration, rien n'est modifié. Avec Stripe, cette confirmation
-// viendrait d'un webhook après paiement réel, pas d'un bouton.
-const checkoutResolveSchema = z.object({
-  workspaceId: z.string().min(1),
-  plan: z.enum(["FREE", "PRO", "BUSINESS"]),
-  budgetEuros: z.coerce.number().min(0).max(1_000_000).optional(),
-  outcome: z.enum(["success", "fail"]),
-});
-
-export async function resolveSimulatedCheckout(formData: FormData): Promise<void> {
-  const user = await requireUser();
-  const parsed = checkoutResolveSchema.safeParse({
-    workspaceId: formData.get("workspaceId"),
-    plan: formData.get("plan"),
-    budgetEuros: formData.get("budgetEuros") || undefined,
-    outcome: formData.get("outcome"),
-  });
-  if (!parsed.success) return;
-
-  const { workspaceId, plan, budgetEuros, outcome } = parsed.data;
-  if (await ensureAdmin(user.id, workspaceId)) return;
-
   const base = `/app/workspaces/${workspaceId}/administration`;
-  if (outcome === "fail") {
-    // Paiement simulé échoué : rien n'est appliqué.
-    redirect(`${base}?payment=failed`);
+  const currentPlan = workspace?.plan ?? "FREE";
+
+  if (plan === currentPlan) {
+    // Même offre : simple ajustement du plafond, immédiat. On vide aussi tout
+    // changement en attente (cas de l'aller-retour, qui redevient un non-événement).
+    await prisma.workspace.update({
+      where: { id: workspaceId },
+      data: { budgetCapCents, pendingPlan: null, pendingBudgetCapCents: null },
+    });
+    revalidatePath(base);
+    redirect(base);
   }
 
-  // Succès : re-vérification des sièges (ils ont pu bouger) puis application.
-  const budgetCapCents = capFor(plan, budgetEuros);
-  const activeMembers = await prisma.membership.count({
-    where: { workspaceId, deactivatedAt: null },
+  // Changement d'offre : mis en attente, effectif au prochain traitement de nuit.
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { pendingPlan: plan, pendingBudgetCapCents: budgetCapCents },
   });
-  const issue = seatCheck(plan, budgetCapCents, activeMembers);
-  if (issue) {
-    const tb = budgetEuros == null ? "" : `&triedBudget=${budgetEuros}`;
-    redirect(`${base}?planError=${issue}&tried=${plan}${tb}`);
-  }
-
-  await applyPlanAndBudget(workspaceId, plan, budgetCapCents);
-  redirect(`${base}?subscribed=1`);
+  revalidatePath(base);
+  redirect(`${base}?planPending=1`);
 }

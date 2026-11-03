@@ -271,6 +271,8 @@ const fr = {
     unlimited: "illimité",
     nearLimit:
       "Vous approchez de la limite de votre formule pour : {items}. Pensez à faire évoluer l'abonnement.",
+    pendingPlanNotice:
+      "Changement vers {plan} enregistré : il sera pris en compte au prochain traitement de nuit.",
   },
   billingInfo: {
     title: "Comment fonctionne la facturation",
@@ -311,26 +313,15 @@ const fr = {
     ],
     notActive:
       "La facturation n'est pas encore activée : cette page en décrit le fonctionnement.",
-    estimateTitle: "Coût estimé du mois en cours",
-    estimateAmount: "{amount} ce mois-ci",
+    estimateTitle: "Coût estimé du cycle en cours",
+    estimateAmount: "{amount} ce cycle",
     estimateUsers: "{n} utilisateur(s) facturé(s) jusqu'ici",
     estimateHint:
-      "Estimation à l'instant présent ; elle peut augmenter si de nouveaux membres sont actifs d'ici la fin du mois.",
-    estimateFree: "Offre gratuite : aucun montant n'est facturé ce mois-ci.",
+      "Estimation à l'instant présent ; elle peut augmenter si de nouveaux membres sont actifs d'ici la fin du cycle.",
+    estimateFree: "Offre gratuite : aucun montant n'est facturé.",
   },
-  checkout: {
-    title: "Paiement de l'abonnement",
-    simulationBadge: "Simulation — aucun paiement réel n'est effectué.",
-    intro:
-      "Étape de paiement simulée : le paiement en ligne sera branché ultérieurement. Aucune carte n'est demandée et aucun montant n'est débité.",
-    recapPlanLabel: "Formule",
-    recapAmountLabel: "Montant mensuel estimé",
-    recapAmountValue: "{amount} pour {n} membre(s) actif(s)",
-    payButton: "Simuler un paiement réussi",
-    failButton: "Simuler un échec de paiement",
-    cancel: "Annuler",
-    successBanner: "Abonnement activé — votre formule payante est en service.",
-    failBanner: "Paiement refusé (simulation) — la formule n'a pas été modifiée.",
+  billing: {
+    planChangePending: "Votre changement d'offre sera pris en compte cette nuit.",
   },
   documents: {
     projectDocuments: "Documents du projet",

@@ -11,6 +11,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 export function PlanPanel({
   workspaceId,
   plan,
+  pendingPlan,
   budgetCapCents,
   activeMembers,
   planError,
@@ -20,6 +21,8 @@ export function PlanPanel({
 }: {
   workspaceId: string;
   plan: WorkspacePlan;
+  // Offre choisie en attente du prochain traitement de nuit (null = aucune).
+  pendingPlan: WorkspacePlan | null;
   budgetCapCents: number | null;
   activeMembers: number;
   planError: SeatIssue | null;
@@ -34,6 +37,13 @@ export function PlanPanel({
           {(planError === "budgetCapUnset" ? t.usage.planErrorCapUnset : t.usage.planErrorSeatLimit)
             .replace("{plan}", triedPlan ?? "")
             .replace("{n}", String(activeMembers))}
+        </div>
+      )}
+
+      {/* Offre en attente : un changement a été enregistré et sera appliqué la nuit. */}
+      {pendingPlan && (
+        <div className="rounded-xl border border-indigo-300 bg-indigo-50 p-4 text-sm text-indigo-800 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300">
+          {t.usage.pendingPlanNotice.replace("{plan}", pendingPlan)}
         </div>
       )}
 

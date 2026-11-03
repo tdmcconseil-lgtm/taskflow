@@ -272,6 +272,8 @@ const en: Dictionary = {
     unlimited: "unlimited",
     nearLimit:
       "You are nearing your plan limit for: {items}. Consider upgrading your subscription.",
+    pendingPlanNotice:
+      "Change to {plan} saved: it will take effect at the next nightly run.",
   },
   billingInfo: {
     title: "How billing works",
@@ -312,26 +314,15 @@ const en: Dictionary = {
     ],
     notActive:
       "Billing is not active yet: this page describes how it works.",
-    estimateTitle: "Estimated cost for the current month",
-    estimateAmount: "{amount} this month",
+    estimateTitle: "Estimated cost for the current cycle",
+    estimateAmount: "{amount} this cycle",
     estimateUsers: "{n} user(s) billed so far",
     estimateHint:
-      "Estimate as of now; it may rise if new members are active before the end of the month.",
-    estimateFree: "Free plan: nothing is billed this month.",
+      "Estimate as of now; it may rise if new members are active before the end of the cycle.",
+    estimateFree: "Free plan: nothing is billed.",
   },
-  checkout: {
-    title: "Subscription payment",
-    simulationBadge: "Simulation — no real payment is made.",
-    intro:
-      "Simulated payment step: online payment will be connected later. No card is requested and no amount is charged.",
-    recapPlanLabel: "Plan",
-    recapAmountLabel: "Estimated monthly amount",
-    recapAmountValue: "{amount} for {n} active member(s)",
-    payButton: "Simulate a successful payment",
-    failButton: "Simulate a failed payment",
-    cancel: "Cancel",
-    successBanner: "Subscription active — your paid plan is now in effect.",
-    failBanner: "Payment declined (simulation) — the plan was not changed.",
+  billing: {
+    planChangePending: "Your plan change will take effect tonight.",
   },
   documents: {
     projectDocuments: "Project documents",

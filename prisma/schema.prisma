@@ -156,12 +156,25 @@ model Workspace {
   // null = non défini → aucun membre ne peut être ajouté (cf. lib/billing/budget).
   // Les sièges autorisés = budgetCapCents / prix unitaire de la formule.
   budgetCapCents Int?
+  // --- Facturation à l'usage : cycle ancré sur la date d'abonnement ---
+  // Date d'ancrage du cycle courant (null = pas de cycle payant en cours, ex. FREE).
+  // Le renouvellement et le prorata se calculent depuis cette date (cf. lib/billing/cycle).
+  billingCycleStart DateTime?
+  // Changement d'offre choisi dans l'UI mais PAS encore appliqué : il devient
+  // effectif au prochain « traitement de nuit » (null = aucun changement en attente).
+  pendingPlan           WorkspacePlan?
+  // Plafond choisi en même temps que l'offre en attente, appliqué avec elle la nuit.
+  pendingBudgetCapCents Int?
+  // Jour (minuit) du dernier traitement de nuit appliqué : garde-fou d'idempotence
+  // pour n'évaluer l'état de facturation qu'une fois par jour.
+  lastBilledOn          DateTime?
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
   members     Membership[]
   membershipEvents MembershipEvent[]
+  billingSegments BillingSegment[]
   tasks       Task[]
   invitations Invitation[]
   documents   Document[]
@@ -251,6 +264,28 @@ model MembershipEvent {
   @@index([workspaceId])
   @@index([userId])
   @@index([workspaceId, at])
+}
+
+// --- Segment de facturation clôturé (facture interne, append-only) ---
+// Une ligne par segment d'offre clôturé : changement d'offre, passage à FREE, ou
+// renouvellement de cycle. Le montant est proraté base 30 (plafonné à un mois
+// plein) sur les jours du segment. Jamais mis à jour (hors cascade). Reconstitue
+// l'historique de facturation et alimentera l'encaissement réel (Stripe) plus tard.
+model BillingSegment {
+  id             String        @id @default(cuid())
+  plan           WorkspacePlan // offre facturée sur ce segment
+  startedAt      DateTime      // début du segment (date d'ancrage du cycle)
+  endedAt        DateTime      // clôture (changement effectif ou fin de cycle)
+  days           Int           // jours attribués au segment
+  billableUsers  Int           // utilisateurs facturables sur la période du segment
+  unitPriceCents Int           // prix unitaire de l'offre au moment de la clôture
+  amountCents    Int           // montant proraté (base 30, plafonné à 1 mois)
+  createdAt      DateTime      @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 // --- Tâche ---

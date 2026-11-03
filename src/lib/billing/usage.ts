@@ -54,7 +54,13 @@ export async function billableUserCount(
   return count;
 }
 
-// Bornes du mois courant : du 1er à 00:00 (heure serveur) jusqu'à maintenant.
-export function currentMonthPeriod(now: Date = new Date()): { start: Date; end: Date } {
-  return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: now };
+// Bornes du cycle de facturation en cours, pour l'estimation affichée dans
+// l'administration : de la date d'ancrage du cycle jusqu'à maintenant. null si
+// l'espace n'a pas de cycle payant en cours (ex. FREE) — rien à estimer.
+export function currentCyclePeriod(
+  billingCycleStart: Date | null,
+  now: Date = new Date(),
+): { start: Date; end: Date } | null {
+  if (!billingCycleStart) return null;
+  return { start: billingCycleStart, end: now };
 }
