@@ -18,6 +18,7 @@ import {
   cancelInvitation,
 } from "@/lib/actions/workspaces";
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
+import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -86,10 +87,13 @@ export default async function WorkspaceAdminPage({
 
   // Métriques du volet Consommation (calculées depuis l'existant, sans table dédiée) :
   // le volet n'affiche que les membres actifs et le stockage effectif.
-  const storageAgg = await prisma.document.aggregate({
-    where: { workspaceId },
-    _sum: { size: true },
-  });
+  // En parallèle : utilisateurs facturables du mois en cours (journal d'appartenance),
+  // pour le coût estimé affiché dans l'onglet Facturation.
+  const { start: monthStart, end: monthEnd } = currentMonthPeriod();
+  const [storageAgg, billableUsers] = await Promise.all([
+    prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
+    billableUserCount(workspaceId, monthStart, monthEnd),
+  ]);
   const usageMetrics = {
     members: workspace.members.filter((m) => m.deactivatedAt === null).length,
     storageBytes: storageAgg._sum.size ?? 0,
@@ -356,7 +360,7 @@ export default async function WorkspaceAdminPage({
           />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
-        facturation={<BillingInfo t={t} />}
+        facturation={<BillingInfo t={t} plan={workspace.plan} billableUsers={billableUsers} />}
         archivage={isOwner ? archivagePanel : undefined}
       />
     </div>

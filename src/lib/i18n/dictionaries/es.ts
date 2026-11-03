@@ -312,6 +312,12 @@ const es: Dictionary = {
     ],
     notActive:
       "La facturación aún no está activada: esta página describe su funcionamiento.",
+    estimateTitle: "Coste estimado del mes en curso",
+    estimateAmount: "{amount} este mes",
+    estimateUsers: "{n} usuario(s) facturado(s) hasta ahora",
+    estimateHint:
+      "Estimación en este momento; puede aumentar si hay nuevos miembros activos antes de fin de mes.",
+    estimateFree: "Plan gratuito: no se factura ningún importe este mes.",
   },
   documents: {
     projectDocuments: "Documentos del proyecto",

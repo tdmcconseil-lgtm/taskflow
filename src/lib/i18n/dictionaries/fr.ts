@@ -311,6 +311,12 @@ const fr = {
     ],
     notActive:
       "La facturation n'est pas encore activée : cette page en décrit le fonctionnement.",
+    estimateTitle: "Coût estimé du mois en cours",
+    estimateAmount: "{amount} ce mois-ci",
+    estimateUsers: "{n} utilisateur(s) facturé(s) jusqu'ici",
+    estimateHint:
+      "Estimation à l'instant présent ; elle peut augmenter si de nouveaux membres sont actifs d'ici la fin du mois.",
+    estimateFree: "Offre gratuite : aucun montant n'est facturé ce mois-ci.",
   },
   documents: {
     projectDocuments: "Documents du projet",

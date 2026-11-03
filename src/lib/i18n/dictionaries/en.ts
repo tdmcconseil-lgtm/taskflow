@@ -312,6 +312,12 @@ const en: Dictionary = {
     ],
     notActive:
       "Billing is not active yet: this page describes how it works.",
+    estimateTitle: "Estimated cost for the current month",
+    estimateAmount: "{amount} this month",
+    estimateUsers: "{n} user(s) billed so far",
+    estimateHint:
+      "Estimate as of now; it may rise if new members are active before the end of the month.",
+    estimateFree: "Free plan: nothing is billed this month.",
   },
   documents: {
     projectDocuments: "Project documents",
