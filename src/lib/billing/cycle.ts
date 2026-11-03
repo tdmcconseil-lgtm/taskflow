@@ -25,6 +25,7 @@
 import { prisma } from "@/lib/prisma";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 import { billableUserCount } from "@/lib/billing/usage";
+import { chargeInvoiceViaStripe } from "@/lib/billing/stripe-charge";
 import type { WorkspacePlan } from "@/lib/plans";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -169,6 +170,7 @@ export async function runNightlyForWorkspace(
   );
 
   let invoicesEmitted = 0;
+  const createdInvoiceIds: string[] = [];
   await prisma.$transaction(async (tx) => {
     if (rows.length > 0) await tx.billingSegment.createMany({ data: rows });
     await tx.workspace.update({
@@ -227,9 +229,21 @@ export async function runNightlyForWorkspace(
         where: { id: { in: g.segIds } },
         data: { invoiceId: invoice.id },
       });
+      createdInvoiceIds.push(invoice.id);
       invoicesEmitted++;
     }
   });
+
+  // Encaissement Stripe des factures émises — HORS transaction (appel réseau) et
+  // best-effort : une erreur Stripe ne doit pas annuler la facturation ni bloquer
+  // les autres espaces. No-op si Stripe n'est pas configuré (cf. chargeInvoiceViaStripe).
+  for (const id of createdInvoiceIds) {
+    try {
+      await chargeInvoiceViaStripe(id);
+    } catch (err) {
+      console.error(`[billing] stripe charge ${id}`, err);
+    }
+  }
 
   return invoicesEmitted;
 }
