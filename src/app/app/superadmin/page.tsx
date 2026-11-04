@@ -58,6 +58,14 @@ export default async function SuperadminPage({ searchParams }: PageProps<"/app/s
         <IdeasAdmin locale={locale} t={t} />
       ) : tab === "recouvrement" ? (
         <RecoveryAdmin locale={locale} t={t} />
+      ) : sp.list === "users" ? (
+        <UsersList
+          locale={locale}
+          t={t}
+          month={typeof sp.month === "string" ? sp.month : undefined}
+        />
+      ) : sp.list === "workspaces" ? (
+        <WorkspacesList locale={locale} t={t} />
       ) : (
         <StatsPanel locale={locale} t={t} />
       )}
@@ -271,8 +279,16 @@ async function StatsPanel({ locale, t }: { locale: Locale; t: Dict }) {
     <div className="space-y-8">
       {/* Totaux */}
       <div className="grid grid-cols-2 gap-4">
-        <StatTile label={s.statsUsersTotal} value={users.length} />
-        <StatTile label={s.statsWorkspacesTotal} value={totalWorkspaces} />
+        <StatTile
+          label={s.statsUsersTotal}
+          value={users.length}
+          href="/app/superadmin?tab=stats&list=users"
+        />
+        <StatTile
+          label={s.statsWorkspacesTotal}
+          value={totalWorkspaces}
+          href="/app/superadmin?tab=stats&list=workspaces"
+        />
       </div>
 
       {/* Espaces par formule */}
@@ -312,12 +328,26 @@ async function StatsPanel({ locale, t }: { locale: Locale; t: Dict }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {months.map((m) => (
-              <tr key={m.key} className="bg-white dark:bg-zinc-900">
-                <td className="px-4 py-2 capitalize">{m.label}</td>
-                <td className="px-4 py-2 text-right tabular-nums">{m.count}</td>
-              </tr>
-            ))}
+            {months.map((m) => {
+              const href = `/app/superadmin?tab=stats&list=users&month=${m.key}`;
+              return (
+                <tr
+                  key={m.key}
+                  className="bg-white transition hover:bg-indigo-50/40 dark:bg-zinc-900 dark:hover:bg-indigo-950/30"
+                >
+                  <td className="px-4 py-2">
+                    <Link href={href} className="block capitalize hover:underline">
+                      {m.label}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-2 text-right tabular-nums">
+                    <Link href={href} className="block hover:underline">
+                      {m.count}
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </section>
@@ -325,13 +355,161 @@ async function StatsPanel({ locale, t }: { locale: Locale; t: Dict }) {
   );
 }
 
-function StatTile({ label, value }: { label: string; value: number }) {
+// Lien de retour vers la vue d'ensemble des statistiques, en tête d'un détail.
+function DetailBack({ label }: { label: string }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <Link
+      href="/app/superadmin?tab=stats"
+      className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+    >
+      {label}
+    </Link>
+  );
+}
+
+// --- Détail : utilisateurs (tri par inscription décroissante) ---
+// Tout l'historique si `month` est absent, sinon les seuls inscrits du mois
+// donné (clé « AAAA-M », mois 0-indexé en UTC, cohérente avec la vue mensuelle).
+async function UsersList({ locale, t, month }: { locale: Locale; t: Dict; month?: string }) {
+  const s = t.superadmin;
+
+  let where = {};
+  let title = s.usersListTitle;
+  if (month) {
+    const [y, m] = month.split("-").map(Number);
+    if (Number.isFinite(y) && Number.isFinite(m)) {
+      const start = new Date(Date.UTC(y, m, 1));
+      const end = new Date(Date.UTC(y, m + 1, 1));
+      where = { createdAt: { gte: start, lt: end } };
+      title = s.usersListMonthTitle.replace("{month}", formatMonth(start, locale));
+    }
+  }
+
+  const users = await prisma.user.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    select: { id: true, name: true, email: true, createdAt: true },
+  });
+
+  return (
+    <div className="space-y-4">
+      <DetailBack label={s.detailBack} />
+      <h2 className="text-lg font-semibold tracking-tight">
+        {title} <span className="text-sm font-normal text-zinc-400">({users.length})</span>
+      </h2>
+      {users.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          {s.detailEmpty}
+        </p>
+      ) : (
+        <table className="w-full overflow-hidden rounded-xl border border-zinc-200 text-sm dark:border-zinc-800">
+          <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400">
+            <tr>
+              <th className="px-4 py-2 font-medium">{s.colName}</th>
+              <th className="px-4 py-2 font-medium">{s.colEmail}</th>
+              <th className="px-4 py-2 text-right font-medium">{s.colRegistered}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {users.map((u) => (
+              <tr key={u.id} className="bg-white dark:bg-zinc-900">
+                <td className="px-4 py-2">{u.name}</td>
+                <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">{u.email}</td>
+                <td className="px-4 py-2 text-right tabular-nums whitespace-nowrap">
+                  {formatDate(u.createdAt, locale)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+// --- Détail : espaces de travail (tri par création décroissante) ---
+async function WorkspacesList({ locale, t }: { locale: Locale; t: Dict }) {
+  const s = t.superadmin;
+
+  const workspaces = await prisma.workspace.findMany({
+    where: { archivedAt: null },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      plan: true,
+      createdAt: true,
+      // Membres actifs (comptés sur la relation filtrée).
+      members: { where: { deactivatedAt: null }, select: { id: true } },
+    },
+  });
+
+  return (
+    <div className="space-y-4">
+      <DetailBack label={s.detailBack} />
+      <h2 className="text-lg font-semibold tracking-tight">
+        {s.statsWorkspacesTotal}{" "}
+        <span className="text-sm font-normal text-zinc-400">({workspaces.length})</span>
+      </h2>
+      {workspaces.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          {s.detailEmpty}
+        </p>
+      ) : (
+        <table className="w-full overflow-hidden rounded-xl border border-zinc-200 text-sm dark:border-zinc-800">
+          <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400">
+            <tr>
+              <th className="px-4 py-2 font-medium">{s.colName}</th>
+              <th className="px-4 py-2 font-medium">{s.statsPlanCol}</th>
+              <th className="px-4 py-2 text-right font-medium">{s.colMembers}</th>
+              <th className="px-4 py-2 text-right font-medium">{s.colCreated}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {workspaces.map((w) => (
+              <tr key={w.id} className="bg-white dark:bg-zinc-900">
+                <td className="px-4 py-2">{w.name}</td>
+                <td className="px-4 py-2">{PLAN_NAMES[w.plan]}</td>
+                <td className="px-4 py-2 text-right tabular-nums">{w.members.length}</td>
+                <td className="px-4 py-2 text-right tabular-nums whitespace-nowrap">
+                  {formatDate(w.createdAt, locale)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+// Tuile de statistique. Avec `href`, elle devient cliquable (vers le détail) et
+// montre un chevron ; la valeur elle-même est soulignée au survol.
+function StatTile({ label, value, href }: { label: string; value: number; href?: string }) {
+  const body = (
+    <>
       <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
         {label}
       </p>
-      <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
-    </div>
+      <p className="mt-1 text-2xl font-semibold tabular-nums">
+        {value}
+        {href && <span className="ml-1 text-base font-normal text-zinc-400">›</span>}
+      </p>
+    </>
+  );
+  if (!href) {
+    return (
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        {body}
+      </div>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className="rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-400 hover:bg-indigo-50/40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/30"
+    >
+      {body}
+    </Link>
   );
 }

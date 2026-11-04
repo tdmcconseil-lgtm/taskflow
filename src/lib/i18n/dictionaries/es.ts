@@ -932,6 +932,16 @@ const es: Dictionary = {
     statsCountCol: "Cantidad",
     statsPlanCol: "Plan",
     statsEmpty: "Sin datos.",
+    // Detalle clicable de las estadísticas
+    detailBack: "← Volver a las estadísticas",
+    detailEmpty: "Sin resultados.",
+    usersListTitle: "Usuarios",
+    usersListMonthTitle: "Registrados en {month}",
+    colName: "Nombre",
+    colEmail: "Correo",
+    colRegistered: "Registrado el",
+    colMembers: "Miembros activos",
+    colCreated: "Creado el",
   },
 };
 

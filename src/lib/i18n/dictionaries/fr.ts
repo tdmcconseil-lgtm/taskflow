@@ -934,6 +934,16 @@ const fr = {
     statsCountCol: "Nombre",
     statsPlanCol: "Formule",
     statsEmpty: "Aucune donnée.",
+    // Détail cliquable des statistiques
+    detailBack: "← Retour aux statistiques",
+    detailEmpty: "Aucun résultat.",
+    usersListTitle: "Utilisateurs",
+    usersListMonthTitle: "Inscrits en {month}",
+    colName: "Nom",
+    colEmail: "E-mail",
+    colRegistered: "Inscrit le",
+    colMembers: "Membres actifs",
+    colCreated: "Créé le",
   },
 };
 
