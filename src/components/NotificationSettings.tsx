@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
+import { ToggleSwitch } from "@/components/ToggleSwitch";
 import { labelClass, errorClass } from "@/components/ui";
 import { useT } from "@/lib/i18n/context";
 import {
@@ -39,14 +40,9 @@ export function NotificationSettings({ pref }: { pref: EffectivePreference }) {
     <form action={action} className="space-y-4">
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{n.intro}</p>
 
-      <label className="flex items-center gap-2 text-sm font-medium">
-        <input
-          type="checkbox"
-          name="emailEnabled"
-          defaultChecked={pref.emailEnabled}
-          className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600"
-        />
-        {n.emailEnabled}
+      <label className="flex items-center justify-between gap-3 text-sm font-medium">
+        <span>{n.emailEnabled}</span>
+        <ToggleSwitch name="emailEnabled" defaultChecked={pref.emailEnabled} label={n.emailEnabled} />
       </label>
 
       <div className="space-y-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">

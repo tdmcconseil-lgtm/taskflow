@@ -6,6 +6,7 @@ import { getRootProject, canManageProject } from "@/lib/access";
 import { UserAvatar } from "@/components/UserAvatar";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { Button } from "@/components/Button";
+import { ToggleSwitch } from "@/components/ToggleSwitch";
 import { getDictionary } from "@/lib/i18n/server";
 import {
   addProjectMembers,
@@ -189,7 +190,7 @@ export default async function ProjectMembersPage({
             <div className="space-y-2">
               {addable.map((m) => (
                 <label key={m.user.id} className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" name="members" value={m.user.id} />
+                  <ToggleSwitch name="members" value={m.user.id} label={m.user.name} />
                   <span>{m.user.name}</span>
                   <span className="text-zinc-400 dark:text-zinc-500">{m.user.email}</span>
                 </label>

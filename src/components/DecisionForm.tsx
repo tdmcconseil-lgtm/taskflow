@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createDecision } from "@/lib/actions/decisions";
 import { SubmitButton } from "@/components/SubmitButton";
+import { ToggleSwitch } from "@/components/ToggleSwitch";
 import { inputClass, labelClass, errorClass } from "@/components/ui";
 
 type DocOption = { id: string; name: string };
@@ -67,11 +68,7 @@ export function DecisionForm({
       )}
 
       <label className="flex items-start gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="isProjectDecision"
-          className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 dark:border-zinc-700"
-        />
+        <ToggleSwitch name="isProjectDecision" label="Décision projet" className="mt-0.5" />
         <span>
           Décision projet
           <span className="block text-xs text-zinc-400 dark:text-zinc-500">
