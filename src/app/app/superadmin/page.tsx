@@ -4,10 +4,17 @@ import { requireSuperAdmin } from "@/lib/auth/superadmin-guard";
 import { prisma } from "@/lib/prisma";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import type { Locale } from "@/lib/i18n/config";
-import { formatMonth } from "@/lib/labels";
+import { formatMonth, formatDate } from "@/lib/labels";
 import { PLANS, type WorkspacePlan } from "@/lib/plans";
 import { IdeaAdminCard } from "@/components/superadmin/IdeaAdminCard";
-import { setIdeaStatus, addIdeaComment, deleteIdeaComment } from "@/lib/actions/superadmin";
+import { RecoveryCard } from "@/components/superadmin/RecoveryCard";
+import {
+  setIdeaStatus,
+  addIdeaComment,
+  deleteIdeaComment,
+  markInvoicePaid,
+  reopenWorkspace,
+} from "@/lib/actions/superadmin";
 
 export const metadata: Metadata = { title: "Administration — getRIDA" };
 
@@ -25,7 +32,8 @@ export default async function SuperadminPage({ searchParams }: PageProps<"/app/s
   const locale = await getLocale();
   const t = await getDictionary(locale);
   const sp = await searchParams;
-  const tab = sp.tab === "stats" ? "stats" : "idees";
+  const tab =
+    sp.tab === "stats" ? "stats" : sp.tab === "recouvrement" ? "recouvrement" : "idees";
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -38,6 +46,9 @@ export default async function SuperadminPage({ searchParams }: PageProps<"/app/s
         <TabLink href="/app/superadmin" active={tab === "idees"}>
           {t.superadmin.tabIdeas}
         </TabLink>
+        <TabLink href="/app/superadmin?tab=recouvrement" active={tab === "recouvrement"}>
+          {t.superadmin.tabRecovery}
+        </TabLink>
         <TabLink href="/app/superadmin?tab=stats" active={tab === "stats"}>
           {t.superadmin.tabStats}
         </TabLink>
@@ -45,6 +56,8 @@ export default async function SuperadminPage({ searchParams }: PageProps<"/app/s
 
       {tab === "idees" ? (
         <IdeasAdmin locale={locale} t={t} />
+      ) : tab === "recouvrement" ? (
+        <RecoveryAdmin locale={locale} t={t} />
       ) : (
         <StatsPanel locale={locale} t={t} />
       )}
@@ -137,6 +150,85 @@ async function IdeasAdmin({ locale, t }: { locale: Locale; t: Dict }) {
               id: c.id,
               body: c.body,
               createdAt: c.createdAt.toISOString(),
+            })),
+          }}
+        />
+      ))}
+    </ul>
+  );
+}
+
+// --- Onglet Recouvrement ---
+// Espaces suspendus OU avec une facture échue impayée (même périmètre que le
+// script scripts/recouvrement.ts). Deux actions par espace : « Marquer payé »
+// (par facture) et, pour un espace suspendu, « Rouvrir sans paiement » (motif
+// obligatoire). Chaque action est journalisée (RecoveryAction).
+async function RecoveryAdmin({ locale, t }: { locale: Locale; t: Dict }) {
+  const now = new Date();
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      OR: [
+        { suspendedAt: { not: null } },
+        { invoices: { some: { status: "PENDING", dueAt: { lt: now } } } },
+      ],
+    },
+    orderBy: [{ suspendedAt: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      suspendedAt: true,
+      invoices: {
+        where: { status: "PENDING" },
+        orderBy: { periodStart: "asc" },
+        select: { id: true, periodStart: true, amountCents: true, dueAt: true },
+      },
+    },
+  });
+
+  if (workspaces.length === 0) {
+    return (
+      <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+        {t.superadmin.recoveryEmpty}
+      </p>
+    );
+  }
+
+  const money = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" });
+
+  const labels = {
+    suspendedSince: t.superadmin.suspendedSince,
+    active: t.superadmin.recoveryActive,
+    invoicesHeading: t.superadmin.unpaidInvoices,
+    noInvoices: t.superadmin.noUnpaidInvoices,
+    overdue: t.superadmin.overdue,
+    due: t.superadmin.dueAt,
+    markPaid: t.superadmin.markPaid,
+    markPaidConfirm: t.superadmin.markPaidConfirm,
+    reopenHeading: t.superadmin.reopenHeading,
+    reasonPlaceholder: t.superadmin.reopenReasonPlaceholder,
+    reopenSubmit: t.superadmin.reopenSubmit,
+    reopenConfirm: t.superadmin.reopenConfirm,
+  };
+
+  return (
+    <ul className="space-y-4">
+      {workspaces.map((w) => (
+        <RecoveryCard
+          key={w.id}
+          markPaid={markInvoicePaid}
+          reopen={reopenWorkspace}
+          labels={labels}
+          workspace={{
+            id: w.id,
+            name: w.name,
+            suspended: w.suspendedAt !== null,
+            suspendedSince: w.suspendedAt ? formatDate(w.suspendedAt, locale) : null,
+            invoices: w.invoices.map((inv) => ({
+              id: inv.id,
+              period: formatMonth(inv.periodStart, locale),
+              amount: money.format(inv.amountCents / 100),
+              due: formatDate(inv.dueAt, locale) ?? "",
+              overdue: inv.dueAt.getTime() < now.getTime(),
             })),
           }}
         />

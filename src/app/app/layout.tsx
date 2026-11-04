@@ -84,6 +84,19 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   // Nombre d'événements nouveaux depuis la dernière consultation.
   const eventsCount = await countNewEventGroups(user.id, user.eventsReadAt ?? null);
 
+  // Espaces à recouvrer (suspendus ou avec une facture échue impayée) : pastille
+  // sur le bouclier superadmin. Requête réservée aux superadmins.
+  const recoveryCount = isSuperAdmin(user)
+    ? await prisma.workspace.count({
+        where: {
+          OR: [
+            { suspendedAt: { not: null } },
+            { invoices: { some: { status: "PENDING", dueAt: { lt: new Date() } } } },
+          ],
+        },
+      })
+    : 0;
+
   // Espace en cours de visite — on ne déplie que ses projets dans le menu.
   const pathname = (await headers()).get("x-pathname") ?? "";
   let activeWorkspaceId: string | null = null;
@@ -124,7 +137,9 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
       <div className="flex items-center gap-1">
         <IdeasNavLink label={t.nav.ideas} />
         {/* Console superadmin : bouclier, visible des seuls superadmins. */}
-        {isSuperAdmin(user) && <SuperadminNavLink label={t.nav.superadmin} />}
+        {isSuperAdmin(user) && (
+          <SuperadminNavLink label={t.nav.superadmin} recoveryCount={recoveryCount} />
+        )}
       </div>
 
       {/* Langue : sélecteur déroulant (ouverture vers le haut) tout en bas du menu. */}

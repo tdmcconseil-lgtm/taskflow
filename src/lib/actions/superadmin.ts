@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { IdeaStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireSuperAdmin } from "@/lib/auth/superadmin-guard";
+import { settleInvoice } from "@/lib/billing/suspension";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 
 export type FormState = { error?: string } | undefined;
@@ -64,4 +65,61 @@ export async function deleteIdeaComment(formData: FormData): Promise<void> {
 
   await prisma.ideaComment.deleteMany({ where: { id: commentId } });
   revalidateIdeas();
+}
+
+// --- Recouvrement (console superadmin) ---
+
+// Motif de réouverture sans paiement (geste commercial) : obligatoire.
+const reasonSchema = z.string().trim().min(3, "reasonRequired").max(500, "reasonTooLong");
+
+// Constate le paiement d'une facture (virement constaté hors-bande) depuis la
+// console. Réutilise settleInvoice (PAID + lève la coupure s'il ne reste aucune
+// facture échue) puis journalise l'action. Sans motif. La liste n'affiche que des
+// factures PENDING, donc on ignore une facture déjà payée.
+export async function markInvoicePaid(formData: FormData): Promise<void> {
+  const user = await requireSuperAdmin();
+  const invoiceId = String(formData.get("invoiceId") ?? "");
+  if (!invoiceId) return;
+
+  const invoice = await prisma.invoice.findUnique({
+    where: { id: invoiceId },
+    select: { id: true, workspaceId: true, status: true },
+  });
+  if (!invoice || invoice.status === "PAID") return;
+
+  await settleInvoice(invoice.id);
+  await prisma.recoveryAction.create({
+    data: { type: "PAY", workspaceId: invoice.workspaceId, invoiceId: invoice.id, actorId: user.id },
+  });
+  revalidatePath("/app/superadmin");
+}
+
+// Rouvre un espace suspendu SANS paiement (geste commercial) : lève la coupure et
+// journalise avec un motif obligatoire. N'agit que si l'espace est bien suspendu.
+export async function reopenWorkspace(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireSuperAdmin();
+  const t = await getDictionary();
+
+  const workspaceId = String(formData.get("workspaceId") ?? "");
+  const parsed = reasonSchema.safeParse(formData.get("reason") ?? "");
+  if (!parsed.success) {
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
+  }
+
+  const ws = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    select: { id: true, suspendedAt: true },
+  });
+  if (!ws) return { error: t.superadmin.workspaceGone };
+  if (!ws.suspendedAt) return { error: t.superadmin.notSuspended };
+
+  await prisma.workspace.update({
+    where: { id: ws.id },
+    data: { suspendedAt: null },
+  });
+  await prisma.recoveryAction.create({
+    data: { type: "REOPEN", workspaceId: ws.id, reason: parsed.data, actorId: user.id },
+  });
+  revalidatePath("/app/superadmin");
+  return undefined;
 }

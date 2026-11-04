@@ -148,6 +148,7 @@ model User {
   authoredIdeas Idea[]       @relation("IdeaAuthor")
   ideaVotes     IdeaVote[]
   ideaComments  IdeaComment[] @relation("IdeaCommentAuthor")
+  recoveryActions RecoveryAction[] @relation("RecoveryActor")
 
   @@index([email])
 }
@@ -199,6 +200,7 @@ model Workspace {
   tasks       Task[]
   invitations Invitation[]
   documents   Document[]
+  recoveryActions RecoveryAction[]
   // Informations d'entreprise (volet Identité de l'administration), 1-1.
   organizationProfile OrganizationProfile?
 }
@@ -345,6 +347,39 @@ model Invoice {
 
   @@unique([workspaceId, periodStart]) // une seule facture par espace et par mois
   @@index([workspaceId])
+
+  recoveryActions RecoveryAction[]
+}
+
+// Type d'action de recouvrement (journal d'audit superadmin).
+enum RecoveryActionType {
+  PAY // paiement d'une facture constaté (lève la coupure si plus aucune échue)
+  REOPEN // réouverture sans paiement (geste commercial) — motif obligatoire
+}
+
+// --- Journal d'audit du recouvrement (append-only) ---
+// Trace chaque action du superadmin depuis la console « Recouvrement » :
+// constatation d'un paiement (PAY, rattaché à une facture) ou réouverture d'un
+// espace sans paiement (REOPEN, motif obligatoire au niveau applicatif). Jamais
+// mis à jour ni supprimé (hors cascade). Le script scripts/recouvrement.ts, outil
+// d'exploitation hors application, n'écrit pas ici.
+model RecoveryAction {
+  id        String             @id @default(cuid())
+  type      RecoveryActionType
+  reason    String? // motif libre (requis pour REOPEN, côté applicatif)
+  createdAt DateTime           @default(now())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  // Facture concernée pour un paiement (null pour une réouverture sans paiement).
+  invoiceId   String?
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  // Superadmin auteur de l'action.
+  actorId String
+  actor   User   @relation("RecoveryActor", fields: [actorId], references: [id])
+
+  @@index([workspaceId])
+  @@index([createdAt])
 }
 
 // --- Tâche ---
