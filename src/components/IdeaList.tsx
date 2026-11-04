@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
-type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE";
+type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE" | "ECARTEE";
 
 type Response = { id: string; body: string; date: string | null };
 
@@ -38,6 +38,7 @@ const STATUS_BADGE: Record<IdeaStatusKey, string> = {
   EN_ATTENTE: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
   A_LETUDE: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   IMPLEMENTEE: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
+  ECARTEE: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
 };
 
 // Bouton pouce : met en avant l'état « voté » (indigo plein) et se désactive le

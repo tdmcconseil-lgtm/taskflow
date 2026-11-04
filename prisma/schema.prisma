@@ -618,6 +618,7 @@ enum IdeaStatus {
   EN_ATTENTE // reçue, pas encore arbitrée (défaut)
   A_LETUDE // retenue, en cours d'évaluation
   IMPLEMENTEE // réalisée
+  ECARTEE // non retenue, écartée
 }
 
 // --- Idée d'amélioration (module transverse à l'application) ---

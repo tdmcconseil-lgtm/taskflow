@@ -10,7 +10,7 @@ import { getDictionary, zodError } from "@/lib/i18n/server";
 export type FormState = { error?: string } | undefined;
 
 // Statuts d'idée autorisés (doit refléter l'enum Prisma IdeaStatus).
-const STATUSES: IdeaStatus[] = ["EN_ATTENTE", "A_LETUDE", "IMPLEMENTEE"];
+const STATUSES: IdeaStatus[] = ["EN_ATTENTE", "A_LETUDE", "IMPLEMENTEE", "ECARTEE"];
 
 const commentSchema = z.string().trim().min(1, "commentRequired").max(2000, "commentTooLong");
 

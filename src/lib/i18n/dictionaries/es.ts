@@ -885,6 +885,7 @@ const es: Dictionary = {
       EN_ATTENTE: "Pendiente",
       A_LETUDE: "En estudio",
       IMPLEMENTEE: "Implementada",
+      ECARTEE: "Descartada",
     },
     teamResponse: "Respuesta del equipo",
   },

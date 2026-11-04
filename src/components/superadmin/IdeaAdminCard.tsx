@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import type { FormState } from "@/lib/actions/superadmin";
 
-type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE";
+type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE" | "ECARTEE";
 
 type Response = { id: string; body: string; createdAt: string };
 
@@ -31,13 +31,14 @@ type Labels = {
   deleteResponseConfirm: string;
 };
 
-const STATUSES: IdeaStatusKey[] = ["EN_ATTENTE", "A_LETUDE", "IMPLEMENTEE"];
+const STATUSES: IdeaStatusKey[] = ["EN_ATTENTE", "A_LETUDE", "IMPLEMENTEE", "ECARTEE"];
 
 // Couleur de la pastille de statut (reprend la famille « état » des tâches).
 const STATUS_ACTIVE: Record<IdeaStatusKey, string> = {
   EN_ATTENTE: "border-zinc-400 bg-zinc-600 text-white",
   A_LETUDE: "border-blue-600 bg-blue-600 text-white",
   IMPLEMENTEE: "border-green-600 bg-green-600 text-white",
+  ECARTEE: "border-rose-600 bg-rose-600 text-white",
 };
 
 function SubmitButton({ label }: { label: string }) {

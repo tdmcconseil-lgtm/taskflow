@@ -885,6 +885,7 @@ const en: Dictionary = {
       EN_ATTENTE: "Pending",
       A_LETUDE: "Under review",
       IMPLEMENTEE: "Implemented",
+      ECARTEE: "Dismissed",
     },
     teamResponse: "Team response",
   },

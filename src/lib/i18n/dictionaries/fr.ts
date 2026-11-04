@@ -887,6 +887,7 @@ const fr = {
       EN_ATTENTE: "En attente",
       A_LETUDE: "À l'étude",
       IMPLEMENTEE: "Implémentée",
+      ECARTEE: "Écartée",
     },
     teamResponse: "Réponse de l'équipe",
   },
