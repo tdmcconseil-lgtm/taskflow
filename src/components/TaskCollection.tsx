@@ -11,47 +11,6 @@ import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
 import { useT, useLocale } from "@/lib/i18n/context";
 
-// Vue « Arborescence » : rend récursivement chaque tâche puis ses sous-tâches,
-// indentées par niveau, pour visualiser toute la hiérarchie d'un coup d'œil.
-function TreeRows({ nodes, depth }: { nodes: TaskNode[]; depth: number }) {
-  const t = useT();
-  return (
-    <>
-      {nodes.map((node) => (
-        <div key={node.id}>
-          <div
-            className="flex items-center gap-2 border-b border-zinc-100 px-4 py-2 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/50"
-            style={{ paddingLeft: `${1 + depth * 1.5}rem` }}
-          >
-            <TypeIcon
-              isProject={node.parentId === null}
-              label={node.parentId === null ? t.task.prefixProject : t.task.prefixTask}
-              className="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500"
-            />
-            <Link
-              href={`/app/tasks/${node.id}`}
-              className="min-w-0 flex-1 truncate font-medium hover:underline"
-            >
-              <span className={node.status === "DONE" ? "text-zinc-400 line-through dark:text-zinc-500" : ""}>
-                {node.title}
-              </span>
-            </Link>
-            {node.children.length > 0 && (
-              <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-                {node.children.length}
-              </span>
-            )}
-            <span className="shrink-0 text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-              {t.status[node.status]}
-            </span>
-          </div>
-          {node.children.length > 0 && <TreeRows nodes={node.children} depth={depth + 1} />}
-        </div>
-      ))}
-    </>
-  );
-}
-
 // Présentation d'une collection de tâches (les « projets » d'un espace, ou les
 // sous-tâches d'une tâche) avec bascule Tableau / Liste / Arborescence — comme
 // l'ancienne page projet. `roots` sont les tâches de 1er niveau de cette collection.
@@ -98,6 +57,19 @@ export function TaskCollection({
         : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
     }`;
 
+  // Pastille de compte pour la vue Arborescence : mise en avant si > 0, grisée à 0.
+  const countBadge = (n: number) => (
+    <span
+      className={`inline-flex min-w-[1.75rem] justify-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+        n > 0
+          ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
+          : "text-zinc-400 dark:text-zinc-500"
+      }`}
+    >
+      {n}
+    </span>
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -129,7 +101,49 @@ export function TaskCollection({
         </p>
       ) : view === "arborescence" ? (
         <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <TreeRows nodes={roots} depth={0} />
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-zinc-200 text-left text-xs font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <th className="px-4 py-2">{t.task.treeTaskCol}</th>
+                <th className="px-4 py-2 text-center">{t.task.treeOpenSubtasks}</th>
+                <th className="px-4 py-2 text-center">{t.task.treeOpenSubSubtasks}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              {roots.map((node) => {
+                // Sous-tâches (niveau direct) et sous-sous-tâches (niveau suivant)
+                // non terminées, par rapport à la tâche affichée sur la ligne.
+                const openSub = node.children.filter((c) => c.status !== "DONE").length;
+                const openSubSub = node.children.reduce(
+                  (sum, c) => sum + c.children.filter((g) => g.status !== "DONE").length,
+                  0,
+                );
+                return (
+                  <tr key={node.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                    <td className="px-4 py-2">
+                      <Link
+                        href={`/app/tasks/${node.id}`}
+                        className="inline-flex items-center gap-2 font-medium hover:underline"
+                      >
+                        <TypeIcon
+                          isProject={node.parentId === null}
+                          label={node.parentId === null ? t.task.prefixProject : t.task.prefixTask}
+                          className="h-4 w-4 shrink-0"
+                        />
+                        <span
+                          className={node.status === "DONE" ? "text-zinc-400 line-through dark:text-zinc-500" : ""}
+                        >
+                          {node.title}
+                        </span>
+                      </Link>
+                    </td>
+                    <td className="px-4 py-2 text-center">{countBadge(openSub)}</td>
+                    <td className="px-4 py-2 text-center">{countBadge(openSubSub)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       ) : view === "tableau" ? (
         <KanbanBoard tasks={boardTasks} />
