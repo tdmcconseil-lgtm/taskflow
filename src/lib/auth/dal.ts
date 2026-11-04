@@ -29,7 +29,11 @@ export const getCurrentUser = cache(async () => {
 // À utiliser au début de toute page/action protégée.
 export async function requireUser() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  // On passe par /logout (et non /login) pour EFFACER un cookie signé encore
+  // valide mais dont le compte n'existe plus : sinon le proxy optimiste
+  // (signature seule) renverrait /login → /app en boucle. /logout nettoie le
+  // cookie puis renvoie vers /login, où le proxy ne reboucle plus.
+  if (!user) redirect("/logout");
   return user;
 }
 
