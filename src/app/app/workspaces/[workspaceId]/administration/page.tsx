@@ -7,6 +7,7 @@ import { Button, ButtonLink } from "@/components/Button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MemberControls } from "@/components/MemberControls";
 import { MembersEditSwitch } from "@/components/MembersEditSwitch";
+import { PendingInvitations } from "@/components/PendingInvitations";
 import { AdminTabs } from "@/components/AdminTabs";
 import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
 import { UsagePanel } from "@/components/UsagePanel";
@@ -23,7 +24,7 @@ import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
 import { unitPriceCents } from "@/lib/billing/budget";
 import { isStripeConfigured } from "@/lib/billing/stripe";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
-import { formatDate } from "@/lib/labels";
+import { formatDate, isPast } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
 // Page d'administration d'un espace : accessible aux administrateurs, signalée
@@ -199,8 +200,14 @@ export default async function WorkspaceAdminPage({
     </ul>
   );
 
-  // Vue lecture seule : uniquement la liste des membres, sans contrôle.
-  const membresReadOnly = renderMembersList(false);
+  // Vue lecture seule : la liste des membres + les invitations en attente, elles
+  // aussi en lecture seule (aucune action ; la gestion se fait en mode édition).
+  const membresReadOnly = (
+    <div key="members-readonly" className="space-y-6">
+      {renderMembersList(false)}
+      <PendingInvitations invitations={workspace.invitations} locale={locale} />
+    </div>
+  );
 
   // Note sur les administrateurs : affichée en lecture seule (partie affichage).
   // NB : ces éléments (note, liste, bouton, vue édition) sont créés ici, dans le
@@ -253,7 +260,7 @@ export default async function WorkspaceAdminPage({
           </h3>
           <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:divide-zinc-800 dark:border-zinc-700">
             {workspace.invitations.map((inv) => {
-              const expired = inv.expiresAt.getTime() < Date.now();
+              const expired = isPast(inv.expiresAt);
               return (
                 <li
                   key={inv.id}

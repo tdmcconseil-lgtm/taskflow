@@ -15,6 +15,7 @@ import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EventList } from "@/components/EventList";
 import { EventFilter } from "@/components/EventFilter";
 import { DiscussionList } from "@/components/DiscussionList";
+import { PendingInvitations } from "@/components/PendingInvitations";
 
 export default async function WorkspacePage({
   params,
@@ -173,6 +174,7 @@ export default async function WorkspacePage({
           );
         })}
       </ul>
+      <PendingInvitations invitations={workspace.invitations} locale={locale} />
     </div>
   );
 

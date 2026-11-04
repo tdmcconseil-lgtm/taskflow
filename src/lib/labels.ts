@@ -85,3 +85,9 @@ export function isOverdue(date: Date | null | undefined): boolean {
   today.setHours(0, 0, 0, 0);
   return date.getTime() < today.getTime();
 }
+
+// Vrai si l'instant est déjà passé (comparaison exacte, à la milliseconde) —
+// p. ex. pour une invitation expirée. Encapsule l'appel impur à Date.now().
+export function isPast(date: Date): boolean {
+  return date.getTime() < Date.now();
+}
