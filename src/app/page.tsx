@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/auth/dal";
 import { getDictionary } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { PricingTable } from "@/components/PricingTable";
@@ -10,8 +10,12 @@ import { buttonClass } from "@/components/Button";
 // Structure : en-tête collant, hero, bandeau confiance, avantages, offres,
 // FAQ, appel final, pied de page.
 export default async function Home() {
-  const session = await getSession();
-  const isAuthed = session !== null;
+  // On décide « connecté » sur l'EXISTENCE réelle du compte (requête DB), pas sur
+  // la simple présence du cookie : un cookie resté valide mais dont le compte
+  // n'existe plus (ex. après purge de la base) afficherait sinon la vue connectée
+  // et masquerait « Se connecter / S'inscrire ».
+  const user = await getCurrentUser();
+  const isAuthed = user !== null;
   const t = await getDictionary();
   // Hash du commit déployé (injecté dans l'image au build). Affiché discrètement
   // dans le pied de page ; absent en local, donc rien ne s'affiche en dev.
