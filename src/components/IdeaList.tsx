@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
+type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE";
+
+type Response = { id: string; body: string; date: string | null };
+
 type Idea = {
   id: string;
   title: string;
@@ -11,6 +15,8 @@ type Idea = {
   votes: number;
   voted: boolean;
   mine: boolean;
+  status: IdeaStatusKey;
+  responses: Response[];
 };
 
 type Labels = {
@@ -23,6 +29,15 @@ type Labels = {
   hideDescription: string;
   delete: string;
   deleteConfirm: string;
+  status: Record<IdeaStatusKey, string>;
+  teamResponse: string;
+};
+
+// Pastille de statut (famille « état », ton plus doux que les boutons admin).
+const STATUS_BADGE: Record<IdeaStatusKey, string> = {
+  EN_ATTENTE: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
+  A_LETUDE: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+  IMPLEMENTEE: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
 };
 
 // Bouton pouce : met en avant l'état « voté » (indigo plein) et se désactive le
@@ -83,9 +98,16 @@ export function IdeaList({
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                  {labels.by.replace("{pseudo}", idea.pseudo)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                    {labels.by.replace("{pseudo}", idea.pseudo)}
+                  </p>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[idea.status]}`}
+                  >
+                    {labels.status[idea.status]}
+                  </span>
+                </div>
                 <h2 className="mt-0.5 font-medium">{idea.title}</h2>
                 {idea.body && (
                   <button
@@ -102,6 +124,26 @@ export function IdeaList({
                   <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
                     {idea.body}
                   </p>
+                )}
+
+                {idea.responses.length > 0 && (
+                  <div className="mt-3 space-y-2 border-l-2 border-indigo-200 pl-3 dark:border-indigo-900">
+                    {idea.responses.map((r) => (
+                      <div key={r.id}>
+                        <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                          {labels.teamResponse}
+                          {r.date && (
+                            <span className="ml-2 font-normal text-zinc-400 dark:text-zinc-500">
+                              {r.date}
+                            </span>
+                          )}
+                        </p>
+                        <p className="whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
+                          {r.body}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 

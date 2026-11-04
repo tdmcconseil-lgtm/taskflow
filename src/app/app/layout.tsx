@@ -8,6 +8,8 @@ import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
 import { NavLinks } from "@/components/NavLinks";
 import { IdeasNavLink } from "@/components/IdeasNavLink";
+import { SuperadminNavLink } from "@/components/SuperadminNavLink";
+import { isSuperAdmin } from "@/lib/auth/superadmin";
 import { MobileDrawer } from "@/components/MobileDrawer";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { MenuLocaleSwitcher } from "@/components/MenuLocaleSwitcher";
@@ -119,7 +121,11 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
       </nav>
 
       {/* Module Idées : simple ampoule, juste au-dessus du sélecteur de langue. */}
-      <IdeasNavLink label={t.nav.ideas} />
+      <div className="flex items-center gap-1">
+        <IdeasNavLink label={t.nav.ideas} />
+        {/* Console superadmin : bouclier, visible des seuls superadmins. */}
+        {isSuperAdmin(user) && <SuperadminNavLink label={t.nav.superadmin} />}
+      </div>
 
       {/* Langue : sélecteur déroulant (ouverture vers le haut) tout en bas du menu. */}
       <MenuLocaleSwitcher locale={locale} label={t.common.language} />

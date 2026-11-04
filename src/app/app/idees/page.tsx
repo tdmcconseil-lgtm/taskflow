@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
-import { getDictionary } from "@/lib/i18n/server";
+import { getLocale, getDictionary } from "@/lib/i18n/server";
+import { formatDate } from "@/lib/labels";
 import { ButtonLink } from "@/components/Button";
 import { IdeaList } from "@/components/IdeaList";
 import { IdeaControls, type IdeaSort, type IdeaFilter } from "@/components/IdeaControls";
@@ -15,7 +16,8 @@ export const metadata: Metadata = { title: "Idées — getRIDA" };
 // compteurs ; `mine` (calculé côté serveur) sert à la suppression et au filtre.
 export default async function IdeasPage({ searchParams }: PageProps<"/app/idees">) {
   const user = await requireUser();
-  const t = await getDictionary();
+  const locale = await getLocale();
+  const t = await getDictionary(locale);
   const sp = await searchParams;
 
   const sort: IdeaSort =
@@ -46,10 +48,16 @@ export default async function IdeasPage({ searchParams }: PageProps<"/app/idees"
       title: true,
       body: true,
       pseudo: true,
+      status: true,
       authorId: true,
       _count: { select: { votes: true } },
       // Pouce de l'utilisateur courant uniquement (pour l'état « voté »).
       votes: { where: { userId: user.id }, select: { id: true } },
+      // Réponses officielles de l'équipe (publiques), les plus anciennes d'abord.
+      comments: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, body: true, createdAt: true },
+      },
     },
   });
 
@@ -58,9 +66,15 @@ export default async function IdeasPage({ searchParams }: PageProps<"/app/idees"
     title: i.title,
     body: i.body,
     pseudo: i.pseudo,
+    status: i.status,
     votes: i._count.votes,
     voted: i.votes.length > 0,
     mine: i.authorId === user.id,
+    responses: i.comments.map((c) => ({
+      id: c.id,
+      body: c.body,
+      date: formatDate(c.createdAt, locale),
+    })),
   }));
 
   return (
@@ -97,6 +111,8 @@ export default async function IdeasPage({ searchParams }: PageProps<"/app/idees"
           hideDescription: t.ideas.hideDescription,
           delete: t.ideas.delete,
           deleteConfirm: t.ideas.deleteConfirm,
+          status: t.ideas.status,
+          teamResponse: t.ideas.teamResponse,
         }}
       />
     </div>

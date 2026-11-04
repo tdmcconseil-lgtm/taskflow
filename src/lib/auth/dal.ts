@@ -15,6 +15,7 @@ export const getCurrentUser = cache(async () => {
       id: true,
       name: true,
       email: true,
+      isSuperAdmin: true,
       photoMime: true,
       photoX: true,
       photoY: true,

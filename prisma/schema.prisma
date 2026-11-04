@@ -147,6 +147,7 @@ model User {
   projectAccess ProjectAccess[] @relation("ProjectAccessUser")
   authoredIdeas Idea[]       @relation("IdeaAuthor")
   ideaVotes     IdeaVote[]
+  ideaComments  IdeaComment[] @relation("IdeaCommentAuthor")
 
   @@index([email])
 }
@@ -611,6 +612,14 @@ model EmailChangeRequest {
   @@index([userId])
 }
 
+// Statut de traitement d'une idée, piloté par le superadmin et affiché
+// publiquement à tous les utilisateurs sur la page Idées.
+enum IdeaStatus {
+  EN_ATTENTE // reçue, pas encore arbitrée (défaut)
+  A_LETUDE // retenue, en cours d'évaluation
+  IMPLEMENTEE // réalisée
+}
+
 // --- Idée d'amélioration (module transverse à l'application) ---
 // Chaque utilisateur propose une idée et vote (pouce) pour celles des autres.
 // L'interface n'affiche jamais que le pseudo ; le lien vers le compte (authorId)
@@ -622,14 +631,35 @@ model Idea {
   // Pseudo affiché de l'auteur, figé au moment du post (stable même si l'auteur
   // change de pseudo ensuite).
   pseudo    String
+  // Statut de traitement, piloté par le superadmin (visible de tous).
+  status    IdeaStatus @default(EN_ATTENTE)
   // Lien interne vers l'auteur, jamais affiché dans l'interface.
   authorId  String
   author    User       @relation("IdeaAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime   @default(now())
 
   votes     IdeaVote[]
+  // Réponses officielles de l'équipe (superadmin), affichées publiquement.
+  comments  IdeaComment[]
 
   @@index([authorId])
+}
+
+// --- Réponse officielle de l'équipe sur une idée ---
+// Rédigée par un superadmin et affichée publiquement sous l'idée. L'auteur
+// (authorId) sert la traçabilité interne ; l'interface n'expose que « l'équipe ».
+model IdeaComment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  // Superadmin auteur de la réponse (jamais affiché nominativement).
+  authorId  String
+  author    User     @relation("IdeaCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
 }
 
 // --- Pouce (vote) sur une idée ---
