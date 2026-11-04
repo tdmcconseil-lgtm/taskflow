@@ -8,6 +8,11 @@ const es: Dictionary = {
     yes: "Sí",
     no: "No",
   },
+  update: {
+    available: "Hay una nueva versión disponible.",
+    reload: "Recargar",
+    later: "Más tarde",
+  },
   auth: {
     loginSubtitle: "Inicia sesión",
     signupSubtitle: "Crea tu cuenta",

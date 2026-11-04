@@ -7,6 +7,11 @@ const fr = {
     yes: "Oui",
     no: "Non",
   },
+  update: {
+    available: "Une nouvelle version est disponible.",
+    reload: "Recharger",
+    later: "Plus tard",
+  },
   auth: {
     loginSubtitle: "Connectez-vous",
     signupSubtitle: "Créez votre compte",

@@ -8,6 +8,11 @@ const en: Dictionary = {
     yes: "Yes",
     no: "No",
   },
+  update: {
+    available: "A new version is available.",
+    reload: "Reload",
+    later: "Later",
+  },
   auth: {
     loginSubtitle: "Sign in",
     signupSubtitle: "Create your account",

@@ -4,6 +4,7 @@ import "./globals.css";
 import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/context";
 import { InlineScript } from "@/components/InlineScript";
+import { UpdateBanner } from "@/components/UpdateBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,9 @@ const THEME_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )tf_th
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getDictionary(locale);
+  // Hash du commit servant cet onglet ; le bandeau le compare à /version pour
+  // détecter un déploiement plus récent. « dev » en local ⇒ bandeau inactif.
+  const buildSha = process.env.BUILD_SHA ?? "dev";
 
   return (
     <html
@@ -39,6 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <InlineScript html={THEME_SCRIPT} />
         <I18nProvider locale={locale} messages={messages}>
           {children}
+          <UpdateBanner currentSha={buildSha} />
         </I18nProvider>
       </body>
     </html>
