@@ -12,7 +12,11 @@ export function GET(request: NextRequest) {
   const next = request.nextUrl.searchParams.get("next");
   // On n'accepte qu'un chemin interne absolu (pas d'URL externe « //evil.com »).
   const target = next && next.startsWith("/") && !next.startsWith("//") ? next : "/login";
-  const res = NextResponse.redirect(new URL(target, request.url));
+  // Redirection RELATIVE (et non new URL(target, request.url)) : derrière Caddy,
+  // request.url pointe sur l'origine INTERNE (localhost:3001) et enverrait le
+  // navigateur sur localhost. Une Location relative est résolue par le navigateur
+  // contre l'URL publique qu'il a demandée (getrida.com). On efface le cookie au passage.
+  const res = new NextResponse(null, { status: 307, headers: { Location: target } });
   res.cookies.delete(COOKIE_NAME);
   return res;
 }
