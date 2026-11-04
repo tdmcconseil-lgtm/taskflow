@@ -2,6 +2,8 @@
 // Permet de vérifier l'alignement sans navigateur, ex. :
 //   curl https://getrida.com/version
 // BUILD_SHA est injecté dans l'image au déploiement (voir Dockerfile + deploy.sh).
+// Également interrogé côté client par <UpdateBanner> pour détecter une nouvelle
+// version déployée et proposer un rechargement.
 export const dynamic = "force-dynamic";
 
 export function GET() {
