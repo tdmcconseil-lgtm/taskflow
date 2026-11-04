@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 // courante. Le choix est ainsi conservé en changeant de page.
 export async function setTaskView(formData: FormData): Promise<void> {
   const raw = formData.get("view");
-  const view = raw === "liste" ? "liste" : raw === "analyse" ? "analyse" : "tableau";
+  const view = raw === "liste" ? "liste" : raw === "arborescence" ? "arborescence" : "tableau";
   const back = String(formData.get("back") ?? "/app");
 
   const store = await cookies();
