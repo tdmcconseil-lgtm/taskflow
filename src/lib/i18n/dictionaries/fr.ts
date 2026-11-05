@@ -86,7 +86,7 @@ const fr = {
     noDescription: "Aucune description.",
     prefixProject: "Projet",
     prefixTask: "Tâche",
-    viewBoard: "Tableau",
+    viewBoard: "Kanban",
     viewList: "Liste",
     viewTree: "Arborescence",
     treeTaskCol: "Tâche",

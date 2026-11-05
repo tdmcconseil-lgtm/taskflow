@@ -87,7 +87,7 @@ const en: Dictionary = {
     noDescription: "No description.",
     prefixProject: "Project",
     prefixTask: "Task",
-    viewBoard: "Board",
+    viewBoard: "Kanban",
     viewList: "List",
     viewTree: "Tree",
     treeTaskCol: "Task",
