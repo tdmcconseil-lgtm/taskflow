@@ -428,7 +428,14 @@ export default async function TaskDetailPage({
         taskId={task.id}
         initialTab={initialTab}
         chatUnread={chatUnread}
-        followerCount={followerCount}
+        counts={{
+          sous: children.length,
+          chat: task.comments.length,
+          decisions: decisionItems.length,
+          docs: linkedDocs.length + poolDocs.length,
+          followers: followerCount,
+          activite: activities.length,
+        }}
         activity={<ActivityFeed activities={activities} />}
         subtasks={
           <TaskCollection

@@ -38,7 +38,7 @@ export function TaskTabs({
   taskId,
   initialTab = "sous",
   chatUnread,
-  followerCount,
+  counts,
   subtasks,
   documents,
   decisions,
@@ -49,7 +49,8 @@ export function TaskTabs({
   taskId: string;
   initialTab?: TabKey;
   chatUnread: number;
-  followerCount: number;
+  // Nombre d'éléments par onglet : alimente une pastille discrète dès qu'il y en a.
+  counts: Record<TabKey, number>;
   subtasks: ReactNode;
   documents: ReactNode;
   decisions: ReactNode;
@@ -89,30 +90,40 @@ export function TaskTabs({
         role="tablist"
         className="flex flex-wrap gap-x-6 gap-y-0.5 border-b border-zinc-200 dark:border-zinc-800"
       >
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={active === t.key}
-            onClick={() => open(t.key)}
-            className={`-mb-px flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-1 py-2.5 text-sm font-medium transition ${
-              active === t.key
-                ? "border-indigo-600 text-zinc-900 dark:text-white"
-                : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-            }`}
-          >
-            {t.key === "followers" && <span aria-hidden>👁</span>}
-            {t.key === "followers"
-              ? `${dict.taskTabs.subscribers} (${followerCount})`
-              : dict.taskTabs[t.labelKey]}
-            {t.key === "chat" && unread > 0 && (
-              <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
-                {unread}
-              </span>
-            )}
-          </button>
-        ))}
+        {TABS.map((t) => {
+          // Chat : la pastille des non-lus (indigo, plus visible) prime ; sinon
+          // on retombe sur la pastille discrète du nombre total d'éléments.
+          const showUnread = t.key === "chat" && unread > 0;
+          const count = counts[t.key];
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active === t.key}
+              onClick={() => open(t.key)}
+              className={`-mb-px flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-1 py-2.5 text-sm font-medium transition ${
+                active === t.key
+                  ? "border-indigo-600 text-zinc-900 dark:text-white"
+                  : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+              }`}
+            >
+              {t.key === "followers" && <span aria-hidden>👁</span>}
+              {dict.taskTabs[t.labelKey]}
+              {showUnread ? (
+                <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-semibold text-white">
+                  {unread}
+                </span>
+              ) : (
+                count > 0 && (
+                  <span className="inline-flex min-w-[1.25rem] justify-center rounded-full bg-zinc-100 px-1.5 py-0.5 text-xs font-medium tabular-nums text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                    {count}
+                  </span>
+                )
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div className="pt-6">
