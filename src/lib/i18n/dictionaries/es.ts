@@ -653,6 +653,9 @@ const es: Dictionary = {
     inviteSubject: "{inviter} te invita a unirte a «{workspace}» en getRIDA",
     inviteBody:
       "Hola,\n\n{inviter} te invita a colaborar en el espacio de trabajo «{workspace}» en getRIDA. Para crear tu cuenta y unirte, haz clic en el enlace de abajo:\n\n{url}\n\nEste enlace caduca el {expires}.\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de getRIDA",
+    inviteAcceptedSubject: "{member} se ha unido a «{workspace}» en getRIDA",
+    inviteAcceptedBody:
+      "Hola {inviter},\n\n{member} ({email}) ha aceptado tu invitación y se ha unido al espacio de trabajo «{workspace}» en getRIDA.\n\nPuedes encontrarlo entre los miembros del espacio:\n\n{url}\n\n— El equipo de getRIDA",
     addedSubject: "{inviter} te ha añadido a «{workspace}» en getRIDA",
     addedBody:
       "Hola,\n\n{inviter} te ha añadido al espacio de trabajo «{workspace}» en getRIDA. Ya tienes acceso:\n\n{url}\n\nSi no te concierne, simplemente ignora este correo.\n\n— El equipo de getRIDA",

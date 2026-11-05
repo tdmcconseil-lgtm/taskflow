@@ -653,6 +653,9 @@ const fr = {
     inviteSubject: "{inviter} vous invite à rejoindre « {workspace} » sur getRIDA",
     inviteBody:
       "Bonjour,\n\n{inviter} vous invite à collaborer dans l'espace de travail « {workspace} » sur getRIDA. Pour créer votre compte et le rejoindre, cliquez sur le lien ci-dessous :\n\n{url}\n\nCe lien expire le {expires}.\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe getRIDA",
+    inviteAcceptedSubject: "{member} a rejoint « {workspace} » sur getRIDA",
+    inviteAcceptedBody:
+      "Bonjour {inviter},\n\n{member} ({email}) a accepté votre invitation et a bien rejoint l'espace de travail « {workspace} » sur getRIDA.\n\nVous pouvez le retrouver parmi les membres de l'espace :\n\n{url}\n\n— L'équipe getRIDA",
     addedSubject: "{inviter} vous a ajouté à « {workspace} » sur getRIDA",
     addedBody:
       "Bonjour,\n\n{inviter} vous a ajouté à l'espace de travail « {workspace} » sur getRIDA. Vous y avez accès dès maintenant :\n\n{url}\n\nSi vous n'êtes pas concerné, ignorez simplement cet email.\n\n— L'équipe getRIDA",

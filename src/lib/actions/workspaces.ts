@@ -9,8 +9,9 @@ import { ensureOwner, ensureAdmin } from "@/lib/auth/guards";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession, getSession, destroySession } from "@/lib/auth/session";
 import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
-import { sendMail, invitationEmail, workspaceAddedEmail } from "@/lib/mail";
+import { sendMail, invitationEmail, workspaceAddedEmail, invitationAcceptedEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
+import { locales, defaultLocale, type Locale } from "@/lib/i18n/config";
 import { composeName } from "@/lib/name";
 import { seatCheck } from "@/lib/billing/budget";
 import { logMembershipEvent } from "@/lib/billing/membership-events";
@@ -376,6 +377,40 @@ export async function cancelInvitation(formData: FormData): Promise<void> {
   revalidatePath(`/app/workspaces/${invitation.workspaceId}`);
 }
 
+// Prévient l'inviteur (dans SA langue) qu'une personne qu'il a invitée a bien
+// rejoint l'espace. Appelée après chaque acceptation réussie. Silencieuse si
+// l'inviteur n'existe plus ou s'il s'est invité lui-même.
+async function notifyInviterAccepted(
+  invitedById: string,
+  workspaceId: string,
+  workspaceName: string,
+  memberName: string,
+  memberEmail: string,
+): Promise<void> {
+  const inviter = await prisma.user.findUnique({
+    where: { id: invitedById },
+    select: { name: true, email: true, locale: true },
+  });
+  if (!inviter || inviter.email === memberEmail) return;
+
+  const locale: Locale = (locales as readonly string[]).includes(inviter.locale ?? "")
+    ? (inviter.locale as Locale)
+    : defaultLocale;
+  const t = await getDictionary(locale);
+  const appUrl = process.env.APP_URL ?? "http://localhost:3001";
+  const mail = invitationAcceptedEmail(
+    {
+      inviterName: inviter.name,
+      memberName,
+      memberEmail,
+      workspaceName,
+      url: `${appUrl}/app/workspaces/${workspaceId}`,
+    },
+    t,
+  );
+  await sendMail({ to: inviter.email, subject: mail.subject, body: mail.body });
+}
+
 const acceptSchema = z
   .object({
     token: z.string().min(1),
@@ -411,7 +446,7 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
   // l'acceptation (les sièges ont pu se remplir depuis l'envoi de l'invitation).
   const invWorkspace = await prisma.workspace.findUnique({
     where: { id: invitation.workspaceId },
-    select: { plan: true, budgetCapCents: true },
+    select: { name: true, plan: true, budgetCapCents: true },
   });
   if (!invWorkspace) return { error: t.errors.invitationInvalid };
 
@@ -453,6 +488,17 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
         data: { acceptedAt: new Date() },
       }),
     ]);
+    // Rattachement effectif (la personne n'était pas déjà membre) → on prévient
+    // l'inviteur. Si elle était déjà dans l'espace, rien de neuf : pas de mail.
+    if (!already) {
+      await notifyInviterAccepted(
+        invitation.invitedById,
+        invitation.workspaceId,
+        invWorkspace.name,
+        existingUser.name,
+        existingUser.email,
+      );
+    }
     // Déjà connecté avec le bon compte → accès direct. Sinon (aucune session, ou
     // une AUTRE session ouverte sur ce poste), on la nettoie et on renvoie se
     // connecter : l'invitation reste liée à l'identité de l'email invité.
@@ -502,6 +548,15 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
     where: { id: invitation.id },
     data: { acceptedAt: new Date() },
   });
+
+  // Nouveau compte rattaché → on prévient l'inviteur dans sa langue.
+  await notifyInviterAccepted(
+    invitation.invitedById,
+    invitation.workspaceId,
+    invWorkspace.name,
+    newUser.name,
+    newUser.email,
+  );
 
   await createSession({ userId: newUser.id });
   redirect("/app");

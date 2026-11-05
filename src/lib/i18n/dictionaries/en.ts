@@ -653,6 +653,9 @@ const en: Dictionary = {
     inviteSubject: "{inviter} invites you to join “{workspace}” on getRIDA",
     inviteBody:
       "Hello,\n\n{inviter} invites you to collaborate in the workspace “{workspace}” on getRIDA. To create your account and join, click the link below:\n\n{url}\n\nThis link expires on {expires}.\n\nIf this does not concern you, simply ignore this email.\n\n— The getRIDA team",
+    inviteAcceptedSubject: "{member} joined “{workspace}” on getRIDA",
+    inviteAcceptedBody:
+      "Hello {inviter},\n\n{member} ({email}) accepted your invitation and has joined the workspace “{workspace}” on getRIDA.\n\nYou can find them among the workspace members:\n\n{url}\n\n— The getRIDA team",
     addedSubject: "{inviter} added you to “{workspace}” on getRIDA",
     addedBody:
       "Hello,\n\n{inviter} added you to the workspace “{workspace}” on getRIDA. You already have access:\n\n{url}\n\nIf this does not concern you, simply ignore this email.\n\n— The getRIDA team",

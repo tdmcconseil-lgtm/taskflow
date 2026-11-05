@@ -159,6 +159,32 @@ export function workspaceAddedEmail(
   };
 }
 
+// Envoyé à l'INVITEUR quand la personne qu'il a invitée a bien rejoint l'espace
+// (compte créé via l'invitation, ou compte existant rattaché). Rédigé dans la
+// langue de l'inviteur, pas celle du nouvel arrivant.
+export function invitationAcceptedEmail(
+  params: {
+    inviterName: string;
+    memberName: string;
+    memberEmail: string;
+    workspaceName: string;
+    url: string;
+  },
+  t: Dictionary,
+): { subject: string; body: string } {
+  return {
+    subject: t.email.inviteAcceptedSubject
+      .replace("{member}", params.memberName)
+      .replace("{workspace}", params.workspaceName),
+    body: t.email.inviteAcceptedBody
+      .replace("{inviter}", params.inviterName)
+      .replace("{member}", params.memberName)
+      .replace("{email}", params.memberEmail)
+      .replace("{workspace}", params.workspaceName)
+      .replace("{url}", params.url),
+  };
+}
+
 // --- Notifications ---------------------------------------------------------
 // Gabarits rendus dans la langue du DESTINATAIRE. Chaque mail porte un pied de
 // page « gérer mes notifications » et un en-tête List-Unsubscribe pointant vers
