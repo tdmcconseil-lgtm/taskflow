@@ -10,6 +10,7 @@ import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
 import { currentBillingDay } from "@/lib/billing/cycle";
 import { type WorkspacePlan } from "@/lib/plans";
 import { getDictionary, zodError } from "@/lib/i18n/server";
+import { normalizeDomains, isEmailDomainAllowed } from "@/lib/email-domains";
 
 // État de formulaire du volet Identité : erreur localisée, ou succès.
 export type AdminFormState = { error?: string; ok?: boolean } | undefined;
@@ -83,6 +84,49 @@ export async function updateOrganizationProfile(
     where: { workspaceId },
     create: { workspaceId, ...data },
     update: data,
+  });
+
+  revalidatePath(`/app/workspaces/${workspaceId}/administration`);
+  return { ok: true };
+}
+
+const domainsSchema = z.object({
+  workspaceId: z.string().min(1),
+  domains: z.string(),
+});
+
+// Met à jour la liste des domaines email autorisés pour rejoindre l'espace.
+// Liste vide = aucune restriction. Les membres déjà en place ne sont pas
+// retirés (grandfathering) ; la règle s'applique aux nouveaux membres et aux
+// changements d'adresse. Garde-fou : l'administrateur ne peut pas poser une
+// liste qui l'exclurait lui-même (il se verrouillerait hors de son espace).
+export async function updateAllowedEmailDomains(
+  _prev: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  const user = await requireUser();
+  const t = await getDictionary();
+
+  const parsed = domainsSchema.safeParse({
+    workspaceId: formData.get("workspaceId"),
+    domains: formData.get("domains") ?? "",
+  });
+  if (!parsed.success) {
+    return { error: zodError(t, parsed.error.issues[0]?.message) };
+  }
+
+  const { workspaceId } = parsed.data;
+  const adminError = await ensureAdmin(user.id, workspaceId);
+  if (adminError) return { error: adminError };
+
+  const domains = normalizeDomains(parsed.data.domains);
+  if (domains.length > 0 && !isEmailDomainAllowed(user.email, domains)) {
+    return { error: t.errors.emailDomainExcludesSelf };
+  }
+
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { allowedEmailDomains: domains },
   });
 
   revalidatePath(`/app/workspaces/${workspaceId}/administration`);

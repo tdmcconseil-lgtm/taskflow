@@ -190,6 +190,11 @@ model Workspace {
   // le Customer côté Stripe (invoice_settings.default_payment_method).
   stripeDefaultPaymentMethodId String?
   archivedAt DateTime? // non null = espace archivé (préalable à la suppression)
+  // Restriction d'accès par domaine email : liste des domaines autorisés pour
+  // devenir / rester membre (ex. ["acme.com", "acme.fr"]). Vide = aucune
+  // restriction. Appliquée à l'invitation, à l'acceptation et au changement
+  // d'adresse email ; les membres déjà en place ne sont pas retirés (grandfathering).
+  allowedEmailDomains String[] @default([])
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 

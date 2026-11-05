@@ -10,6 +10,8 @@ import { MembersEditSwitch } from "@/components/MembersEditSwitch";
 import { PendingInvitations } from "@/components/PendingInvitations";
 import { AdminTabs } from "@/components/AdminTabs";
 import { OrganizationProfileForm } from "@/components/OrganizationProfileForm";
+import { EmailDomainForm } from "@/components/EmailDomainForm";
+import { isEmailDomainAllowed } from "@/lib/email-domains";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
@@ -73,6 +75,7 @@ export default async function WorkspaceAdminPage({
       pendingPlan: true,
       stripeDefaultPaymentMethodId: true,
       archivedAt: true,
+      allowedEmailDomains: true,
       organizationProfile: true,
       members: {
         orderBy: { createdAt: "asc" },
@@ -141,6 +144,20 @@ export default async function WorkspaceAdminPage({
       dueAt: inv.dueAt as Date | null,
     })),
   ];
+
+  // Membres actifs dont le domaine email ne respecte pas la restriction en
+  // vigueur : listés dans le volet Identité (grandfathering — ils ne sont pas
+  // retirés). Vide si aucune restriction.
+  const nonCompliantMembers =
+    workspace.allowedEmailDomains.length === 0
+      ? []
+      : workspace.members
+          .filter(
+            (m) =>
+              m.deactivatedAt === null &&
+              !isEmailDomainAllowed(m.user.email, workspace.allowedEmailDomains),
+          )
+          .map((m) => ({ name: m.user.name, email: m.user.email }));
 
   const isArchived = workspace.archivedAt !== null;
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
@@ -420,10 +437,17 @@ export default async function WorkspaceAdminPage({
         }
         membres={membresPanel}
         identite={
-          <OrganizationProfileForm
-            workspaceId={workspace.id}
-            profile={workspace.organizationProfile}
-          />
+          <div className="space-y-6">
+            <OrganizationProfileForm
+              workspaceId={workspace.id}
+              profile={workspace.organizationProfile}
+            />
+            <EmailDomainForm
+              workspaceId={workspace.id}
+              domains={workspace.allowedEmailDomains}
+              nonCompliant={nonCompliantMembers}
+            />
+          </div>
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
         facturation={

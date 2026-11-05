@@ -10,8 +10,31 @@ import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, emailChangeEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { composeName } from "@/lib/name";
+import { isEmailDomainAllowed } from "@/lib/email-domains";
 
 export type FormState = { error?: string } | undefined;
+
+// L'email est une propriété GLOBALE de l'utilisateur, partagée par tous ses
+// espaces. Si l'un d'eux restreint les domaines autorisés et que la personne y
+// est membre actif, un nouvel email d'un domaine non autorisé violerait cette
+// règle : on renvoie alors le nom de l'espace bloquant (sinon null). Garantit
+// l'invariant « tout membre actif respecte la politique de domaine de son espace ».
+async function workspaceBlockingEmail(userId: string, newEmail: string): Promise<string | null> {
+  const memberships = await prisma.membership.findMany({
+    where: {
+      userId,
+      deactivatedAt: null,
+      workspace: { allowedEmailDomains: { isEmpty: false } },
+    },
+    select: { workspace: { select: { name: true, allowedEmailDomains: true } } },
+  });
+  for (const m of memberships) {
+    if (!isEmailDomainAllowed(newEmail, m.workspace.allowedEmailDomains)) {
+      return m.workspace.name;
+    }
+  }
+  return null;
+}
 
 const nameSchema = z.object({
   firstName: z.string().trim().min(2, "firstNameMin"),
@@ -190,6 +213,13 @@ export async function requestEmailChange(_prev: FormState, formData: FormData): 
   const taken = await prisma.user.findUnique({ where: { email: parsed.data.newEmail } });
   if (taken) return { error: t.errors.emailTaken };
 
+  // On vérifie dès la demande qu'aucun espace restreint ne serait violé : inutile
+  // d'envoyer un email de confirmation vers une adresse qui serait refusée.
+  const blocking = await workspaceBlockingEmail(user.id, parsed.data.newEmail);
+  if (blocking) {
+    return { error: t.errors.emailDomainBlockedByWorkspace.replace("{workspace}", blocking) };
+  }
+
   const token = generateInvitationToken();
   const tokenHash = hashToken(token);
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 h
@@ -234,6 +264,13 @@ export async function confirmEmailChange(_prev: FormState, formData: FormData): 
   const taken = await prisma.user.findUnique({ where: { email: request.newEmail } });
   if (taken && taken.id !== request.userId) {
     return { error: t.errors.emailNowUsed };
+  }
+
+  // Re-vérification à la confirmation : une restriction a pu être posée entre la
+  // demande et le clic sur le lien (fenêtre de 24 h).
+  const blocking = await workspaceBlockingEmail(request.userId, request.newEmail);
+  if (blocking) {
+    return { error: t.errors.emailDomainBlockedByWorkspace.replace("{workspace}", blocking) };
   }
 
   await prisma.$transaction([

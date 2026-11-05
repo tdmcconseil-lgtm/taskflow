@@ -12,6 +12,7 @@ import { generateInvitationToken, hashToken } from "@/lib/auth/tokens";
 import { sendMail, invitationEmail, workspaceAddedEmail, invitationAcceptedEmail } from "@/lib/mail";
 import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { locales, defaultLocale, type Locale } from "@/lib/i18n/config";
+import { isEmailDomainAllowed } from "@/lib/email-domains";
 import { composeName } from "@/lib/name";
 import { seatCheck } from "@/lib/billing/budget";
 import { logMembershipEvent } from "@/lib/billing/membership-events";
@@ -214,9 +215,15 @@ export async function inviteMember(_prev: FormState, formData: FormData): Promis
 
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
-    select: { name: true, plan: true, budgetCapCents: true },
+    select: { name: true, plan: true, budgetCapCents: true, allowedEmailDomains: true },
   });
   if (!workspace) return { error: t.errors.workspaceNotFound };
+
+  // Restriction d'accès par domaine email : on refuse d'inviter / d'ajouter une
+  // adresse dont le domaine n'est pas autorisé (liste vide = aucune restriction).
+  if (!isEmailDomainAllowed(email, workspace.allowedEmailDomains)) {
+    return { error: t.errors.emailDomainNotAllowed };
+  }
 
   // Garde-fou plafond de budget / sièges : les sièges déjà réservés = membres
   // actifs + invitations en attente. On refuse si ce nouvel ajout dépasserait le
@@ -446,9 +453,15 @@ export async function acceptInvitation(_prev: FormState, formData: FormData): Pr
   // l'acceptation (les sièges ont pu se remplir depuis l'envoi de l'invitation).
   const invWorkspace = await prisma.workspace.findUnique({
     where: { id: invitation.workspaceId },
-    select: { name: true, plan: true, budgetCapCents: true },
+    select: { name: true, plan: true, budgetCapCents: true, allowedEmailDomains: true },
   });
   if (!invWorkspace) return { error: t.errors.invitationInvalid };
+
+  // La restriction de domaine a pu être posée (ou durcie) depuis l'envoi de
+  // l'invitation : on revérifie l'adresse invitée au moment de l'acceptation.
+  if (!isEmailDomainAllowed(invitation.email, invWorkspace.allowedEmailDomains)) {
+    return { error: t.errors.emailDomainNotAllowed };
+  }
 
   // Compte déjà existant pour cet email : on l'ajoute à l'espace (s'il n'y est
   // pas déjà) et on le renvoie se connecter — aucun mot de passe requis.
