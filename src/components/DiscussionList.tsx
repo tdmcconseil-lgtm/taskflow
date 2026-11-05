@@ -49,7 +49,7 @@ export function DiscussionList({
               </div>
               <p className="mt-0.5 truncate text-sm text-zinc-500 dark:text-zinc-400">
                 <span className="text-zinc-600 dark:text-zinc-300">{r.last.author.name}</span> ·{" "}
-                {r.last.body}
+                {r.last.preview}
               </p>
               <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">{r.workspace}</p>
             </div>
