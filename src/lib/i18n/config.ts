@@ -1,5 +1,5 @@
 // Configuration des langues de l'interface.
-export const locales = ["fr", "en", "es"] as const;
+export const locales = ["fr", "en", "es", "de", "it"] as const;
 export type Locale = (typeof locales)[number];
 
 // Langue par défaut quand rien n'est détecté.
@@ -13,6 +13,8 @@ export const localeNames: Record<Locale, string> = {
   fr: "Français",
   en: "English",
   es: "Español",
+  de: "Deutsch",
+  it: "Italiano",
 };
 
 // Drapeaux associés à chaque langue (repère visuel).
@@ -20,4 +22,6 @@ export const localeFlags: Record<Locale, string> = {
   fr: "🇫🇷",
   en: "🇬🇧",
   es: "🇪🇸",
+  de: "🇩🇪",
+  it: "🇮🇹",
 };

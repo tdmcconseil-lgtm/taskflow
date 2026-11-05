@@ -2,7 +2,7 @@ import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 import type { Locale } from "@/lib/i18n/config";
 
 // Correspondance langue de l'app → locale Intl pour le formatage des dates.
-const INTL_LOCALE: Record<Locale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES" };
+const INTL_LOCALE: Record<Locale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", de: "de-DE", it: "it-IT" };
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
   TODO: "À faire",

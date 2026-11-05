@@ -35,6 +35,28 @@ export function Flag({
     );
   }
 
+  if (locale === "de") {
+    // Allemagne : trois bandes horizontales noir / rouge / or.
+    return (
+      <svg {...common}>
+        <rect width="30" height="20" fill="#FFCE00" />
+        <rect width="30" height="13.34" fill="#DD0000" />
+        <rect width="30" height="6.67" fill="#000" />
+      </svg>
+    );
+  }
+
+  if (locale === "it") {
+    // Italie : trois bandes verticales vert / blanc / rouge.
+    return (
+      <svg {...common}>
+        <rect width="30" height="20" fill="#F4F5F0" />
+        <rect width="10" height="20" fill="#008C45" />
+        <rect x="20" width="10" height="20" fill="#CD212A" />
+      </svg>
+    );
+  }
+
   // en → Union Jack (version compacte sans contre-échange, lisible en petit).
   return (
     <svg {...common}>

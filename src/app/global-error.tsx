@@ -23,13 +23,23 @@ const MESSAGES = {
     desc: "No se pudo mostrar la página. Esto puede ocurrir justo después de una actualización: recarga la página para obtener la última versión.",
     reload: "Recargar la página",
   },
+  de: {
+    title: "Ein Fehler ist aufgetreten",
+    desc: "Die Seite konnte nicht angezeigt werden. Das kann direkt nach einem Update passieren: Lade die Seite neu, um die aktuelle Version zu erhalten.",
+    reload: "Seite neu laden",
+  },
+  it: {
+    title: "Si è verificato un errore",
+    desc: "Impossibile visualizzare la pagina. Può succedere subito dopo un aggiornamento: ricarica la pagina per ottenere l'ultima versione.",
+    reload: "Ricarica la pagina",
+  },
 } as const;
 
 type Lang = keyof typeof MESSAGES;
 
 function detectLang(): Lang {
   if (typeof document === "undefined") return "fr";
-  const m = document.cookie.match(/(?:^|; )tf_lang=(fr|en|es)/);
+  const m = document.cookie.match(/(?:^|; )tf_lang=(fr|en|es|de|it)/);
   return (m?.[1] as Lang) ?? "fr";
 }
 
