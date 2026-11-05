@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
 import { setDecisionProject, deleteDecision } from "@/lib/actions/decisions";
 import { formatDate } from "@/lib/labels";
+import { linkify } from "@/lib/linkify";
 import { useT, useLocale } from "@/lib/i18n/context";
 
 export type DecisionItem = {
@@ -52,7 +53,7 @@ export function TaskDecisions({
               {projectDecisions.map((d) => (
                 <li key={d.id} className="space-y-1 bg-white p-3 dark:bg-zinc-900">
                   <p className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
-                    {d.content}
+                    {linkify(d.content)}
                   </p>
                   <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
                     <span>
@@ -95,7 +96,7 @@ export function TaskDecisions({
             {decisions.map((d) => (
               <li key={d.id} id={`evt-${d.id}`} className="space-y-2 bg-white p-3 dark:bg-zinc-900">
                 <p className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
-                  {d.content}
+                  {linkify(d.content)}
                 </p>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
                   <span>

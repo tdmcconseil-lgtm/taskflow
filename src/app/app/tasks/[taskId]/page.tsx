@@ -5,6 +5,7 @@ import { requireUser, getMembership } from "@/lib/auth/dal";
 import { canAccessTask, getRootProject, canManageProject } from "@/lib/access";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
+import { linkify } from "@/lib/linkify";
 import { PriorityBadge } from "@/components/badges";
 import { StatusSelect } from "@/components/StatusSelect";
 import { DeleteTaskButton } from "@/components/DeleteTaskButton";
@@ -412,7 +413,7 @@ export default async function TaskDetailPage({
           description={
             task.description ? (
               <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
-                {task.description}
+                {linkify(task.description)}
               </p>
             ) : (
               <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.task.noDescription}</p>

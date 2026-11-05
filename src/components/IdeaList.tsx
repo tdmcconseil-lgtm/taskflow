@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { linkify } from "@/lib/linkify";
 
 type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE" | "ECARTEE";
 
@@ -123,7 +124,7 @@ export function IdeaList({
                 )}
                 {idea.body && isOpen && (
                   <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
-                    {idea.body}
+                    {linkify(idea.body)}
                   </p>
                 )}
 
@@ -140,7 +141,7 @@ export function IdeaList({
                           )}
                         </p>
                         <p className="whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
-                          {r.body}
+                          {linkify(r.body)}
                         </p>
                       </div>
                     ))}

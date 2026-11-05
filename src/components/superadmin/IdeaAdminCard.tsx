@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import type { FormState } from "@/lib/actions/superadmin";
+import { linkify } from "@/lib/linkify";
 
 type IdeaStatusKey = "EN_ATTENTE" | "A_LETUDE" | "IMPLEMENTEE" | "ECARTEE";
 
@@ -89,7 +90,7 @@ export function IdeaAdminCard({
           <h2 className="mt-0.5 font-medium">{idea.title}</h2>
           {idea.body && (
             <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
-              {idea.body}
+              {linkify(idea.body)}
             </p>
           )}
         </div>
@@ -143,7 +144,7 @@ export function IdeaAdminCard({
               >
                 <div className="min-w-0">
                   <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-200">
-                    {r.body}
+                    {linkify(r.body)}
                   </p>
                   <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
                     {dateFmt.format(new Date(r.createdAt))}

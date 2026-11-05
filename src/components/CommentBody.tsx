@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
+import { linkify } from "@/lib/linkify";
 
 // Rend le corps d'un commentaire : @[id] devient le nom de la personne (gras,
 // bleu) et $[id] devient le document, en bleu et cliquable vers sa fiche.
@@ -18,7 +19,8 @@ export function CommentBody({
   let key = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(body))) {
-    if (m.index > last) parts.push(body.slice(last, m.index));
+    if (m.index > last)
+      parts.push(<Fragment key={key++}>{linkify(body.slice(last, m.index))}</Fragment>);
     if (m[1] === "$") {
       const name = docs[m[2]] ?? "document";
       parts.push(
@@ -40,7 +42,7 @@ export function CommentBody({
     }
     last = re.lastIndex;
   }
-  if (last < body.length) parts.push(body.slice(last));
+  if (last < body.length) parts.push(<Fragment key={key++}>{linkify(body.slice(last))}</Fragment>);
 
   return (
     <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">{parts}</p>
