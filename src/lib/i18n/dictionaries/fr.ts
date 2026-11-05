@@ -224,6 +224,7 @@ const fr = {
     adminEnoughAdmins:
       "Pensez à garder plusieurs administrateurs sur cet espace : il reste ainsi gérable même si l'un d'eux devient indisponible.",
     tabPlan: "Formule",
+    tabAccess: "Accès",
     tabIdentity: "Identité",
     tabUsage: "Consommation",
     tabBilling: "Facturation",

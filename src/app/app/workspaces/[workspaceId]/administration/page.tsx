@@ -435,19 +435,19 @@ export default async function WorkspaceAdminPage({
             t={t}
           />
         }
+        acces={
+          <EmailDomainForm
+            workspaceId={workspace.id}
+            domains={workspace.allowedEmailDomains}
+            nonCompliant={nonCompliantMembers}
+          />
+        }
         membres={membresPanel}
         identite={
-          <div className="space-y-6">
-            <OrganizationProfileForm
-              workspaceId={workspace.id}
-              profile={workspace.organizationProfile}
-            />
-            <EmailDomainForm
-              workspaceId={workspace.id}
-              domains={workspace.allowedEmailDomains}
-              nonCompliant={nonCompliantMembers}
-            />
-          </div>
+          <OrganizationProfileForm
+            workspaceId={workspace.id}
+            profile={workspace.organizationProfile}
+          />
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
         facturation={

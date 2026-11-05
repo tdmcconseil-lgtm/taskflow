@@ -225,6 +225,7 @@ const de: Dictionary = {
     adminEnoughAdmins:
       "Behalte mehrere Administratoren in diesem Arbeitsbereich, damit er verwaltbar bleibt, selbst wenn einer von ihnen nicht verfügbar ist.",
     tabPlan: "Tarif",
+    tabAccess: "Zugang",
     tabIdentity: "Identität",
     tabUsage: "Verbrauch",
     tabBilling: "Abrechnung",

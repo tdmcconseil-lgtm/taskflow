@@ -225,6 +225,7 @@ const it: Dictionary = {
     adminEnoughAdmins:
       "Mantieni più amministratori su questo spazio di lavoro, così resta gestibile anche se uno di loro diventa indisponibile.",
     tabPlan: "Piano",
+    tabAccess: "Accesso",
     tabIdentity: "Identità",
     tabUsage: "Utilizzo",
     tabBilling: "Fatturazione",

@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n/context";
 
 type AdminTab =
   | "formule"
+  | "acces"
   | "membres"
   | "identite"
   | "consommation"
@@ -19,6 +20,7 @@ type AdminTab =
 export function AdminTabs({
   memberCount,
   formule,
+  acces,
   membres,
   identite,
   consommation,
@@ -28,6 +30,7 @@ export function AdminTabs({
 }: {
   memberCount: number;
   formule: ReactNode;
+  acces: ReactNode;
   membres: ReactNode;
   identite: ReactNode;
   consommation: ReactNode;
@@ -41,6 +44,7 @@ export function AdminTabs({
 
   const tabs: { key: AdminTab; label: string }[] = [
     { key: "formule", label: dict.workspace.tabPlan },
+    { key: "acces", label: dict.workspace.tabAccess },
     { key: "membres", label: `${dict.wsTabs.members} (${memberCount})` },
     { key: "identite", label: dict.workspace.tabIdentity },
     { key: "consommation", label: dict.workspace.tabUsage },
@@ -77,6 +81,7 @@ export function AdminTabs({
 
       <div className="pt-6">
         <div hidden={active !== "formule"}>{formule}</div>
+        <div hidden={active !== "acces"}>{acces}</div>
         <div hidden={active !== "membres"}>{membres}</div>
         <div hidden={active !== "identite"}>{identite}</div>
         <div hidden={active !== "consommation"}>{consommation}</div>

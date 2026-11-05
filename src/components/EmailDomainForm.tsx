@@ -26,10 +26,7 @@ export function EmailDomainForm({
   );
 
   return (
-    <form
-      action={formAction}
-      className="space-y-4 border-t border-zinc-200 pt-6 dark:border-zinc-800"
-    >
+    <form action={formAction} className="space-y-4">
       <div>
         <h3 className="text-base font-semibold">{t.emailDomains.title}</h3>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.emailDomains.desc}</p>

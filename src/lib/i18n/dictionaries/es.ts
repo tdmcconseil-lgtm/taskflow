@@ -225,6 +225,7 @@ const es: Dictionary = {
     adminEnoughAdmins:
       "Mantén varios administradores en este espacio para que siga siendo gestionable aunque uno deje de estar disponible.",
     tabPlan: "Plan",
+    tabAccess: "Acceso",
     tabIdentity: "Identidad",
     tabUsage: "Consumo",
     tabBilling: "Facturación",

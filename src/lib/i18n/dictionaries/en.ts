@@ -225,6 +225,7 @@ const en: Dictionary = {
     adminEnoughAdmins:
       "Keep several administrators on this workspace so it stays manageable even if one becomes unavailable.",
     tabPlan: "Plan",
+    tabAccess: "Access",
     tabIdentity: "Identity",
     tabUsage: "Usage",
     tabBilling: "Billing",
