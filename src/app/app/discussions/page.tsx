@@ -4,7 +4,10 @@ import { getDiscussionRows } from "@/lib/discussions";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { DiscussionList } from "@/components/DiscussionList";
 
-export const metadata: Metadata = { title: "Discussions — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.discussions} — getRIDA` };
+}
 
 export default async function DiscussionsPage() {
   const user = await requireUser();

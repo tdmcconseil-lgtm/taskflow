@@ -16,7 +16,10 @@ import {
   reopenWorkspace,
 } from "@/lib/actions/superadmin";
 
-export const metadata: Metadata = { title: "Administration — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.superadmin} — getRIDA` };
+}
 
 // Noms de marque des formules (neutres quelle que soit la langue).
 const PLAN_NAMES: Record<WorkspacePlan, string> = {

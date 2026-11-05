@@ -5,7 +5,10 @@ import { hashToken } from "@/lib/auth/tokens";
 import { ConfirmEmailForm } from "@/components/ConfirmEmailForm";
 import { getDictionary } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Changement d'email — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.confirmEmail} — getRIDA` };
+}
 
 function Card({ children }: { children: React.ReactNode }) {
   return (

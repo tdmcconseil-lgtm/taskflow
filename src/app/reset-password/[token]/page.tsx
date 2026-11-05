@@ -5,7 +5,10 @@ import { hashToken } from "@/lib/auth/tokens";
 import { ResetPasswordForm } from "@/components/ResetPasswordForm";
 import { getDictionary } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Réinitialisation du mot de passe — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.resetPassword} — getRIDA` };
+}
 
 function Card({ children }: { children: React.ReactNode }) {
   return (

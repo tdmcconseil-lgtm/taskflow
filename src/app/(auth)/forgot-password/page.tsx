@@ -4,7 +4,10 @@ import { ForgotPasswordForm } from "@/components/ForgotPasswordForm";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { getDictionary } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Mot de passe oublié — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.forgotPassword} — getRIDA` };
+}
 
 export default async function ForgotPasswordPage({
   searchParams,

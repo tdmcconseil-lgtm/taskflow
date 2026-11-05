@@ -8,7 +8,10 @@ import { IdeaList } from "@/components/IdeaList";
 import { IdeaControls, type IdeaSort, type IdeaFilter } from "@/components/IdeaControls";
 import { toggleIdeaVote, deleteIdea } from "@/lib/actions/ideas";
 
-export const metadata: Metadata = { title: "Idées — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.ideas} — getRIDA` };
+}
 
 // Module Idées : liste transverse à l'application. Tri (pouces / récentes /
 // anciennes) et filtre (toutes / miennes / sauf miennes) via l'URL. On ne

@@ -130,7 +130,11 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
           eventsCount={eventsCount}
         />
 
-        <WorkspaceNav workspaces={workspaces} initialActiveId={activeWorkspaceId} />
+        <WorkspaceNav
+          workspaces={workspaces}
+          initialActiveId={activeWorkspaceId}
+          labels={{ title: t.nav.spaces, newWorkspace: t.nav.newWorkspace, noProject: t.nav.noProject }}
+        />
       </nav>
 
       {/* Module Idées : simple ampoule, juste au-dessus du sélecteur de langue. */}

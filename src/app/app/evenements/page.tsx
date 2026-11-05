@@ -6,7 +6,10 @@ import { MarkEventsRead } from "@/components/MarkEventsRead";
 import { EventFilter } from "@/components/EventFilter";
 import { EventList } from "@/components/EventList";
 
-export const metadata: Metadata = { title: "Événements — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.events} — getRIDA` };
+}
 
 export default async function EvenementsPage({
   searchParams,

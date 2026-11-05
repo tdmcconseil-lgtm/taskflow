@@ -6,7 +6,10 @@ import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 import { IdeaForm } from "@/components/IdeaForm";
 
-export const metadata: Metadata = { title: "Nouvelle idée — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.newIdea} — getRIDA` };
+}
 
 // Création d'une idée sur sa propre page dédiée (« une création = une page »).
 // Si l'utilisateur n'a pas encore de pseudo, le formulaire en demande un.

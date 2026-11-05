@@ -6,7 +6,10 @@ import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Mes tâches — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.tasks} — getRIDA` };
+}
 
 // Page dédiée « Mes tâches à faire » (comme Discussions et Événements). Liste
 // les tâches assignées à l'utilisateur et non terminées, toutes espaces

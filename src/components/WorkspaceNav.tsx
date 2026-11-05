@@ -12,9 +12,11 @@ type Ws = { id: string; name: string; tasks: { id: string; title: string }[] };
 export function WorkspaceNav({
   workspaces,
   initialActiveId,
+  labels,
 }: {
   workspaces: Ws[];
   initialActiveId: string | null;
+  labels: { title: string; newWorkspace: string; noProject: string };
 }) {
   const pathname = usePathname();
   const [active, setActive] = useState<string | null>(initialActiveId);
@@ -41,12 +43,12 @@ export function WorkspaceNav({
     <div>
       <div className="mb-2 flex items-center justify-between px-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-300">
-          Espaces
+          {labels.title}
         </span>
         <Link
           href="/app/workspaces/new"
           className="text-sm text-indigo-600 hover:underline"
-          title="Nouvel espace de travail"
+          title={labels.newWorkspace}
         >
           +
         </Link>
@@ -78,7 +80,7 @@ export function WorkspaceNav({
                     </li>
                   ))}
                   {ws.tasks.length === 0 && (
-                    <li className="px-2 py-1 text-xs italic text-zinc-400 dark:text-zinc-300">Aucun projet</li>
+                    <li className="px-2 py-1 text-xs italic text-zinc-400 dark:text-zinc-300">{labels.noProject}</li>
                   )}
                 </ul>
               )}

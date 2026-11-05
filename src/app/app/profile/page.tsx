@@ -9,7 +9,10 @@ import { getEffectivePreference } from "@/lib/notify";
 import { getDictionary } from "@/lib/i18n/server";
 import { cardClass } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Mon profil — getRIDA" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDictionary();
+  return { title: `${t.pageTitles.profile} — getRIDA` };
+}
 
 export default async function ProfilePage({ searchParams }: PageProps<"/app/profile">) {
   const sessionUser = await requireUser();
@@ -88,6 +91,15 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
                 initialZoom={user.photoZoom}
                 version={user.photoUpdatedAt?.getTime() ?? 0}
                 fallback={user.name.trim()[0]?.toUpperCase() ?? "?"}
+                labels={{
+                  choose: t.profile.photoChoose,
+                  change: t.profile.photoChange,
+                  hint: t.profile.photoHint,
+                  save: t.profile.photoSave,
+                  saving: t.profile.photoSaving,
+                  remove: t.profile.photoRemove,
+                  alt: t.profile.photoAlt,
+                }}
               />
             </section>
 

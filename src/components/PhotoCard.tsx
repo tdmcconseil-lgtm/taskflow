@@ -13,6 +13,15 @@ type Props = {
   initialZoom: number;
   version: number;
   fallback: string;
+  labels: {
+    choose: string;
+    change: string;
+    hint: string;
+    save: string;
+    saving: string;
+    remove: string;
+    alt: string;
+  };
 };
 
 // Réduit une image côté client à MAX px de côté et l'encode en WebP.
@@ -218,7 +227,7 @@ export function PhotoCard(props: Props) {
               <img
                 ref={imgRef}
                 src={src}
-                alt="Aperçu de la photo"
+                alt={props.labels.alt}
                 draggable={false}
                 onLoad={(e) =>
                   setNat({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })
@@ -271,7 +280,7 @@ export function PhotoCard(props: Props) {
               onClick={() => fileRef.current?.click()}
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
-              {hasImage ? "Changer la photo" : "Choisir une photo"}
+              {hasImage ? props.labels.change : props.labels.choose}
             </button>
 
             {hasImage && (
@@ -281,7 +290,7 @@ export function PhotoCard(props: Props) {
                 disabled={isPending || !dirty}
                 className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isPending ? "Enregistrement…" : "Enregistrer"}
+                {isPending ? props.labels.saving : props.labels.save}
               </button>
             )}
 
@@ -292,12 +301,12 @@ export function PhotoCard(props: Props) {
                 disabled={isPending}
                 className="rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/50"
               >
-                Supprimer
+                {props.labels.remove}
               </button>
             )}
           </div>
 
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">JPEG, PNG ou WebP. 2 Mo maximum.</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{props.labels.hint}</p>
         </div>
       </div>
     </div>
