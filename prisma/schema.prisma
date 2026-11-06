@@ -72,6 +72,7 @@ enum TaskActivityType {
   DESCRIPTION_CHANGED
   SUBTASK_ADDED
   SUBTASK_REMOVED
+  REPARENTED // tâche déplacée dans la hiérarchie (changement de parent, intra-projet)
   COMMENT_ADDED
   MENTIONED
   FOLLOWER_ADDED // ajouté comme suiveur d'une tâche (événement ciblé)

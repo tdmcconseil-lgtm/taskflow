@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
-import { canAccessTask } from "@/lib/access";
+import { canAccessTask, getRootProject } from "@/lib/access";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
@@ -325,30 +325,143 @@ export async function setTaskStatus(
   return undefined;
 }
 
-// Réordonne les sous-tâches d'un parent : applique l'ordre reçu (ids) en
-// position 0..n. N'affecte que les tâches réellement enfants de `parentId`.
-export async function reorderTasks(parentId: string, orderedIds: string[]): Promise<void> {
+// Réordonne une fratrie : applique l'ordre reçu (ids) en position 0..n.
+// `parentId` non null = sous-tâches d'une tâche ; `parentId` null = projets
+// racine de l'espace (`workspaceId` requis dans ce cas). N'affecte que les
+// tâches réellement membres de la fratrie ciblée. Pas d'audit (déplacement #1).
+export async function reorderTasks(
+  parentId: string | null,
+  orderedIds: string[],
+  workspaceId?: string,
+): Promise<void> {
   const user = await requireUser();
-  const parent = await prisma.task.findUnique({
-    where: { id: parentId },
-    select: { workspaceId: true },
-  });
-  if (!parent) return;
-  if (!(await getMembership(user.id, parent.workspaceId))) return;
-  if (!(await canAccessTask(user.id, parentId))) return;
 
-  const children = await prisma.task.findMany({
-    where: { parentId },
+  // Résout l'espace, le contrôle d'accès et le filtre de fratrie selon qu'on
+  // réordonne des sous-tâches (accès au projet) ou des projets racine (membre).
+  let wsId: string;
+  let siblingWhere: { parentId: string } | { workspaceId: string; parentId: null };
+  if (parentId === null) {
+    if (!workspaceId) return;
+    if (!(await getMembership(user.id, workspaceId))) return;
+    wsId = workspaceId;
+    siblingWhere = { workspaceId, parentId: null };
+  } else {
+    const parent = await prisma.task.findUnique({
+      where: { id: parentId },
+      select: { workspaceId: true },
+    });
+    if (!parent) return;
+    if (!(await getMembership(user.id, parent.workspaceId))) return;
+    if (!(await canAccessTask(user.id, parentId))) return;
+    wsId = parent.workspaceId;
+    siblingWhere = { parentId };
+  }
+
+  const siblings = await prisma.task.findMany({
+    where: siblingWhere,
     select: { id: true },
   });
-  const childIds = new Set(children.map((c) => c.id));
-  const valid = orderedIds.filter((id) => childIds.has(id));
+  const siblingIds = new Set(siblings.map((c) => c.id));
+  const valid = orderedIds.filter((id) => siblingIds.has(id));
 
   await prisma.$transaction(
     valid.map((id, i) => prisma.task.update({ where: { id }, data: { position: i } })),
   );
 
-  revalidatePath(`/app/tasks/${parentId}`);
+  if (parentId === null) revalidatePath(`/app/workspaces/${wsId}`);
+  else revalidatePath(`/app/tasks/${parentId}`);
+}
+
+// Résultat d'un déplacement dans la hiérarchie (#2 / #3) : succès ou message
+// d'erreur (déjà traduit) à afficher dans la modale de confirmation.
+export type ReparentResult = { ok: true } | { error: string };
+
+// Déplace une tâche sous un nouveau parent (déplacements #2 « remonter d'un
+// niveau » et #3 « rattacher sous une sœur »). La frontière projet/tâche est
+// GELÉE : on refuse tout mouvement qui sortirait du projet racine ou franchirait
+// la frontière (promotion d'une tâche en projet, rétrogradation d'un projet).
+// La tâche emmène tout son sous-arbre. Écrit une entrée d'audit REPARENTED.
+export async function reparentTask(
+  taskId: string,
+  newParentId: string,
+): Promise<ReparentResult> {
+  const user = await requireUser();
+  const t = await getDictionary();
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      title: true,
+      workspaceId: true,
+      parentId: true,
+      parent: { select: { id: true, title: true } },
+    },
+  });
+  if (!task) return { error: t.errors.taskNotFound };
+  if (!(await getMembership(user.id, task.workspaceId))) return { error: t.errors.accessDenied };
+  if (!(await canAccessTask(user.id, task.id))) return { error: t.errors.accessDenied };
+
+  // Un projet (tâche racine) ne se déplace jamais : frontière gelée.
+  if (task.parentId === null) return { error: t.errors.cannotMoveProject };
+  // Mouvement sans effet (déjà sous ce parent).
+  if (newParentId === task.parentId) return { error: t.errors.moveNoop };
+  // On ne peut pas rattacher une tâche sous elle-même.
+  if (newParentId === task.id) return { error: t.errors.moveInvalid };
+
+  const newParent = await prisma.task.findUnique({
+    where: { id: newParentId },
+    select: { id: true, title: true, workspaceId: true },
+  });
+  if (!newParent) return { error: t.errors.parentNotFound };
+  if (newParent.workspaceId !== task.workspaceId) return { error: t.errors.moveInvalid };
+
+  // Frontière gelée : le projet racine ne doit pas changer. Comme le nouveau
+  // parent est une tâche existante (jamais null), la tâche reste une sous-tâche.
+  const [taskRoot, newParentRoot] = await Promise.all([
+    getRootProject(task.id),
+    getRootProject(newParent.id),
+  ]);
+  if (!taskRoot || !newParentRoot || taskRoot.id !== newParentRoot.id) {
+    return { error: t.errors.moveCrossProject };
+  }
+
+  // Sûreté anti-cycle : le nouveau parent ne doit pas être un descendant de la
+  // tâche déplacée (on remonte ses ancêtres jusqu'à la racine).
+  let cursor: string | null = newParentId;
+  let guard = 0;
+  while (cursor && guard++ < 50) {
+    if (cursor === task.id) return { error: t.errors.moveIntoDescendant };
+    const row: { parentId: string | null } | null = await prisma.task.findUnique({
+      where: { id: cursor },
+      select: { parentId: true },
+    });
+    cursor = row?.parentId ?? null;
+  }
+
+  // Nouvelle position : en dernier enfant du nouveau parent.
+  const position = await prisma.task.count({ where: { parentId: newParentId } });
+
+  await prisma.task.update({
+    where: { id: task.id },
+    data: { parentId: newParentId, position },
+  });
+
+  // Journal : déplacement consigné sur la tâche (ancienne mère → nouvelle mère).
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "REPARENTED",
+    fromValue: task.parent?.title ?? null,
+    toValue: newParent.title,
+  });
+
+  revalidatePath("/app");
+  revalidatePath(`/app/tasks/${task.id}`);
+  revalidatePath(`/app/tasks/${newParentId}`);
+  if (task.parentId) revalidatePath(`/app/tasks/${task.parentId}`);
+  revalidatePath(`/app/workspaces/${task.workspaceId}`);
+  return { ok: true };
 }
 
 export async function deleteTask(

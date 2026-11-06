@@ -444,7 +444,13 @@ export default async function TaskDetailPage({
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel={t.task.newSubtask}
-            reorderParentId={task.id}
+            workspaceId={task.workspaceId}
+            reorderScope={{
+              parentId: task.id,
+              parentTitle: task.title,
+              grandParentId: task.parentId,
+              grandParentTitle: ancestors[ancestors.length - 1]?.title ?? null,
+            }}
             followedIds={followedChildIds}
             emptyLabel={isTopLevel ? t.task.noTasksInProject : t.task.noSubtasks}
           />

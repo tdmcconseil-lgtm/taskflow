@@ -35,6 +35,11 @@ export function describeActivity(a: ActivityCore, t: Dictionary): string {
       return act.subtaskAdded.replace("{name}", a.targetName ?? "");
     case "SUBTASK_REMOVED":
       return act.subtaskRemoved.replace("{name}", a.targetName ?? "");
+    case "REPARENTED":
+      if (a.fromValue && a.toValue)
+        return act.reparented.replace("{from}", a.fromValue).replace("{to}", a.toValue);
+      if (a.toValue) return act.reparentedTo.replace("{to}", a.toValue);
+      return act.modified;
     case "COMMENT_ADDED":
       return act.commentAdded;
     case "MENTIONED":

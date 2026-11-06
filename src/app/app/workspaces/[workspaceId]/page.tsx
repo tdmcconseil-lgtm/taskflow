@@ -57,10 +57,11 @@ export default async function WorkspacePage({
         },
       },
     }),
-    // Projets = tâches de 1er niveau, du plus récent au plus ancien.
+    // Projets = tâches de 1er niveau. Ordre manuel (position) d'abord, puis du
+    // plus récent au plus ancien à position égale (réordonnables en mode édition).
     prisma.task.findMany({
       where: { workspaceId },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
       select: {
         id: true,
         title: true,
@@ -126,6 +127,13 @@ export default async function WorkspacePage({
       toggleBase={`/app/workspaces/${workspace.id}`}
       newTaskHref={isArchived ? null : `/app/tasks/new?workspace=${workspace.id}`}
       newTaskLabel={t.task.newProject}
+      workspaceId={workspace.id}
+      reorderScope={{
+        parentId: null,
+        parentTitle: workspace.name,
+        grandParentId: null,
+        grandParentTitle: null,
+      }}
       followedIds={followedIds}
       emptyLabel={t.task.noProjects}
     />
