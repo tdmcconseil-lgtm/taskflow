@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
-import { canAccessTask, getRootProject } from "@/lib/access";
+import { canAccessTask, canAccessProject, getRootProject } from "@/lib/access";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
@@ -27,6 +27,24 @@ async function loadTaskForUser(userId: string, taskId: string) {
   if (!membership) return null;
   if (!(await canAccessTask(userId, task.id))) return null;
   return task;
+}
+
+// Option « assigner = donner accès » : garantit que l'assigné d'une tâche peut
+// accéder à son projet. Si le projet racine est restreint et que l'assigné n'y a
+// pas encore accès (ni OWNER de l'espace, ni créateur, ni déjà membre du projet),
+// on l'ajoute comme membre du projet (ProjectAccess MEMBER) et on le fait suivre
+// le projet — même chemin que l'ajout manuel de membres (cf. addProjectMembers).
+// Idempotent ; ne retire jamais d'accès (une désassignation ne révoque rien).
+async function grantProjectAccessToAssignee(assigneeId: string, taskId: string): Promise<void> {
+  const root = await getRootProject(taskId);
+  if (!root) return;
+  if (await canAccessProject(assigneeId, root)) return;
+  await prisma.projectAccess.upsert({
+    where: { taskId_userId: { taskId: root.id, userId: assigneeId } },
+    update: {},
+    create: { taskId: root.id, userId: assigneeId, role: "MEMBER" },
+  });
+  await ensureFollow(assigneeId, root.id);
 }
 
 const createSchema = z.object({
@@ -132,7 +150,11 @@ export async function createTask(_prev: FormState, formData: FormData): Promise<
 
   // Suivi automatique : le créateur et l'assigné suivent la tâche.
   await ensureFollow(user.id, task.id);
-  if (assigneeId) await ensureFollow(assigneeId, task.id);
+  if (assigneeId) {
+    await ensureFollow(assigneeId, task.id);
+    // Assigner à quelqu'un lui ouvre l'accès au projet s'il ne l'a pas encore.
+    await grantProjectAccessToAssignee(assigneeId, task.id);
+  }
 
   // Journal : création (+ sous-tâche ajoutée côté parent).
   await logActivity({ taskId: task.id, actorId: user.id, type: "CREATED" });
@@ -228,8 +250,11 @@ export async function updateTask(_prev: FormState, formData: FormData): Promise<
     data: { title: parsed.data.title, description, priority: parsed.data.priority, assigneeId, dueDate },
   });
 
-  // Être assigné à une tâche la fait suivre.
-  if (assigneeId) await ensureFollow(assigneeId, old.id);
+  // Être assigné à une tâche la fait suivre et ouvre l'accès au projet.
+  if (assigneeId) {
+    await ensureFollow(assigneeId, old.id);
+    await grantProjectAccessToAssignee(assigneeId, old.id);
+  }
 
   // Journal : une entrée par champ réellement modifié, toutes reliées par un
   // même groupId (une seule ligne dans le flux d'événements).
