@@ -27,12 +27,16 @@ export type SubtaskItem = {
 
 export function ReorderableSubtasks({
   parentId,
+  workspaceId,
   items,
 }: {
-  parentId: string;
+  // Fratrie réordonnée : une tâche (sous-tâches) ou null (projets racine de l'espace).
+  parentId: string | null;
+  workspaceId: string;
   items: SubtaskItem[];
 }) {
   const dict = useT();
+  const isProject = parentId === null;
   const [order, setOrder] = useState<SubtaskItem[]>(items);
   const [dragId, setDragId] = useState<string | null>(null);
   const orderRef = useRef<string[]>(items.map((i) => i.id));
@@ -63,7 +67,7 @@ export function ReorderableSubtasks({
   }
 
   function onDrop() {
-    if (dragId) reorderTasks(parentId, orderRef.current);
+    if (dragId) reorderTasks(parentId, orderRef.current, workspaceId);
     setDragId(null);
   }
 
@@ -92,7 +96,10 @@ export function ReorderableSubtasks({
 
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-1.5">
-                <TypeIcon isProject={false} label={dict.task.prefixTask} />
+                <TypeIcon
+                  isProject={isProject}
+                  label={isProject ? dict.task.prefixProject : dict.task.prefixTask}
+                />
                 <Link
                   href={`/app/tasks/${t.id}`}
                   draggable={false}

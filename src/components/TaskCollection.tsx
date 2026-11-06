@@ -195,8 +195,12 @@ export function TaskCollection({
         </div>
       ) : view === "tableau" ? (
         <KanbanBoard tasks={boardTasks} />
-      ) : reorderScope && reorderScope.parentId !== null ? (
-        <ReorderableSubtasks parentId={reorderScope.parentId} items={siblingItems()} />
+      ) : reorderScope ? (
+        <ReorderableSubtasks
+          parentId={reorderScope.parentId}
+          workspaceId={workspaceId}
+          items={siblingItems()}
+        />
       ) : (
         <div className="space-y-6">
           {STATUS_ORDER.map((status) => {

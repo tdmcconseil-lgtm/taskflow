@@ -5,6 +5,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { getTaskView } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { getUserOrder } from "@/lib/task-order";
 import { UserAvatar } from "@/components/UserAvatar";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
@@ -87,7 +88,9 @@ export default async function WorkspacePage({
   ]);
   if (!workspace) notFound();
 
-  const { roots } = buildTaskIndex(allTasks as RawTask[]);
+  // Ordre d'affichage personnel de l'utilisateur (projets et sous-tâches).
+  const userOrder = await getUserOrder(user.id, allTasks.map((t) => t.id));
+  const { roots } = buildTaskIndex(allTasks as RawTask[], userOrder);
   const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
   // Confidentialité stricte : seul l'OWNER voit tous les projets de l'espace.
   const seesAllProjects = membership.role === "OWNER";

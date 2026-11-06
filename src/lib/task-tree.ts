@@ -1,5 +1,22 @@
 import type { TaskStatus, TaskPriority } from "@/generated/prisma/client";
 
+// Trie une fratrie selon l'ordre d'affichage PERSONNEL (map taskId → position) :
+// les tâches explicitement ordonnées d'abord (position croissante), puis les
+// autres dans l'ordre reçu (ordre partagé par défaut). Tri stable, n'exige que
+// l'identifiant. Fonction pure (pas d'accès base) pour rester utilisable côté
+// client ; la lecture de l'ordre en base est faite par getUserOrder (task-order).
+export function applyUserOrder<T extends { id: string }>(
+  siblings: T[],
+  order: Map<string, number>,
+): T[] {
+  if (order.size === 0) return siblings;
+  const ordered = siblings
+    .filter((s) => order.has(s.id))
+    .sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+  const rest = siblings.filter((s) => !order.has(s.id));
+  return [...ordered, ...rest];
+}
+
 // Infos de l'assigné nécessaires pour afficher sa miniature (photo cadrée).
 export type AssigneeInfo = {
   id: string;
@@ -65,7 +82,12 @@ export const ASSIGNEE_SELECT = {
 } as const;
 
 // Construit l'arbre des tâches à partir d'une liste plate (celles d'un espace).
-export function buildTaskIndex(tasks: RawTask[]): {
+// `userOrder` (optionnel) applique l'ordre d'affichage personnel de l'utilisateur
+// à chaque fratrie (racines et enfants) ; absent, l'ordre reçu est conservé.
+export function buildTaskIndex(
+  tasks: RawTask[],
+  userOrder?: Map<string, number>,
+): {
   roots: TaskNode[];
   byId: Map<string, TaskNode>;
 } {
@@ -84,12 +106,20 @@ export function buildTaskIndex(tasks: RawTask[]): {
       children: [],
     });
   }
-  const roots: TaskNode[] = [];
+  let roots: TaskNode[] = [];
   for (const t of tasks) {
     const node = byId.get(t.id)!;
     const parent = t.parentId ? byId.get(t.parentId) : undefined;
     if (parent) parent.children.push(node);
     else roots.push(node);
+  }
+  // Ordre d'affichage personnel : trie chaque fratrie selon les préférences de
+  // l'utilisateur (les enfants de chaque nœud, puis les racines).
+  if (userOrder && userOrder.size > 0) {
+    for (const node of byId.values()) {
+      node.children = applyUserOrder(node.children, userOrder);
+    }
+    roots = applyUserOrder(roots, userOrder);
   }
   return { roots, byId };
 }

@@ -4,6 +4,8 @@ import { requireUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { logout } from "@/lib/actions/auth";
 import { countNewEventGroups } from "@/lib/events";
+import { getUserOrder } from "@/lib/task-order";
+import { applyUserOrder } from "@/lib/task-tree";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
 import { NavLinks } from "@/components/NavLinks";
@@ -57,11 +59,23 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
             { workspaceId: { in: ownerWorkspaceIds } },
           ],
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
         select: { id: true, title: true },
       },
     },
   });
+
+  // Ordre d'affichage PERSONNEL des projets dans le menu : chaque utilisateur
+  // trie les projets d'un espace à sa guise (via le réordonnancement), ce qui se
+  // reflète ici. Les projets non triés suivent l'ordre partagé par défaut.
+  const menuOrder = await getUserOrder(
+    user.id,
+    workspaces.flatMap((w) => w.tasks.map((t) => t.id)),
+  );
+  const orderedWorkspaces = workspaces.map((w) => ({
+    ...w,
+    tasks: applyUserOrder(w.tasks, menuOrder),
+  }));
 
   // Nombre de discussions non lues (parmi les tâches encore suivies).
   const follows = await prisma.taskFollow.findMany({
@@ -131,7 +145,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         />
 
         <WorkspaceNav
-          workspaces={workspaces}
+          workspaces={orderedWorkspaces}
           initialActiveId={activeWorkspaceId}
           labels={{ title: t.nav.spaces, newWorkspace: t.nav.newWorkspace, noProject: t.nav.noProject }}
         />

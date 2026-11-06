@@ -325,10 +325,11 @@ export async function setTaskStatus(
   return undefined;
 }
 
-// Réordonne une fratrie : applique l'ordre reçu (ids) en position 0..n.
-// `parentId` non null = sous-tâches d'une tâche ; `parentId` null = projets
-// racine de l'espace (`workspaceId` requis dans ce cas). N'affecte que les
-// tâches réellement membres de la fratrie ciblée. Pas d'audit (déplacement #1).
+// Réordonne une fratrie selon l'ordre PERSONNEL de l'utilisateur : applique
+// l'ordre reçu (ids) en position 0..n dans TaskOrder, pour lui seul (les autres
+// utilisateurs ne sont pas affectés). `parentId` non null = sous-tâches d'une
+// tâche ; `parentId` null = projets racine de l'espace (`workspaceId` requis).
+// N'affecte que les tâches réellement membres de la fratrie. Pas d'audit (#1).
 export async function reorderTasks(
   parentId: string | null,
   orderedIds: string[],
@@ -364,12 +365,22 @@ export async function reorderTasks(
   const siblingIds = new Set(siblings.map((c) => c.id));
   const valid = orderedIds.filter((id) => siblingIds.has(id));
 
+  // Ordre personnel : on enregistre la position voulue par CET utilisateur dans
+  // TaskOrder (upsert), sans toucher le champ partagé Task.position.
   await prisma.$transaction(
-    valid.map((id, i) => prisma.task.update({ where: { id }, data: { position: i } })),
+    valid.map((id, i) =>
+      prisma.taskOrder.upsert({
+        where: { userId_taskId: { userId: user.id, taskId: id } },
+        create: { userId: user.id, taskId: id, position: i },
+        update: { position: i },
+      }),
+    ),
   );
 
   if (parentId === null) revalidatePath(`/app/workspaces/${wsId}`);
   else revalidatePath(`/app/tasks/${parentId}`);
+  // Le menu latéral (layout) reflète aussi l'ordre personnel des projets.
+  revalidatePath("/app", "layout");
 }
 
 // Résultat d'un déplacement dans la hiérarchie (#2 / #3) : succès ou message
