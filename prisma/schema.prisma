@@ -72,6 +72,7 @@ enum TaskActivityType {
   DESCRIPTION_CHANGED
   SUBTASK_ADDED
   SUBTASK_REMOVED
+  REPARENTED // tâche déplacée dans la hiérarchie (changement de parent, intra-projet)
   COMMENT_ADDED
   MENTIONED
   FOLLOWER_ADDED // ajouté comme suiveur d'une tâche (événement ciblé)
@@ -149,6 +150,8 @@ model User {
   ideaVotes     IdeaVote[]
   ideaComments  IdeaComment[] @relation("IdeaCommentAuthor")
   recoveryActions RecoveryAction[] @relation("RecoveryActor")
+  // Ordre d'affichage personnel des fratries de tâches (projets et sous-tâches).
+  taskOrders    TaskOrder[]  @relation("UserTaskOrders")
 
   @@index([email])
 }
@@ -430,10 +433,32 @@ model Task {
   decisions  Decision[]
   // Membres explicitement autorisés (projet restreint ; tâche racine uniquement).
   access     ProjectAccess[] @relation("ProjectAccess")
+  // Ordre d'affichage personnel de cette tâche dans sa fratrie, par utilisateur.
+  userOrders TaskOrder[] @relation("TaskUserOrders")
 
   @@index([workspaceId])
   @@index([assigneeId])
   @@index([parentId])
+}
+
+// --- Ordre d'affichage personnel d'une tâche dans sa fratrie ---
+// Chaque utilisateur peut trier les projets d'un espace et les sous-tâches d'une
+// tâche selon son propre ordre, sans impacter les autres. Une ligne = la position
+// (0..n) d'une tâche dans sa fratrie, pour un utilisateur donné. Les tâches sans
+// ligne pour cet utilisateur sont affichées après les tâches ordonnées, dans
+// l'ordre partagé par défaut (champ Task.position puis date de création).
+model TaskOrder {
+  id       String @id @default(cuid())
+  position Int
+
+  userId String
+  user   User   @relation("UserTaskOrders", fields: [userId], references: [id], onDelete: Cascade)
+  taskId String
+  task   Task   @relation("TaskUserOrders", fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
+  @@index([userId])
+  @@index([taskId])
 }
 
 // --- Accès à un projet restreint ---

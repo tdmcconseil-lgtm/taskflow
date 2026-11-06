@@ -5,6 +5,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { getTaskView } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { getUserOrder } from "@/lib/task-order";
 import { UserAvatar } from "@/components/UserAvatar";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
@@ -57,10 +58,11 @@ export default async function WorkspacePage({
         },
       },
     }),
-    // Projets = tâches de 1er niveau, du plus récent au plus ancien.
+    // Projets = tâches de 1er niveau. Ordre manuel (position) d'abord, puis du
+    // plus récent au plus ancien à position égale (réordonnables en mode édition).
     prisma.task.findMany({
       where: { workspaceId },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
       select: {
         id: true,
         title: true,
@@ -86,7 +88,9 @@ export default async function WorkspacePage({
   ]);
   if (!workspace) notFound();
 
-  const { roots } = buildTaskIndex(allTasks as RawTask[]);
+  // Ordre d'affichage personnel de l'utilisateur (projets et sous-tâches).
+  const userOrder = await getUserOrder(user.id, allTasks.map((t) => t.id));
+  const { roots } = buildTaskIndex(allTasks as RawTask[], userOrder);
   const isAdmin = membership.role === "OWNER" || membership.role === "ADMIN";
   // Confidentialité stricte : seul l'OWNER voit tous les projets de l'espace.
   const seesAllProjects = membership.role === "OWNER";
@@ -126,6 +130,13 @@ export default async function WorkspacePage({
       toggleBase={`/app/workspaces/${workspace.id}`}
       newTaskHref={isArchived ? null : `/app/tasks/new?workspace=${workspace.id}`}
       newTaskLabel={t.task.newProject}
+      workspaceId={workspace.id}
+      reorderScope={{
+        parentId: null,
+        parentTitle: workspace.name,
+        grandParentId: null,
+        grandParentTitle: null,
+      }}
       followedIds={followedIds}
       emptyLabel={t.task.noProjects}
     />

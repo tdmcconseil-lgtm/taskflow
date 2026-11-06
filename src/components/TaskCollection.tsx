@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
 import { KanbanBoard, type BoardTask } from "@/components/KanbanBoard";
 import { TaskRow } from "@/components/TaskRow";
 import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
+import { HierarchyEditor, type HierarchyScope } from "@/components/HierarchyEditor";
 import { TypeIcon } from "@/components/TypeIcon";
 import { setTaskView } from "@/lib/actions/view";
 import type { TaskNode } from "@/lib/task-tree";
@@ -21,7 +23,8 @@ export function TaskCollection({
   newTaskHref,
   newTaskLabel,
   emptyLabel,
-  reorderParentId,
+  workspaceId,
+  reorderScope,
   followedIds,
 }: {
   roots: TaskNode[];
@@ -30,13 +33,34 @@ export function TaskCollection({
   newTaskHref?: string | null;
   newTaskLabel?: string;
   emptyLabel: string;
-  // Si fourni, la vue Liste devient une liste à plat réordonnable (sous-tâches).
-  reorderParentId?: string | null;
+  // Espace de la collection (nécessaire pour réordonner les projets racine).
+  workspaceId: string;
+  // Si fourni, active le mode « édition de la hiérarchie » (réordonner, et pour
+  // les sous-tâches remonter / rattacher). `parentId` null = projets racine.
+  reorderScope?: HierarchyScope;
   // Identifiants des tâches auxquelles l'utilisateur est abonné (œil 👁).
   followedIds?: Set<string>;
 }) {
   const t = useT();
   const locale = useLocale();
+  const [editing, setEditing] = useState(false);
+
+  // Éléments de la fratrie au format liste (réutilisé par la vue Liste et par
+  // l'éditeur de hiérarchie).
+  const siblingItems = (): SubtaskItem[] =>
+    roots.map((n) => ({
+      id: n.id,
+      title: n.title,
+      description: n.description,
+      status: n.status,
+      priority: n.priority,
+      assignee: n.assignee,
+      due: formatDate(n.dueDate, locale),
+      overdue: isOverdue(n.dueDate) && n.status !== "DONE",
+      childCount: n.children.length,
+      attachmentCount: n.attachmentCount,
+      followed: followedIds?.has(n.id) ?? false,
+    }));
   const boardTasks: BoardTask[] = roots.map((n) => ({
     id: n.id,
     title: n.title,
@@ -73,32 +97,56 @@ export function TaskCollection({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <form
-          action={setTaskView}
-          className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
-        >
-          <input type="hidden" name="back" value={toggleBase} />
-          <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
-            {t.task.viewBoard}
-          </button>
-          <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
-            {t.task.viewList}
-          </button>
-          <button type="submit" name="view" value="arborescence" className={tabClass(view === "arborescence")}>
-            {t.task.viewTree}
-          </button>
-        </form>
-        {newTaskHref && (
-          <ButtonLink href={newTaskHref} variant="primary">
-            {newTaskLabel}
-          </ButtonLink>
+        {editing ? (
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-300">
+            <span aria-hidden>↕</span>
+            {t.hierarchy.editingBanner}
+          </span>
+        ) : (
+          <form
+            action={setTaskView}
+            className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
+          >
+            <input type="hidden" name="back" value={toggleBase} />
+            <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
+              {t.task.viewBoard}
+            </button>
+            <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
+              {t.task.viewList}
+            </button>
+            <button type="submit" name="view" value="arborescence" className={tabClass(view === "arborescence")}>
+              {t.task.viewTree}
+            </button>
+          </form>
         )}
+        <div className="flex items-center gap-2">
+          {reorderScope && roots.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setEditing((v) => !v)}
+              className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+                editing
+                  ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
+                  : "border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              }`}
+            >
+              {editing ? t.hierarchy.editDone : t.hierarchy.editToggle}
+            </button>
+          )}
+          {!editing && newTaskHref && (
+            <ButtonLink href={newTaskHref} variant="primary">
+              {newTaskLabel}
+            </ButtonLink>
+          )}
+        </div>
       </div>
 
       {roots.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
           {emptyLabel}
         </p>
+      ) : editing && reorderScope ? (
+        <HierarchyEditor scope={reorderScope} workspaceId={workspaceId} items={siblingItems()} />
       ) : view === "arborescence" ? (
         <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-sm">
@@ -147,24 +195,11 @@ export function TaskCollection({
         </div>
       ) : view === "tableau" ? (
         <KanbanBoard tasks={boardTasks} />
-      ) : reorderParentId ? (
+      ) : reorderScope ? (
         <ReorderableSubtasks
-          parentId={reorderParentId}
-          items={roots.map(
-            (n): SubtaskItem => ({
-              id: n.id,
-              title: n.title,
-              description: n.description,
-              status: n.status,
-              priority: n.priority,
-              assignee: n.assignee,
-              due: formatDate(n.dueDate, locale),
-              overdue: isOverdue(n.dueDate) && n.status !== "DONE",
-              childCount: n.children.length,
-              attachmentCount: n.attachmentCount,
-              followed: followedIds?.has(n.id) ?? false,
-            }),
-          )}
+          parentId={reorderScope.parentId}
+          workspaceId={workspaceId}
+          items={siblingItems()}
         />
       ) : (
         <div className="space-y-6">

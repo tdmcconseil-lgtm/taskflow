@@ -25,6 +25,7 @@ import { TaskDecisions } from "@/components/TaskDecisions";
 import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
+import { getUserOrder } from "@/lib/task-order";
 import { getTaskView, getTaskTab, parseTaskTab } from "@/lib/view";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
@@ -171,7 +172,9 @@ export default async function TaskDetailPage({
     ...t,
     attachmentCount: t._count.documentLinks,
   }));
-  const { byId } = buildTaskIndex(rawTasks);
+  // Ordre d'affichage personnel de l'utilisateur (sous-tâches de chaque niveau).
+  const userOrder = await getUserOrder(user.id, allTasks.map((rt) => rt.id));
+  const { byId } = buildTaskIndex(rawTasks, userOrder);
   const children = byId.get(task.id)?.children ?? [];
 
   // Sous-tâches directes que l'utilisateur courant suit (pour l'œil 👁).
@@ -444,7 +447,13 @@ export default async function TaskDetailPage({
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel={t.task.newSubtask}
-            reorderParentId={task.id}
+            workspaceId={task.workspaceId}
+            reorderScope={{
+              parentId: task.id,
+              parentTitle: task.title,
+              grandParentId: task.parentId,
+              grandParentTitle: ancestors[ancestors.length - 1]?.title ?? null,
+            }}
             followedIds={followedChildIds}
             emptyLabel={isTopLevel ? t.task.noTasksInProject : t.task.noSubtasks}
           />
