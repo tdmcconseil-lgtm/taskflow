@@ -544,6 +544,8 @@ const de: Dictionary = {
   descriptionReveal: {
     show: "Beschreibung anzeigen",
     hide: "Beschreibung ausblenden",
+    more: "Mehr anzeigen",
+    less: "Weniger anzeigen",
   },
   newWorkspace: {
     back: "Startseite",
