@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { AddMemberForm } from "@/components/AddMemberForm";
 import { cardClass } from "@/components/ui";
 import { getDictionary } from "@/lib/i18n/server";
-import { formatPrice } from "@/lib/plans";
+import { formatPrice, FREE_SEATS } from "@/lib/plans";
 import { maxSeats, isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 
 export default async function NewMemberPage({
@@ -67,7 +67,7 @@ export default async function NewMemberPage({
           )}
           {paid && (
             <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">
-              {t.members.billedUserMonthWarning}
+              {t.members.billedUserMonthWarning.replace("{free}", String(FREE_SEATS))}
             </p>
           )}
         </div>

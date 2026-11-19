@@ -6,6 +6,7 @@ import { buttonClass } from "@/components/Button";
 import {
   PLANS,
   PLAN_DEFS,
+  FREE_SEATS,
   formatPrice,
   formatStorageMb,
   type WorkspacePlan,
@@ -59,6 +60,12 @@ export function PricingTable() {
 
   return (
     <div>
+      {/* Franchise : les cinq premiers utilisateurs sont gratuits sur toutes les
+          offres — message mis en avant au-dessus de la grille. */}
+      <p className="mb-6 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-center text-sm font-medium text-indigo-800 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+        {t.landing.franchiseBanner.replace("{free}", String(FREE_SEATS))}
+      </p>
+
       {/* Cartes d'offres */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {PLANS.map((plan) => {
@@ -90,6 +97,13 @@ export function PricingTable() {
                   {cents === 0 ? "" : t.landing.perMonth}
                 </span>
               </div>
+              {/* Offres payantes : rappel que le prix ne s'applique qu'au-delà de
+                  la franchise de sièges gratuits. */}
+              {cents > 0 && (
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  {t.landing.priceAboveFranchise.replace("{free}", String(FREE_SEATS))}
+                </p>
+              )}
 
               <ul className="mt-6 space-y-2 text-sm">
                 <li className="flex justify-between gap-3">

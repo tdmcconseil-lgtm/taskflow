@@ -26,7 +26,7 @@ import { prisma } from "@/lib/prisma";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 import { billableUserCount } from "@/lib/billing/usage";
 import { chargeInvoiceViaStripe } from "@/lib/billing/stripe-charge";
-import type { WorkspacePlan } from "@/lib/plans";
+import { billableSeats, type WorkspacePlan } from "@/lib/plans";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 // Échéance d'une facture mensuelle : 30 jours après la fin du mois facturé.
@@ -42,13 +42,16 @@ export function dayCount(start: Date, end: Date): number {
   return Math.max(0, Math.round((end.getTime() - start.getTime()) / DAY_MS));
 }
 
-// Montant d'un segment en centimes : utilisateurs × prix unitaire × prorata, arrondi.
+// Montant d'un segment en centimes : sièges FACTURÉS × prix unitaire × prorata,
+// arrondi. La franchise FREE_SEATS est retranchée ici (billableSeats) : on reçoit
+// le nombre d'utilisateurs ACTIFS sur le segment et on ne facture que ceux au-delà
+// de la franchise. 5 actifs ou moins → 0 €.
 export function segmentAmountCents(
-  billableUsers: number,
+  activeUsers: number,
   unitCents: number,
   days: number,
 ): number {
-  return Math.round(billableUsers * unitCents * prorata(days));
+  return Math.round(billableSeats(activeUsers) * unitCents * prorata(days));
 }
 
 // Premier jour (minuit UTC) du mois civil de `d`. Les dates de facturation sont
@@ -153,7 +156,7 @@ export async function runNightlyForWorkspace(
 
   const rows = await Promise.all(
     plan.segments.map(async (seg) => {
-      const users = await billableUserCount(ws.id, seg.start, seg.end);
+      const active = await billableUserCount(ws.id, seg.start, seg.end);
       const unit = unitPriceCents(seg.plan);
       const days = dayCount(seg.start, seg.end);
       return {
@@ -162,9 +165,11 @@ export async function runNightlyForWorkspace(
         startedAt: seg.start,
         endedAt: seg.end,
         days,
-        billableUsers: users,
+        // Sièges facturés (franchise FREE_SEATS retranchée) : le montant du segment
+        // en découle directement (sièges facturés × prix × prorata).
+        billableUsers: billableSeats(active),
         unitPriceCents: unit,
-        amountCents: segmentAmountCents(users, unit, days),
+        amountCents: segmentAmountCents(active, unit, days),
       };
     }),
   );

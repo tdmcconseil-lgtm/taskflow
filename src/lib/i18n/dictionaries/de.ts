@@ -190,7 +190,7 @@ const de: Dictionary = {
     seatUsage: "{used} / {max} Plätze reserviert",
     perMemberCost: "Jedes aktive Mitglied: {price} / Monat",
     billedUserMonthWarning:
-      "Hinweis: Jedes Mitglied, das du hinzufügst, zählt als ein voller Nutzermonat zum vollen Preis, auch wenn es nur kurz aktiv ist und gleich danach deaktiviert wird.",
+      "Die ersten {free} Nutzer sind kostenlos. Darüber hinaus zählt jedes Mitglied, das du hinzufügst, als ein voller Nutzermonat zum vollen Preis, auch wenn es nur kurz aktiv ist und gleich danach deaktiviert wird.",
     invite: "Mitglied einladen",
     you: "(du)",
     deactivated: "deaktiviert",
@@ -307,6 +307,10 @@ const de: Dictionary = {
       "Du näherst dich deinem Tariflimit für: {items}. Erwäge ein Upgrade deines Abonnements.",
     pendingPlanNotice:
       "Wechsel zu {plan} gespeichert: Er wird beim nächsten nächtlichen Lauf wirksam.",
+    planErrorPaidMinSeats:
+      "Der kostenlose Tarif deckt bis zu {free} Nutzer ab — dein Bereich hat {n}. Ein kostenpflichtiger Tarif berechnet nur Nutzer über {free}; du kannst wechseln, sobald die {free} kostenlosen Plätze belegt sind.",
+    paidMinSeatsWarning:
+      "Der kostenlose Tarif deckt bis zu {free} Nutzer ab — du hast {m}. Ein kostenpflichtiger Tarif lohnt sich erst darüber; bleib vorerst im kostenlosen Tarif.",
   },
   billingInfo: {
     title: "So funktioniert die Abrechnung",
@@ -325,12 +329,16 @@ const de: Dictionary = {
         body: "Jeder, der auch nur kurz im Monat einen Platz hatte, zählt als eine Einheit zum vollen Preis (keine anteilige Berechnung). Derselbe Nutzer zählt nur einmal, auch wenn er mehrfach hinzugefügt und entfernt wird.",
       },
       {
+        title: "Die ersten 5 sind kostenlos",
+        body: "Für alle Tarife gilt ein Freikontingent von 5 Nutzern: Du zahlst nur für Nutzer ab dem sechsten. Ein Team mit 5 Personen oder weniger zahlt nichts.",
+      },
+      {
         title: "Preise",
-        body: "Kostenlos: 0 €. PRO: 3 € pro Nutzer und Monat. BUSINESS: 6 € pro Nutzer und Monat.",
+        body: "Kostenlos: 0 €. PRO: 3 € pro Nutzer und Monat, ab 5. BUSINESS: 6 € pro Nutzer und Monat, ab 5.",
       },
       {
         title: "Kostenloser Tarif",
-        body: "Auf 3 Mitglieder begrenzt, ganz ohne Rechnung. Darüber hinaus wechsle zu einem kostenpflichtigen Tarif.",
+        body: "Bis zu 5 Mitglieder, ganz ohne Rechnung. Darüber hinaus wechsle zu einem kostenpflichtigen Tarif.",
       },
       {
         title: "Dein Team rotieren",
@@ -395,8 +403,10 @@ const de: Dictionary = {
       "Bei verspäteter Zahlung fallen Verzugszinsen zum gesetzlichen Satz sowie eine pauschale Beitreibungsgebühr von 40 € an (Geschäftskunden).",
     currentEstimateNote:
       "Schätzung zum jetzigen Zeitpunkt: Der endgültige Betrag steht mit dem Monatsabschluss fest.",
-    usersSectionTitle: "Abgerechnete Nutzer",
-    empty: "Kein Nutzer in diesem Zeitraum abgerechnet.",
+    usersSectionTitle: "Aktive Nutzer im Zeitraum",
+    franchiseNote:
+      "Die ersten {free} Nutzer sind kostenlos inbegriffen: {billed} abgerechnet von {active} aktiven.",
+    empty: "Kein aktiver Nutzer in diesem Zeitraum.",
     anonymized: "Anonymisiertes Konto",
     stillActive: "noch aktiv",
   },
@@ -786,6 +796,8 @@ const de: Dictionary = {
     advMultiDesc: "Oberfläche auf Englisch, Französisch und Spanisch, mit einer Einstellung pro Nutzer.",
     offersTitle: "Einfache Tarife",
     offersSubtitle: "Pauschaler Preis pro Nutzer, keine Mengenrabatte.",
+    franchiseBanner: "Deine ersten {free} Nutzer sind kostenlos — du zahlst nur für die weiteren.",
+    priceAboveFranchise: "pro Nutzer ab {free}",
     billingMonthly: "Monatlich",
     billingYearly: "Jährlich",
     billingYearlyNote: "2 Monate gratis",
@@ -800,7 +812,7 @@ const de: Dictionary = {
     rowStorage: "Speicher",
     rowSpecifics: "Inklusive",
     freePrice: "0 €",
-    freeSeats: "bis zu 3",
+    freeSeats: "bis zu 5",
     freeStorage: "2 GB",
     freeSpec: "Das Wesentliche für den Einstieg",
     proSeats: "Unbegrenzt",

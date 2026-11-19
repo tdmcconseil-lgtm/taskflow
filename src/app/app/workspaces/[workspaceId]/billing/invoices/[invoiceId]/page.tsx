@@ -7,7 +7,7 @@ import { type Locale } from "@/lib/i18n/config";
 import { cardClass } from "@/components/ui";
 import { ButtonLink } from "@/components/Button";
 import { formatDate, formatMonth } from "@/lib/labels";
-import { formatPrice, type WorkspacePlan } from "@/lib/plans";
+import { formatPrice, billableSeats, FREE_SEATS, type WorkspacePlan } from "@/lib/plans";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 import { billableUsersDetailed, currentMonthPeriod } from "@/lib/billing/usage";
 
@@ -39,6 +39,10 @@ export default async function InvoiceDetailPage({
     if (!workspace || !isPaidPlan(workspace.plan) || !workspace.billingCycleStart) notFound();
     const month = currentMonthPeriod(workspace.billingCycleStart)!;
     const users = await billableUsersDetailed(workspaceId, month.start, month.end);
+    // Franchise FREE_SEATS : seuls les utilisateurs actifs au-delà du seuil sont
+    // facturés. La liste ci-dessous reste exhaustive (tous les actifs) ; le montant
+    // et le compte « facturés » retranchent la franchise.
+    const billed = billableSeats(users.length);
     return (
       <InvoiceView
         workspaceId={workspaceId}
@@ -49,8 +53,9 @@ export default async function InvoiceDetailPage({
         plans={[workspace.plan]}
         periodStart={month.start}
         periodEnd={month.end}
-        amountCents={users.length * unitPriceCents(workspace.plan)}
-        billedUsers={users.length}
+        amountCents={billed * unitPriceCents(workspace.plan)}
+        billedUsers={billed}
+        activeUsers={users.length}
         isCurrent={true}
         status={null}
         dueAt={null}
@@ -90,7 +95,8 @@ export default async function InvoiceDetailPage({
       periodStart={invoice.periodStart}
       periodEnd={invoice.periodEnd}
       amountCents={invoice.amountCents}
-      billedUsers={users.length}
+      billedUsers={billableSeats(users.length)}
+      activeUsers={users.length}
       isCurrent={false}
       status={invoice.status}
       dueAt={invoice.dueAt}
@@ -110,6 +116,7 @@ function InvoiceView({
   periodEnd,
   amountCents,
   billedUsers,
+  activeUsers,
   isCurrent,
   status,
   dueAt,
@@ -125,7 +132,10 @@ function InvoiceView({
   periodStart: Date;
   periodEnd: Date;
   amountCents: number;
+  // Sièges facturés (franchise FREE_SEATS retranchée) et utilisateurs actifs
+  // (liste exhaustive) : les deux peuvent différer (ex. 10 actifs → 5 facturés).
   billedUsers: number;
+  activeUsers: number;
   isCurrent: boolean;
   status: "PENDING" | "PAID" | null;
   dueAt: Date | null;
@@ -211,6 +221,16 @@ function InvoiceView({
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           {v.usersSectionTitle}
         </h2>
+        {/* Franchise : les cinq premiers utilisateurs sont gratuits. On rappelle,
+            quand la liste dépasse ce seuil, combien sont inclus et combien facturés. */}
+        {activeUsers > 0 && (
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            {v.franchiseNote
+              .replace("{free}", String(Math.min(activeUsers, FREE_SEATS)))
+              .replace("{billed}", String(billedUsers))
+              .replace("{active}", String(activeUsers))}
+          </p>
+        )}
         {users.length === 0 ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">{v.empty}</p>
         ) : (

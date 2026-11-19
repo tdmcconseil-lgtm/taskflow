@@ -190,7 +190,7 @@ const es: Dictionary = {
     seatUsage: "{used} / {max} puestos reservados",
     perMemberCost: "Cada miembro activo: {price} / mes",
     billedUserMonthWarning:
-      "Atención: cualquier miembro que añadas cuenta como un usuario-mes facturado a precio completo, aunque esté activo solo un instante y aunque lo desactives justo después.",
+      "Los primeros {free} usuarios son gratis. Por encima, cualquier miembro que añadas cuenta como un usuario-mes facturado a precio completo, aunque esté activo solo un instante y aunque lo desactives justo después.",
     invite: "Invitar a un miembro",
     you: "(tú)",
     deactivated: "desactivado",
@@ -307,6 +307,10 @@ const es: Dictionary = {
       "Te acercas al límite de tu plan en: {items}. Considera mejorar la suscripción.",
     pendingPlanNotice:
       "Cambio a {plan} registrado: se aplicará en el próximo proceso nocturno.",
+    planErrorPaidMinSeats:
+      "El plan gratuito cubre hasta {free} usuarios — tu espacio tiene {n}. Un plan de pago solo factura los usuarios por encima de {free}; podrás cambiar cuando las {free} plazas gratuitas estén ocupadas.",
+    paidMinSeatsWarning:
+      "El plan gratuito cubre hasta {free} usuarios — tienes {m}. Un plan de pago solo es útil por encima; quédate en el plan gratuito por ahora.",
   },
   billingInfo: {
     title: "Cómo funciona la facturación",
@@ -325,12 +329,16 @@ const es: Dictionary = {
         body: "Toda persona que haya tenido un asiento, aunque sea un instante del mes, cuenta como una unidad, a precio completo (sin prorrateo). Un mismo usuario cuenta una sola vez, aunque se añada y se quite varias veces.",
       },
       {
+        title: "Los 5 primeros son gratis",
+        body: "Se aplica una franquicia de 5 usuarios a todos los planes: solo pagas los usuarios a partir del quinto. Un equipo de 5 personas o menos no paga nada.",
+      },
+      {
         title: "Los precios",
-        body: "Gratis: 0 €. PRO: 3 € por usuario y mes. BUSINESS: 6 € por usuario y mes.",
+        body: "Gratis: 0 €. PRO: 3 € por usuario y mes, a partir de 5. BUSINESS: 6 € por usuario y mes, a partir de 5.",
       },
       {
         title: "Plan gratuito",
-        body: "Limitado a 3 miembros, sin ninguna factura. Por encima, pasa a un plan de pago.",
+        body: "Hasta 5 miembros, sin ninguna factura. Por encima, pasa a un plan de pago.",
       },
       {
         title: "Rota tu equipo",
@@ -395,8 +403,10 @@ const es: Dictionary = {
       "Todo retraso en el pago conlleva intereses de demora al tipo legal vigente, más una indemnización fija de 40 € por gastos de cobro (clientes profesionales).",
     currentEstimateNote:
       "Estimación en este momento: el importe definitivo se fija al cierre del mes.",
-    usersSectionTitle: "Usuarios facturados",
-    empty: "Ningún usuario facturado en este periodo.",
+    usersSectionTitle: "Usuarios activos en el periodo",
+    franchiseNote:
+      "Los primeros {free} usuarios están incluidos gratis: {billed} facturado(s) de {active} activo(s).",
+    empty: "Ningún usuario activo en este periodo.",
     anonymized: "Cuenta anonimizada",
     stillActive: "aún activo",
   },
@@ -786,6 +796,8 @@ const es: Dictionary = {
     advMultiDesc: "Interfaz en español, francés e inglés, con preferencia por usuario.",
     offersTitle: "Planes sencillos",
     offersSubtitle: "Tarifa plana por usuario, sin descuentos por volumen.",
+    franchiseBanner: "Tus primeros {free} usuarios son gratis — solo pagas los demás.",
+    priceAboveFranchise: "por usuario a partir de {free}",
     billingMonthly: "Mensual",
     billingYearly: "Anual",
     billingYearlyNote: "2 meses gratis",
@@ -800,7 +812,7 @@ const es: Dictionary = {
     rowStorage: "Almacenamiento",
     rowSpecifics: "Incluido",
     freePrice: "0 €",
-    freeSeats: "hasta 3",
+    freeSeats: "hasta 5",
     freeStorage: "2 GB",
     freeSpec: "Lo esencial para empezar",
     proSeats: "Ilimitados",

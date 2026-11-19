@@ -6,6 +6,8 @@ import {
   PLANS,
   PLAN_DEFS,
   PLAN_LIMITS,
+  FREE_SEATS,
+  billableSeats,
   formatPrice,
   formatStorageMb,
   type WorkspacePlan,
@@ -65,8 +67,13 @@ export function PlanAndBudgetForm({
   const seats = maxSeats(sel, paid ? (validAmount ? cents : null) : null);
   const seatsLabel = Number.isFinite(seats) ? String(seats) : t.usage.unlimited;
   const over = !capMissing && activeMembers > seats;
-  // Plafond minimal requis = membres actifs × prix unitaire de l'offre choisie.
-  const minCapLabel = formatPrice(activeMembers * PLAN_DEFS[sel].priceCentsPerUser);
+  // Plafond minimal requis = sièges FACTURÉS (franchise retranchée) × prix unitaire.
+  const minCapLabel = formatPrice(billableSeats(activeMembers) * PLAN_DEFS[sel].priceCentsPerUser);
+  // On ne peut activer une offre payante (depuis l'offre gratuite) qu'une fois le
+  // plafond gratuit de FREE_SEATS utilisateurs atteint (mêmes règles que le
+  // serveur). Le serveur bloque de toute façon ; on prévient avant.
+  const curPaid = PLAN_DEFS[plan].priceCentsPerUser > 0;
+  const paidTooFew = paid && !curPaid && sel !== plan && activeMembers < FREE_SEATS;
 
   // Sous-titre de la formule : nombre max d'utilisateurs (limite du palier) et
   // stockage autorisé (« par utilisateur » pour les offres payantes).
@@ -176,17 +183,22 @@ export function PlanAndBudgetForm({
           (hauteur stable, pas de saut de page) — rouge si les paramètres sont
           incompatibles (validation bloquée), vert sinon. */}
       {editing &&
-        (capMissing || over ? (
+        (capMissing || over || paidTooFew ? (
           <p className="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-            {capMissing
-              ? t.usage.capRequired
-              : paid
-                ? t.usage.seatsOverWarning
-                    .replace("{m}", String(activeMembers))
-                    .replace("{min}", minCapLabel)
-                : t.usage.seatsOverWarningFree
-                    .replace("{m}", String(activeMembers))
-                    .replace("{seats}", seatsLabel)}
+            {paidTooFew
+              ? t.usage.paidMinSeatsWarning
+                  .replace("{m}", String(activeMembers))
+                  .replace("{free}", String(FREE_SEATS))
+                  .replace("{min}", String(FREE_SEATS + 1))
+              : capMissing
+                ? t.usage.capRequired
+                : paid
+                  ? t.usage.seatsOverWarning
+                      .replace("{m}", String(activeMembers))
+                      .replace("{min}", minCapLabel)
+                  : t.usage.seatsOverWarningFree
+                      .replace("{m}", String(activeMembers))
+                      .replace("{seats}", seatsLabel)}
           </p>
         ) : (
           <p className="rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-950/50 dark:text-green-300">
@@ -213,7 +225,7 @@ export function PlanAndBudgetForm({
           >
             {t.usage.cancel}
           </button>
-          <SubmitButton disabled={capMissing || over}>{t.usage.applyChange}</SubmitButton>
+          <SubmitButton disabled={capMissing || over || paidTooFew}>{t.usage.applyChange}</SubmitButton>
         </div>
       )}
     </form>
