@@ -1014,6 +1014,103 @@ const es: Dictionary = {
     colMembers: "Miembros activos",
     colCreated: "Creado el",
   },
+
+  discovery: {
+    menuToggle: "Modo descubrimiento",
+    settingsTitle: "Modo descubrimiento",
+    settingsIntro:
+      "Ayuda para empezar: un recorrido de bienvenida y luego burbujas «?» en las funciones clave. Se puede desactivar en cualquier momento.",
+    settingsToggle: "Activar el modo descubrimiento",
+    replayTour: "Volver a ver el recorrido de bienvenida",
+    badgeLabel: "Ayuda",
+    progress: "{current}/{total}",
+    gotIt: "Entendido",
+    dismiss: "No volver a mostrar",
+    tour: {
+      skip: "Omitir",
+      next: "Siguiente",
+      back: "Anterior",
+      done: "Finalizar",
+      step: "Paso {current} de {total}",
+      endNote: "El modo descubrimiento sigue activo: busca los ? para saber más.",
+      steps: {
+        welcome: {
+          title: "Bienvenido",
+          body: "Este es tu espacio getRIDA. En 4 pasos, descubre lo esencial.",
+        },
+        create: {
+          title: "Crear",
+          body: "Crea un proyecto, luego tareas —y subtareas, sin límite de profundidad.",
+        },
+        organize: {
+          title: "Organizar",
+          body: "Asigna, pon fechas, prioriza. La ficha de la tarea lo reúne todo.",
+        },
+        visualize: {
+          title: "Visualizar",
+          body: "Cambia entre vista Tablero y vista Lista; reordena en la jerarquía.",
+        },
+        collaborate: {
+          title: "Colaborar",
+          body: "Invita a tus colegas y elige quién accede a cada proyecto.",
+        },
+      },
+    },
+    hints: {
+      "projet-tache": {
+        title: "Proyectos y tareas",
+        body: "Un proyecto contiene tareas; una tarea puede tener subtareas, sin límite de profundidad.",
+      },
+      "nouvelle-tache": {
+        title: "Añadir una tarea",
+        body: "Crea una tarea aquí, ponle un título y luego completa su ficha.",
+      },
+      "sous-tache": {
+        title: "Subtareas",
+        body: "Divide una tarea en subtareas para seguir el avance paso a paso.",
+      },
+      assigner: {
+        title: "Asignar",
+        body: "Asigna la tarea a un miembro: la encontrará en su lista.",
+      },
+      echeance: {
+        title: "Fecha límite",
+        body: "Fija una fecha límite; las tareas atrasadas se señalan.",
+      },
+      priorite: {
+        title: "Prioridad",
+        body: "Indica la importancia para que el equipo sepa por dónde empezar.",
+      },
+      description: {
+        title: "Descripción",
+        body: "La primera línea se ve de un vistazo; «Mostrar más» despliega el resto.",
+      },
+      vues: {
+        title: "Cambiar de vista",
+        body: "Cambia entre vista Tablero (kanban) y vista Lista según tu forma de trabajar.",
+      },
+      reordonner: {
+        title: "Reorganizar",
+        body: "En modo edición, sube/baja una tarea o cambia su vinculación.",
+      },
+      inviter: {
+        title: "Invitar a un miembro",
+        body: "Añade a tus colegas por correo. A partir de 5 usuarios, el espacio pasa a un plan de pago.",
+      },
+      acces: {
+        title: "Control de acceso",
+        body: "Elige quién ve este proyecto: todo el espacio o solo los miembros invitados.",
+      },
+      idees: {
+        title: "Ideas",
+        body: "Propón y vota ideas de mejora, separadas de las tareas del día a día.",
+      },
+      facturation: {
+        title: "Plan y facturación",
+        body: "Consulta tu plan, los usuarios facturados y tus facturas.",
+      },
+    },
+  },
 };
 
 export default es;

@@ -6,6 +6,7 @@ import { getRootProject, canManageProject } from "@/lib/access";
 import { UserAvatar } from "@/components/UserAvatar";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { Button } from "@/components/Button";
+import { HintBubble } from "@/components/HintBubble";
 import { ToggleSwitch } from "@/components/ToggleSwitch";
 import { getDictionary } from "@/lib/i18n/server";
 import {
@@ -94,6 +95,7 @@ export default async function ProjectMembersPage({
       <section className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           {t.projectMembers.visibilityTitle}
+          <HintBubble anchor="acces" className="ml-1.5" />
         </h2>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
           {open ? t.projectMembers.currentlyOpen : t.projectMembers.currentlyRestricted}

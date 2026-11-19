@@ -1016,6 +1016,104 @@ const fr = {
     colMembers: "Membres actifs",
     colCreated: "Créé le",
   },
+
+  // Mode découverte — aide à la prise en main (tour de bienvenue + bulles « ? »).
+  discovery: {
+    menuToggle: "Mode découverte",
+    settingsTitle: "Mode découverte",
+    settingsIntro:
+      "L'aide à la prise en main : un tour de bienvenue, puis des bulles « ? » sur les fonctions clés. Désactivable à tout moment.",
+    settingsToggle: "Activer le mode découverte",
+    replayTour: "Revoir le tour de bienvenue",
+    badgeLabel: "Aide",
+    progress: "{current}/{total}",
+    gotIt: "Compris",
+    dismiss: "Ne plus afficher",
+    tour: {
+      skip: "Passer",
+      next: "Suivant",
+      back: "Précédent",
+      done: "Terminer",
+      step: "Étape {current} sur {total}",
+      endNote: "Le mode découverte reste actif — repérez les ? pour en savoir plus.",
+      steps: {
+        welcome: {
+          title: "Bienvenue",
+          body: "Voici votre espace getRIDA. En 4 étapes, découvrez l'essentiel.",
+        },
+        create: {
+          title: "Créer",
+          body: "Créez un projet, puis des tâches — et des sous-tâches, sans limite de profondeur.",
+        },
+        organize: {
+          title: "Organiser",
+          body: "Assignez, datez, priorisez. La fiche de tâche regroupe tout.",
+        },
+        visualize: {
+          title: "Visualiser",
+          body: "Basculez entre vue Tableau et vue Liste ; réordonnez dans la hiérarchie.",
+        },
+        collaborate: {
+          title: "Collaborer",
+          body: "Invitez vos collègues et choisissez qui accède à chaque projet.",
+        },
+      },
+    },
+    hints: {
+      "projet-tache": {
+        title: "Projets et tâches",
+        body: "Un projet contient des tâches ; une tâche peut avoir des sous-tâches, sans limite de profondeur.",
+      },
+      "nouvelle-tache": {
+        title: "Ajouter une tâche",
+        body: "Créez une tâche ici, donnez-lui un titre, puis complétez sa fiche.",
+      },
+      "sous-tache": {
+        title: "Sous-tâches",
+        body: "Découpez une tâche en sous-tâches pour suivre l'avancement étape par étape.",
+      },
+      assigner: {
+        title: "Assigner",
+        body: "Attribuez la tâche à un membre : il la retrouve dans sa liste.",
+      },
+      echeance: {
+        title: "Échéance",
+        body: "Fixez une date limite ; les tâches en retard sont signalées.",
+      },
+      priorite: {
+        title: "Priorité",
+        body: "Indiquez l'importance pour que l'équipe sache par quoi commencer.",
+      },
+      description: {
+        title: "Description",
+        body: "La première ligne s'affiche d'un coup d'œil ; « Afficher plus » déroule le reste.",
+      },
+      vues: {
+        title: "Changer de vue",
+        body: "Basculez entre vue Tableau (kanban) et vue Liste selon votre façon de travailler.",
+      },
+      reordonner: {
+        title: "Réorganiser",
+        body: "En mode édition, montez/descendez une tâche ou changez son rattachement.",
+      },
+      inviter: {
+        title: "Inviter un membre",
+        body: "Ajoutez vos collègues par email. Au-delà de 5 utilisateurs, l'espace passe en offre payante.",
+      },
+      acces: {
+        title: "Contrôle d'accès",
+        body: "Choisissez qui voit ce projet : tout l'espace, ou seulement les membres invités.",
+      },
+      idees: {
+        title: "Idées",
+        body: "Proposez et votez des idées d'amélioration, séparées des tâches du quotidien.",
+      },
+      facturation: {
+        title: "Formule & facturation",
+        body: "Suivez votre offre, les utilisateurs facturés et vos factures.",
+      },
+    },
+  },
 };
 
 export type Dictionary = typeof fr;

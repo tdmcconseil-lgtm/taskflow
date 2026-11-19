@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { NameForm, EmailForm, PasswordForm, PseudoForm } from "@/components/ProfileForms";
 import { PhotoCard } from "@/components/PhotoCard";
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { DiscoverySettings } from "@/components/DiscoverySettings";
 import { ProfileTabs } from "@/components/ProfileTabs";
 import { getEffectivePreference } from "@/lib/notify";
 import { getDictionary } from "@/lib/i18n/server";
@@ -145,6 +146,14 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
               {t.profile.notifications}
             </h2>
             <NotificationSettings pref={notifPref} />
+          </section>
+        }
+        decouverte={
+          <section className={cardClass}>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              {t.discovery.settingsTitle}
+            </h2>
+            <DiscoverySettings />
           </section>
         }
       />

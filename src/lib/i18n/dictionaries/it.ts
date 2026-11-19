@@ -1014,6 +1014,103 @@ const it: Dictionary = {
     colMembers: "Membri attivi",
     colCreated: "Creato il",
   },
+
+  discovery: {
+    menuToggle: "Modalità scoperta",
+    settingsTitle: "Modalità scoperta",
+    settingsIntro:
+      "Aiuto per iniziare: un tour di benvenuto e poi fumetti «?» sulle funzioni principali. Disattivabile in qualsiasi momento.",
+    settingsToggle: "Attiva la modalità scoperta",
+    replayTour: "Rivedere il tour di benvenuto",
+    badgeLabel: "Aiuto",
+    progress: "{current}/{total}",
+    gotIt: "Ho capito",
+    dismiss: "Non mostrare più",
+    tour: {
+      skip: "Salta",
+      next: "Avanti",
+      back: "Indietro",
+      done: "Fine",
+      step: "Passo {current} di {total}",
+      endNote: "La modalità scoperta resta attiva: cerca i ? per saperne di più.",
+      steps: {
+        welcome: {
+          title: "Benvenuto",
+          body: "Questo è il tuo spazio getRIDA. In 4 passaggi, scopri l'essenziale.",
+        },
+        create: {
+          title: "Creare",
+          body: "Crea un progetto, poi attività —e sottoattività, senza limiti di profondità.",
+        },
+        organize: {
+          title: "Organizzare",
+          body: "Assegna, imposta le date, dai priorità. La scheda dell'attività raccoglie tutto.",
+        },
+        visualize: {
+          title: "Visualizzare",
+          body: "Passa tra vista Bacheca e vista Elenco; riordina nella gerarchia.",
+        },
+        collaborate: {
+          title: "Collaborare",
+          body: "Invita i tuoi colleghi e scegli chi accede a ciascun progetto.",
+        },
+      },
+    },
+    hints: {
+      "projet-tache": {
+        title: "Progetti e attività",
+        body: "Un progetto contiene attività; un'attività può avere sottoattività, senza limiti di profondità.",
+      },
+      "nouvelle-tache": {
+        title: "Aggiungere un'attività",
+        body: "Crea un'attività qui, dalle un titolo, poi completa la sua scheda.",
+      },
+      "sous-tache": {
+        title: "Sottoattività",
+        body: "Suddividi un'attività in sottoattività per seguire l'avanzamento passo dopo passo.",
+      },
+      assigner: {
+        title: "Assegnare",
+        body: "Assegna l'attività a un membro: la ritroverà nel suo elenco.",
+      },
+      echeance: {
+        title: "Scadenza",
+        body: "Imposta una scadenza; le attività in ritardo vengono segnalate.",
+      },
+      priorite: {
+        title: "Priorità",
+        body: "Indica l'importanza affinché il team sappia da dove iniziare.",
+      },
+      description: {
+        title: "Descrizione",
+        body: "La prima riga si vede a colpo d'occhio; «Mostra altro» espande il resto.",
+      },
+      vues: {
+        title: "Cambiare vista",
+        body: "Passa tra vista Bacheca (kanban) e vista Elenco a seconda del tuo modo di lavorare.",
+      },
+      reordonner: {
+        title: "Riorganizzare",
+        body: "In modalità modifica, sposta un'attività su/giù o cambia il suo collegamento.",
+      },
+      inviter: {
+        title: "Invitare un membro",
+        body: "Aggiungi i tuoi colleghi via email. Oltre 5 utenti, lo spazio passa a un piano a pagamento.",
+      },
+      acces: {
+        title: "Controllo degli accessi",
+        body: "Scegli chi vede questo progetto: tutto lo spazio o solo i membri invitati.",
+      },
+      idees: {
+        title: "Idee",
+        body: "Proponi e vota idee di miglioramento, separate dalle attività quotidiane.",
+      },
+      facturation: {
+        title: "Piano e fatturazione",
+        body: "Tieni traccia del tuo piano, degli utenti fatturati e delle tue fatture.",
+      },
+    },
+  },
 };
 
 export default it;

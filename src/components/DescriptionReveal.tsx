@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useT } from "@/lib/i18n/context";
+import { HintBubble } from "@/components/HintBubble";
 
 // Au-delà de cette longueur, la 1ʳᵉ ligne sera tronquée visuellement : on propose
 // alors « afficher plus » même en l'absence de retour à la ligne.
@@ -34,6 +35,7 @@ export function DescriptionReveal({
       <dl>
         <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
           {t.task.description}
+          <HintBubble anchor="description" className="ml-1.5" />
         </dt>
         <dd className="mt-1">
           {!hasDescription ? (

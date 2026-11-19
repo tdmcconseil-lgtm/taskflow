@@ -8,7 +8,9 @@ import { TaskRow } from "@/components/TaskRow";
 import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableSubtasks";
 import { HierarchyEditor, type HierarchyScope } from "@/components/HierarchyEditor";
 import { TypeIcon } from "@/components/TypeIcon";
+import { HintBubble } from "@/components/HintBubble";
 import { setTaskView } from "@/lib/actions/view";
+import type { HintAnchor } from "@/lib/discovery";
 import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
 import { useT, useLocale } from "@/lib/i18n/context";
@@ -26,6 +28,7 @@ export function TaskCollection({
   workspaceId,
   reorderScope,
   followedIds,
+  newHint,
 }: {
   roots: TaskNode[];
   view: "liste" | "tableau" | "arborescence";
@@ -33,6 +36,9 @@ export function TaskCollection({
   newTaskHref?: string | null;
   newTaskLabel?: string;
   emptyLabel: string;
+  // Ancre d'aide « ? » du bouton de création (nouvelle-tache côté projets,
+  // sous-tache côté fiche de tâche). Absente = pas de bulle sur ce bouton.
+  newHint?: HintAnchor;
   // Espace de la collection (nécessaire pour réordonner les projets racine).
   workspaceId: string;
   // Si fourni, active le mode « édition de la hiérarchie » (réordonner, et pour
@@ -103,40 +109,49 @@ export function TaskCollection({
             {t.hierarchy.editingBanner}
           </span>
         ) : (
-          <form
-            action={setTaskView}
-            className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
-          >
-            <input type="hidden" name="back" value={toggleBase} />
-            <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
-              {t.task.viewBoard}
-            </button>
-            <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
-              {t.task.viewList}
-            </button>
-            <button type="submit" name="view" value="arborescence" className={tabClass(view === "arborescence")}>
-              {t.task.viewTree}
-            </button>
-          </form>
+          <span className="inline-flex items-center gap-1.5">
+            <form
+              action={setTaskView}
+              className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
+            >
+              <input type="hidden" name="back" value={toggleBase} />
+              <button type="submit" name="view" value="tableau" className={tabClass(view === "tableau")}>
+                {t.task.viewBoard}
+              </button>
+              <button type="submit" name="view" value="liste" className={tabClass(view === "liste")}>
+                {t.task.viewList}
+              </button>
+              <button type="submit" name="view" value="arborescence" className={tabClass(view === "arborescence")}>
+                {t.task.viewTree}
+              </button>
+            </form>
+            <HintBubble anchor="vues" />
+          </span>
         )}
         <div className="flex items-center gap-2">
           {reorderScope && roots.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setEditing((v) => !v)}
-              className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
-                editing
-                  ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
-                  : "border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              }`}
-            >
-              {editing ? t.hierarchy.editDone : t.hierarchy.editToggle}
-            </button>
+            <span className="inline-flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setEditing((v) => !v)}
+                className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
+                  editing
+                    ? "border-indigo-300 bg-indigo-50 text-indigo-600 dark:border-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
+                    : "border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                }`}
+              >
+                {editing ? t.hierarchy.editDone : t.hierarchy.editToggle}
+              </button>
+              {!editing && <HintBubble anchor="reordonner" />}
+            </span>
           )}
           {!editing && newTaskHref && (
-            <ButtonLink href={newTaskHref} variant="primary">
-              {newTaskLabel}
-            </ButtonLink>
+            <span className="inline-flex items-center gap-1.5">
+              <ButtonLink href={newTaskHref} variant="primary">
+                {newTaskLabel}
+              </ButtonLink>
+              {newHint && <HintBubble anchor={newHint} placement="left" />}
+            </span>
           )}
         </div>
       </div>

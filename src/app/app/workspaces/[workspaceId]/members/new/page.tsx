@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { prisma } from "@/lib/prisma";
 import { AddMemberForm } from "@/components/AddMemberForm";
+import { HintBubble } from "@/components/HintBubble";
 import { cardClass } from "@/components/ui";
 import { getDictionary } from "@/lib/i18n/server";
 import { formatPrice } from "@/lib/plans";
@@ -46,7 +47,10 @@ export default async function NewMemberPage({
         >
           ← Membres
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Inviter un membre</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+          Inviter un membre
+          <HintBubble anchor="inviter" className="ml-2" />
+        </h1>
       </div>
 
       {capUnset ? (

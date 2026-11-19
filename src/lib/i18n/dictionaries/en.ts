@@ -1014,6 +1014,103 @@ const en: Dictionary = {
     colMembers: "Active members",
     colCreated: "Created on",
   },
+
+  discovery: {
+    menuToggle: "Discovery mode",
+    settingsTitle: "Discovery mode",
+    settingsIntro:
+      "Onboarding help: a welcome tour, then “?” bubbles on the key features. Can be turned off at any time.",
+    settingsToggle: "Enable discovery mode",
+    replayTour: "Replay the welcome tour",
+    badgeLabel: "Help",
+    progress: "{current}/{total}",
+    gotIt: "Got it",
+    dismiss: "Don't show again",
+    tour: {
+      skip: "Skip",
+      next: "Next",
+      back: "Back",
+      done: "Finish",
+      step: "Step {current} of {total}",
+      endNote: "Discovery mode stays on — look for the ? to learn more.",
+      steps: {
+        welcome: {
+          title: "Welcome",
+          body: "This is your getRIDA workspace. In 4 steps, discover the essentials.",
+        },
+        create: {
+          title: "Create",
+          body: "Create a project, then tasks — and subtasks, with no depth limit.",
+        },
+        organize: {
+          title: "Organize",
+          body: "Assign, set dates, prioritize. The task page brings it all together.",
+        },
+        visualize: {
+          title: "Visualize",
+          body: "Switch between Board and List views; reorder within the hierarchy.",
+        },
+        collaborate: {
+          title: "Collaborate",
+          body: "Invite your colleagues and choose who can access each project.",
+        },
+      },
+    },
+    hints: {
+      "projet-tache": {
+        title: "Projects and tasks",
+        body: "A project holds tasks; a task can have subtasks, with no depth limit.",
+      },
+      "nouvelle-tache": {
+        title: "Add a task",
+        body: "Create a task here, give it a title, then fill in its page.",
+      },
+      "sous-tache": {
+        title: "Subtasks",
+        body: "Break a task into subtasks to track progress step by step.",
+      },
+      assigner: {
+        title: "Assign",
+        body: "Assign the task to a member: they'll find it in their list.",
+      },
+      echeance: {
+        title: "Due date",
+        body: "Set a deadline; overdue tasks are flagged.",
+      },
+      priorite: {
+        title: "Priority",
+        body: "Set the importance so the team knows where to start.",
+      },
+      description: {
+        title: "Description",
+        body: "The first line shows at a glance; “Show more” expands the rest.",
+      },
+      vues: {
+        title: "Switch view",
+        body: "Switch between Board (kanban) and List views to match how you work.",
+      },
+      reordonner: {
+        title: "Reorganize",
+        body: "In edit mode, move a task up/down or change what it's attached to.",
+      },
+      inviter: {
+        title: "Invite a member",
+        body: "Add your colleagues by email. Beyond 5 users, the workspace moves to a paid plan.",
+      },
+      acces: {
+        title: "Access control",
+        body: "Choose who sees this project: the whole workspace, or only invited members.",
+      },
+      idees: {
+        title: "Ideas",
+        body: "Suggest and vote on improvement ideas, kept separate from everyday tasks.",
+      },
+      facturation: {
+        title: "Plan & billing",
+        body: "Track your plan, billed users and your invoices.",
+      },
+    },
+  },
 };
 
 export default en;
