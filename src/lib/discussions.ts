@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { SortState } from "@/lib/sort";
 
 export type DiscussionRow = {
   id: string;
@@ -6,6 +7,8 @@ export type DiscussionRow = {
   workspace: string;
   following: boolean;
   unread: boolean;
+  // Date de création de la tâche (= de la discussion), pour le tri par création.
+  createdAt: Date;
   // `preview` = corps du dernier message avec les tokens résolus en texte lisible
   // (@[id] → @Nom Prénom, $[id] → nom du document), pour l'aperçu de la liste.
   last: { createdAt: Date; body: string; preview: string; author: { name: string } };
@@ -31,6 +34,7 @@ function resolvePreview(
 export async function getDiscussionRows(
   userId: string,
   workspaceId?: string,
+  sort: SortState = { key: "activite", dir: "desc" },
 ): Promise<DiscussionRow[]> {
   const follows = await prisma.taskFollow.findMany({
     where: { userId, ...(workspaceId ? { task: { workspaceId } } : {}) },
@@ -41,6 +45,7 @@ export async function getDiscussionRows(
         select: {
           id: true,
           title: true,
+          createdAt: true,
           workspace: { select: { name: true } },
           comments: {
             orderBy: { createdAt: "desc" },
@@ -63,6 +68,7 @@ export async function getDiscussionRows(
         workspace: f.task.workspace.name,
         following: f.following,
         unread,
+        createdAt: f.task.createdAt,
         last,
       };
     });
@@ -87,10 +93,21 @@ export async function getDiscussionRows(
   const nameById = new Map(users.map((u) => [u.id, u.name]));
   const docNameById = new Map(docs.map((d) => [d.id, d.name]));
 
+  const dir = sort.dir === "asc" ? 1 : -1;
   return base
     .map((r) => ({
       ...r,
       last: { ...r.last, preview: resolvePreview(r.last.body, nameById, docNameById) },
     }))
-    .sort((a, b) => b.last.createdAt.getTime() - a.last.createdAt.getTime());
+    .sort((a, b) => {
+      switch (sort.key) {
+        case "titre":
+          return a.title.localeCompare(b.title) * dir;
+        case "creation":
+          return (a.createdAt.getTime() - b.createdAt.getTime()) * dir;
+        case "activite":
+        default:
+          return (a.last.createdAt.getTime() - b.last.createdAt.getTime()) * dir;
+      }
+    });
 }

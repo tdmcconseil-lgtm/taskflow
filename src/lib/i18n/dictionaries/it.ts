@@ -541,6 +541,28 @@ const it: Dictionary = {
     empty:
       "Nessuna discussione. Segui un'attività o scrivi un messaggio per vederle comparire qui.",
   },
+  sort: {
+    by: "Ordina per",
+    asc: "Crescente",
+    desc: "Decrescente",
+    task: {
+      echeance: "Scadenza",
+      priorite: "Priorità",
+      titre: "Titolo",
+      creation: "Data di creazione",
+      statut: "Stato",
+      assigne: "Assegnato a",
+    },
+    discussion: {
+      activite: "Ultima attività",
+      creation: "Data di creazione",
+      titre: "Titolo",
+    },
+    event: {
+      date: "Data",
+      titre: "Titolo",
+    },
+  },
   descriptionReveal: {
     show: "Mostra descrizione",
     hide: "Nascondi descrizione",

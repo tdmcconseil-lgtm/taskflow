@@ -4,6 +4,7 @@ import { describeActivity, aspectLabel, joinWithAnd } from "@/lib/activity-text"
 import type { TaskActivityType } from "@/generated/prisma/client";
 import type { TaskTab } from "@/lib/view";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
+import type { SortState } from "@/lib/sort";
 
 // Onglet de la fiche de tâche à ouvrir selon le type d'événement (niveau 1 du
 // ciblage : on arrive directement au bon endroit depuis le flux).
@@ -146,6 +147,7 @@ export async function getEventFeed(
   includeOwn = false,
   limit = 100,
   workspaceId?: string,
+  sort: SortState = { key: "date", dir: "desc" },
 ): Promise<EventGroup[]> {
   const followed = await followedTaskIds(userId);
   const rows = await prisma.taskActivity.findMany({
@@ -154,7 +156,21 @@ export async function getEventFeed(
     take: limit,
     select: EVENT_SELECT,
   });
-  return groupEvents(rows as EventRow[], readAt, t);
+  const groups = groupEvents(rows as EventRow[], readAt, t);
+  // Les événements sont le flux d'activité : ils n'ont qu'une date (celle de
+  // l'activité) et le titre de la tâche concernée. On trie le flux groupé selon
+  // le critère choisi (date par défaut, du plus récent au plus ancien).
+  const dir = sort.dir === "asc" ? 1 : -1;
+  groups.sort((a, b) => {
+    switch (sort.key) {
+      case "titre":
+        return a.task.title.localeCompare(b.task.title) * dir;
+      case "date":
+      default:
+        return (a.createdAt.getTime() - b.createdAt.getTime()) * dir;
+    }
+  });
+  return groups;
 }
 
 // Nombre de lignes d'événements nouvelles depuis la dernière consultation.

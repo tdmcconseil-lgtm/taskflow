@@ -17,6 +17,8 @@ import { EventList } from "@/components/EventList";
 import { EventFilter } from "@/components/EventFilter";
 import { DiscussionList } from "@/components/DiscussionList";
 import { PendingInvitations } from "@/components/PendingInvitations";
+import { SortControl } from "@/components/SortControl";
+import { parseSort, followTaskOrderBy, sortControlProps } from "@/lib/sort";
 
 export default async function WorkspacePage({
   params,
@@ -30,6 +32,9 @@ export default async function WorkspacePage({
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
   const initialTab = sp.tab === "membres" ? "membres" : "projets";
+  const taskSort = parseSort("task", sp);
+  const discussionSort = parseSort("discussion", sp);
+  const eventSort = parseSort("event", sp);
 
   const membership = await getMembership(user.id, workspaceId);
   if (!membership) notFound();
@@ -76,15 +81,15 @@ export default async function WorkspacePage({
     }),
     prisma.taskFollow.findMany({
       where: { userId: user.id, following: true, task: { workspaceId } },
-      orderBy: { createdAt: "desc" },
+      orderBy: followTaskOrderBy(taskSort),
       select: {
         task: {
           select: { id: true, title: true, status: true, priority: true, parentId: true },
         },
       },
     }),
-    getEventFeed(user.id, user.eventsReadAt ?? null, t, includeOwn, 50, workspaceId),
-    getDiscussionRows(user.id, workspaceId),
+    getEventFeed(user.id, user.eventsReadAt ?? null, t, includeOwn, 50, workspaceId, eventSort),
+    getDiscussionRows(user.id, workspaceId, discussionSort),
   ]);
   if (!workspace) notFound();
 
@@ -191,7 +196,10 @@ export default async function WorkspacePage({
 
   const suiviesPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.followedDesc}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.followedDesc}</p>
+        {followedTasks.length > 0 && <SortControl {...sortControlProps("task", sp, t)} />}
+      </div>
       {followedTasks.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 dark:border-zinc-700">
           {t.workspace.followedEmpty}
@@ -233,7 +241,10 @@ export default async function WorkspacePage({
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.eventsDesc}</p>
-        <EventFilter hideMine={!includeOwn} />
+        <div className="flex flex-wrap items-center gap-3">
+          <EventFilter hideMine={!includeOwn} />
+          {eventGroups.length > 0 && <SortControl {...sortControlProps("event", sp, t)} />}
+        </div>
       </div>
       <EventList groups={eventGroups} emptyLabel={t.workspace.eventsEmpty} locale={locale} />
     </div>
@@ -241,7 +252,10 @@ export default async function WorkspacePage({
 
   const discussionsPanel = (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.discussionsDesc}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.workspace.discussionsDesc}</p>
+        {discussionRows.length > 0 && <SortControl {...sortControlProps("discussion", sp, t)} />}
+      </div>
       <DiscussionList
         rows={discussionRows}
         emptyLabel={t.workspace.discussionsEmpty}

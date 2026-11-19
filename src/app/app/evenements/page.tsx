@@ -5,6 +5,8 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { MarkEventsRead } from "@/components/MarkEventsRead";
 import { EventFilter } from "@/components/EventFilter";
 import { EventList } from "@/components/EventList";
+import { parseSort, sortControlProps } from "@/lib/sort";
+import { SortControl } from "@/components/SortControl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
@@ -19,7 +21,16 @@ export default async function EvenementsPage({
   const locale = await getLocale();
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
-  const groups = await getEventFeed(user.id, user.eventsReadAt ?? null, t, includeOwn);
+  const sort = parseSort("event", sp);
+  const groups = await getEventFeed(
+    user.id,
+    user.eventsReadAt ?? null,
+    t,
+    includeOwn,
+    100,
+    undefined,
+    sort,
+  );
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -28,8 +39,9 @@ export default async function EvenementsPage({
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t.events.title}</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.events.desc}</p>
-        <div className="mt-3">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <EventFilter hideMine={!includeOwn} />
+          {groups.length > 0 && <SortControl {...sortControlProps("event", sp, t)} />}
         </div>
       </div>
 
