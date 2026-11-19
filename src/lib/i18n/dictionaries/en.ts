@@ -544,6 +544,8 @@ const en: Dictionary = {
   descriptionReveal: {
     show: "Show description",
     hide: "Hide description",
+    more: "Show more",
+    less: "Show less",
   },
   newWorkspace: {
     back: "Home",

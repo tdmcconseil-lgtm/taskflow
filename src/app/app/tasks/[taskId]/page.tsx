@@ -413,15 +413,8 @@ export default async function TaskDetailPage({
               </div>
             </dl>
           }
-          description={
-            task.description ? (
-              <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
-                {linkify(task.description)}
-              </p>
-            ) : (
-              <p className="text-sm italic text-zinc-400 dark:text-zinc-500">{t.task.noDescription}</p>
-            )
-          }
+          description={task.description}
+          rendered={task.description ? linkify(task.description) : null}
         />
       </div>
 

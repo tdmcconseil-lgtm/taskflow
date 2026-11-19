@@ -544,6 +544,8 @@ const fr = {
   descriptionReveal: {
     show: "Afficher la description",
     hide: "Masquer la description",
+    more: "Afficher plus",
+    less: "Afficher moins",
   },
   newWorkspace: {
     back: "Accueil",
