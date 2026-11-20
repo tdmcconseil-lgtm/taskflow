@@ -29,8 +29,7 @@ export function DiscoverySettings() {
         <button
           type="button"
           onClick={replayTour}
-          disabled={!enabled}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium transition hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
         >
           {d.replayTour}
         </button>

@@ -103,8 +103,11 @@ export function DiscoveryProvider({
 
   const replayTour = useCallback(() => {
     setOpenHint(null);
+    // Revoir le tour réactive le mode découverte s'il était coupé (sinon le
+    // tour, conditionné à `enabled`, ne s'afficherait pas).
+    if (!enabled) setEnabled(true);
     setShowTour(true);
-  }, []);
+  }, [enabled, setEnabled]);
 
   const value = useMemo<DiscoveryContextValue>(
     () => ({
