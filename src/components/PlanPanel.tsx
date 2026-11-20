@@ -1,7 +1,11 @@
-import { type WorkspacePlan } from "@/lib/plans";
-import { type SeatIssue } from "@/lib/billing/budget";
+import { FREE_SEATS, type WorkspacePlan } from "@/lib/plans";
+import { isPaidPlan, type SeatIssue } from "@/lib/billing/budget";
 import { PlanAndBudgetForm } from "@/components/PlanAndBudgetForm";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
+
+// Erreur de changement d'offre affichée dans le volet : les garde-fous de sièges
+// (SeatIssue) plus le refus « offre payante seulement à partir de 6 utilisateurs ».
+export type PlanError = SeatIssue | "paidPlanMinSeats";
 
 // Volet Formule (premier onglet de l'administration) : l'encart de description
 // de l'abonnement (récap + bouton « Modifier » en haut à droite) et le
@@ -25,18 +29,41 @@ export function PlanPanel({
   pendingPlan: WorkspacePlan | null;
   budgetCapCents: number | null;
   activeMembers: number;
-  planError: SeatIssue | null;
+  planError: PlanError | null;
   triedPlan: WorkspacePlan | null;
   triedBudgetEuros: string | null;
   t: Dictionary;
 }) {
+  // Rétrogradation imminente : un espace PAYANT dont les utilisateurs actifs sont
+  // retombés dans la franchise (≤ FREE_SEATS) et sans changement d'offre déjà en
+  // attente sera repassé en Gratuit au prochain traitement de nuit (cf.
+  // runNightlyForWorkspace). On prévient l'administrateur à l'avance ; la condition
+  // reproduit exactement le déclencheur du traitement de nuit.
+  const downgradeImminent =
+    isPaidPlan(plan) && pendingPlan === null && activeMembers <= FREE_SEATS;
+
   return (
     <div className="space-y-6">
       {planError && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
-          {(planError === "budgetCapUnset" ? t.usage.planErrorCapUnset : t.usage.planErrorSeatLimit)
+          {(planError === "budgetCapUnset"
+            ? t.usage.planErrorCapUnset
+            : planError === "paidPlanMinSeats"
+              ? t.usage.planErrorPaidMinSeats
+              : t.usage.planErrorSeatLimit)
             .replace("{plan}", triedPlan ?? "")
-            .replace("{n}", String(activeMembers))}
+            .replace("{n}", String(activeMembers))
+            .replace("{free}", String(FREE_SEATS))
+            .replace("{min}", String(FREE_SEATS + 1))}
+        </div>
+      )}
+
+      {/* Rétrogradation imminente vers l'offre gratuite (équipe repassée sous la franchise). */}
+      {downgradeImminent && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+          {t.usage.downgradeImminentNotice
+            .replace("{n}", String(activeMembers))
+            .replace("{free}", String(FREE_SEATS))}
         </div>
       )}
 

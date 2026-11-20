@@ -25,6 +25,7 @@ import {
 import { ArchiveConfirm } from "@/components/ArchiveConfirm";
 import { billableUserCount, currentMonthPeriod } from "@/lib/billing/usage";
 import { unitPriceCents } from "@/lib/billing/budget";
+import { billableSeats } from "@/lib/plans";
 import { isStripeConfigured } from "@/lib/billing/stripe";
 import { toAssigneeInfo, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { formatDate, isPast } from "@/lib/labels";
@@ -49,7 +50,9 @@ export default async function WorkspaceAdminPage({
   const justArchived = sp.archived === "1";
   // Changement de formule bloqué faute de plafond couvrant les membres actuels.
   const planError =
-    sp.planError === "budgetCapUnset" || sp.planError === "seatLimitReached"
+    sp.planError === "budgetCapUnset" ||
+    sp.planError === "seatLimitReached" ||
+    sp.planError === "paidPlanMinSeats"
       ? sp.planError
       : null;
   const triedPlan =
@@ -102,7 +105,7 @@ export default async function WorkspaceAdminPage({
   // pour le coût estimé affiché dans l'onglet Facturation. Hors offre payante (FREE),
   // rien à estimer → 0.
   const month = currentMonthPeriod(workspace.billingCycleStart);
-  const [storageAgg, billableUsers, pastInvoices] = await Promise.all([
+  const [storageAgg, activeUsers, pastInvoices] = await Promise.all([
     prisma.document.aggregate({ where: { workspaceId }, _sum: { size: true } }),
     month ? billableUserCount(workspaceId, month.start, month.end) : Promise.resolve(0),
     prisma.invoice.findMany({
@@ -115,6 +118,9 @@ export default async function WorkspaceAdminPage({
     members: workspace.members.filter((m) => m.deactivatedAt === null).length,
     storageBytes: storageAgg._sum.size ?? 0,
   };
+  // Sièges FACTURÉS du mois en cours : franchise FREE_SEATS retranchée des
+  // utilisateurs actifs. C'est ce nombre qui porte le coût estimé.
+  const billableUsers = billableSeats(activeUsers);
 
   // Factures présentées dans l'onglet Facturation : le mois en cours (montant
   // estimé, recalculé) en tête s'il y en a un, puis les factures mensuelles

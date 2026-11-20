@@ -8,6 +8,20 @@ export type WorkspacePlan = "FREE" | "PRO" | "BUSINESS";
 
 export const PLANS: readonly WorkspacePlan[] = ["FREE", "PRO", "BUSINESS"] as const;
 
+// Franchise de sièges gratuits — SOURCE DE VÉRITÉ UNIQUE. Les cinq premiers
+// utilisateurs d'un espace ne sont jamais facturés : l'offre Gratuite va jusqu'à
+// ce seuil, et sur les offres payantes on ne facture que les utilisateurs AU-DELÀ
+// (facturable = max(0, actifs − FREE_SEATS)). Toute la facturation (quota Free,
+// estimation, segments, plafonds, garde-fous, UI) lit cette constante, jamais 5
+// recopié ailleurs.
+export const FREE_SEATS = 5;
+
+// Sièges effectivement facturés pour un nombre d'utilisateurs actifs donné :
+// la franchise FREE_SEATS est retranchée (jamais négatif). 5 actifs ou moins → 0.
+export function billableSeats(activeUsers: number): number {
+  return Math.max(0, activeUsers - FREE_SEATS);
+}
+
 export type PlanDef = {
   // Prix mensuel par utilisateur actif, en centimes (0 = gratuit). Facturation
   // à l'usage (utilisateur-mois) : il n'y a pas de prix par siège côté Stripe.
@@ -32,7 +46,7 @@ export const PLAN_DEFS: Record<WorkspacePlan, PlanDef> = {
   // formule) : projects = Infinity partout.
   FREE: {
     priceCentsPerUser: 0,
-    members: 3,
+    members: FREE_SEATS,
     projects: Infinity,
     storageMb: 200,
     storagePerUser: false,

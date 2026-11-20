@@ -5,7 +5,7 @@
 //     (budgetCapCents / prix unitaire). Plafond non défini → aucun ajout.
 // Tout est lu depuis PLAN_DEFS (source unique) ; rien n'est recopié.
 
-import { PLAN_DEFS, formatPrice, type WorkspacePlan } from "@/lib/plans";
+import { PLAN_DEFS, FREE_SEATS, billableSeats, formatPrice, type WorkspacePlan } from "@/lib/plans";
 
 export function unitPriceCents(plan: WorkspacePlan): number {
   return PLAN_DEFS[plan].priceCentsPerUser;
@@ -16,18 +16,21 @@ export function isPaidPlan(plan: WorkspacePlan): boolean {
 }
 
 // Nombre de sièges autorisés pour un espace.
-// FREE : la limite de la formule. Payant : plafond / prix unitaire ; si le
-// plafond n'est pas défini, 0 (aucun membre ne peut être ajouté).
+// FREE : la limite de la formule (FREE_SEATS). Payant : la franchise FREE_SEATS
+// (toujours gratuite) + les sièges couverts par le plafond (plafond / prix
+// unitaire) ; si le plafond n'est pas défini, 0 (aucun membre ne peut être
+// ajouté). Exemple : PRO, plafond 15 € → 5 gratuits + 5 facturés = 10 sièges.
 export function maxSeats(plan: WorkspacePlan, budgetCapCents: number | null): number {
   const def = PLAN_DEFS[plan];
   if (def.priceCentsPerUser === 0) return def.members;
   if (budgetCapCents == null) return 0;
-  return Math.floor(budgetCapCents / def.priceCentsPerUser);
+  return FREE_SEATS + Math.floor(budgetCapCents / def.priceCentsPerUser);
 }
 
-// Coût mensuel estimé pour un nombre de sièges actifs donné (centimes).
+// Coût mensuel estimé pour un nombre d'utilisateurs actifs donné (centimes),
+// franchise FREE_SEATS retranchée : seuls les utilisateurs au-delà sont facturés.
 export function monthlyImpactCents(plan: WorkspacePlan, seats: number): number {
-  return seats * PLAN_DEFS[plan].priceCentsPerUser;
+  return billableSeats(seats) * PLAN_DEFS[plan].priceCentsPerUser;
 }
 
 export function formatMonthlyImpact(plan: WorkspacePlan, seats: number): string {

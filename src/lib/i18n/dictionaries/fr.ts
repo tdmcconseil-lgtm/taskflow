@@ -189,7 +189,7 @@ const fr = {
     seatUsage: "{used} / {max} sièges réservés",
     perMemberCost: "Chaque membre actif : {price} / mois",
     billedUserMonthWarning:
-      "Attention : tout membre ajouté compte pour un utilisateur-mois facturé au prix plein, même actif un court instant et même désactivé juste après.",
+      "Les {free} premiers utilisateurs sont gratuits. Au-delà, tout membre ajouté compte pour un utilisateur-mois facturé au prix plein, même actif un court instant et même désactivé juste après.",
     invite: "Inviter un membre",
     you: "(vous)",
     deactivated: "désactivé",
@@ -306,6 +306,12 @@ const fr = {
       "Vous approchez de la limite de votre formule pour : {items}. Pensez à faire évoluer l'abonnement.",
     pendingPlanNotice:
       "Changement vers {plan} enregistré : il sera pris en compte au prochain traitement de nuit.",
+    downgradeImminentNotice:
+      "Votre espace ne compte plus que {n} utilisateur(s) actif(s), dans la limite des {free} places gratuites : il repassera automatiquement en offre Gratuite au prochain traitement de nuit (la part payante du mois en cours reste facturée au prorata).",
+    planErrorPaidMinSeats:
+      "L'offre gratuite couvre jusqu'à {free} utilisateurs — votre espace en a {n}. Une offre payante ne facture que les utilisateurs au-delà de {free} ; vous pourrez y passer une fois les {free} places gratuites occupées.",
+    paidMinSeatsWarning:
+      "L'offre gratuite couvre jusqu'à {free} utilisateurs — vous en avez {m}. Une offre payante ne devient utile qu'au-delà ; restez sur l'offre gratuite pour l'instant.",
   },
   billingInfo: {
     title: "Comment fonctionne la facturation",
@@ -324,12 +330,16 @@ const fr = {
         body: "Toute personne ayant eu un siège, ne serait-ce qu'un instant dans le mois, compte pour une unité, au prix plein (pas de prorata). Un même utilisateur ne compte qu'une fois, même ajouté puis retiré plusieurs fois.",
       },
       {
+        title: "Les 5 premiers sont gratuits",
+        body: "Une franchise de 5 utilisateurs s'applique à toutes les offres : vous ne payez que les utilisateurs au-delà du cinquième. Une équipe de 5 personnes ou moins ne paie rien.",
+      },
+      {
         title: "Les prix",
-        body: "Gratuit : 0 €. PRO : 3 € par utilisateur et par mois. BUSINESS : 6 € par utilisateur et par mois.",
+        body: "Gratuit : 0 €. PRO : 3 € par utilisateur et par mois, au-delà de 5. BUSINESS : 6 € par utilisateur et par mois, au-delà de 5.",
       },
       {
         title: "Offre gratuite",
-        body: "Limitée à 3 membres, sans aucune facture. Au-delà, passez à une offre payante.",
+        body: "Jusqu'à 5 membres, sans aucune facture. Au-delà, passez à une offre payante.",
       },
       {
         title: "Faire tourner votre équipe",
@@ -395,8 +405,10 @@ const fr = {
       "Tout retard de paiement entraîne des pénalités de retard au taux légal en vigueur, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement (clients professionnels).",
     currentEstimateNote:
       "Estimation à l'instant présent : le montant définitif est arrêté à la clôture du mois.",
-    usersSectionTitle: "Utilisateurs facturés",
-    empty: "Aucun utilisateur facturé sur cette période.",
+    usersSectionTitle: "Utilisateurs actifs sur la période",
+    franchiseNote:
+      "Les {free} premiers utilisateurs sont inclus gratuitement : {billed} facturé(s) sur {active} actif(s).",
+    empty: "Aucun utilisateur actif sur cette période.",
     anonymized: "Compte anonymisé",
     stillActive: "encore actif",
   },
@@ -809,6 +821,9 @@ const fr = {
     advMultiDesc: "Interface en français, anglais et espagnol, avec une préférence par utilisateur.",
     offersTitle: "Des offres simples",
     offersSubtitle: "Tarif plat par utilisateur, sans dégressivité.",
+    franchiseBanner:
+      "Vos {free} premiers utilisateurs sont gratuits — vous ne payez que les suivants.",
+    priceAboveFranchise: "par utilisateur au-delà de {free}",
     billingMonthly: "Mensuel",
     billingYearly: "Annuel",
     billingYearlyNote: "2 mois offerts",
@@ -823,7 +838,7 @@ const fr = {
     rowStorage: "Stockage",
     rowSpecifics: "Inclus",
     freePrice: "0 €",
-    freeSeats: "jusqu'à 3",
+    freeSeats: "jusqu'à 5",
     freeStorage: "2 Go",
     freeSpec: "L'essentiel pour démarrer",
     proSeats: "Illimités",

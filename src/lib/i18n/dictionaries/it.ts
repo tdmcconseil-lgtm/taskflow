@@ -190,7 +190,7 @@ const it: Dictionary = {
     seatUsage: "{used} / {max} posti riservati",
     perMemberCost: "Ogni membro attivo: {price} / mese",
     billedUserMonthWarning:
-      "Attenzione: ogni membro che aggiungi conta come un utente-mese intero fatturato a prezzo pieno, anche se attivo solo per poco e anche se disattivato subito dopo.",
+      "I primi {free} utenti sono gratis. Oltre, ogni membro che aggiungi conta come un utente-mese intero fatturato a prezzo pieno, anche se attivo solo per poco e anche se disattivato subito dopo.",
     invite: "Invita un membro",
     you: "(tu)",
     deactivated: "disattivato",
@@ -307,6 +307,12 @@ const it: Dictionary = {
       "Ti stai avvicinando al limite del tuo piano per: {items}. Valuta di aggiornare l'abbonamento.",
     pendingPlanNotice:
       "Modifica a {plan} salvata: avrà effetto alla prossima elaborazione notturna.",
+    downgradeImminentNotice:
+      "Il tuo spazio ha solo {n} utente/i attivo/i, entro i {free} posti gratuiti: tornerà automaticamente al piano Gratuito alla prossima elaborazione notturna (la parte a pagamento del mese in corso è fatturata in proporzione).",
+    planErrorPaidMinSeats:
+      "Il piano gratuito copre fino a {free} utenti — il tuo spazio ne ha {n}. Un piano a pagamento fattura solo gli utenti oltre {free}; potrai passare una volta occupati i {free} posti gratuiti.",
+    paidMinSeatsWarning:
+      "Il piano gratuito copre fino a {free} utenti — ne hai {m}. Un piano a pagamento è utile solo oltre; resta sul piano gratuito per ora.",
   },
   billingInfo: {
     title: "Come funziona la fatturazione",
@@ -325,12 +331,16 @@ const it: Dictionary = {
         body: "Chiunque abbia occupato un posto, anche solo brevemente durante il mese, conta come un'unità, a prezzo pieno (nessun calcolo proporzionale). Lo stesso utente conta una sola volta, anche se aggiunto e rimosso più volte.",
       },
       {
+        title: "I primi 5 sono gratis",
+        body: "Una franchigia di 5 utenti si applica a tutti i piani: paghi solo gli utenti oltre il quinto. Un team di 5 persone o meno non paga nulla.",
+      },
+      {
         title: "Prezzi",
-        body: "Gratuito: 0 €. PRO: 3 € per utente al mese. BUSINESS: 6 € per utente al mese.",
+        body: "Gratuito: 0 €. PRO: 3 € per utente al mese, oltre 5. BUSINESS: 6 € per utente al mese, oltre 5.",
       },
       {
         title: "Piano gratuito",
-        body: "Limitato a 3 membri, senza alcuna fattura. Oltre, passa a un piano a pagamento.",
+        body: "Fino a 5 membri, senza alcuna fattura. Oltre, passa a un piano a pagamento.",
       },
       {
         title: "Ruota il tuo team",
@@ -395,8 +405,10 @@ const it: Dictionary = {
       "Il ritardo nel pagamento comporta interessi di mora al tasso legale, più un'indennità forfettaria di 40 € per spese di recupero (clienti professionali).",
     currentEstimateNote:
       "Stima al momento attuale: l'importo finale è determinato alla chiusura del mese.",
-    usersSectionTitle: "Utenti fatturati",
-    empty: "Nessun utente fatturato per questo periodo.",
+    usersSectionTitle: "Utenti attivi nel periodo",
+    franchiseNote:
+      "I primi {free} utenti sono inclusi gratis: {billed} fatturato(i) su {active} attivo(i).",
+    empty: "Nessun utente attivo per questo periodo.",
     anonymized: "Account anonimizzato",
     stillActive: "ancora attivo",
   },
@@ -808,6 +820,8 @@ const it: Dictionary = {
     advMultiDesc: "Interfaccia in inglese, francese e spagnolo, con una preferenza per utente.",
     offersTitle: "Piani semplici",
     offersSubtitle: "Prezzo fisso per utente, senza sconti sul volume.",
+    franchiseBanner: "I tuoi primi {free} utenti sono gratis — paghi solo i successivi.",
+    priceAboveFranchise: "per utente oltre {free}",
     billingMonthly: "Mensile",
     billingYearly: "Annuale",
     billingYearlyNote: "2 mesi gratis",
@@ -822,7 +836,7 @@ const it: Dictionary = {
     rowStorage: "Archiviazione",
     rowSpecifics: "Incluso",
     freePrice: "0 €",
-    freeSeats: "fino a 3",
+    freeSeats: "fino a 5",
     freeStorage: "2 GB",
     freeSpec: "L'essenziale per iniziare",
     proSeats: "Illimitati",

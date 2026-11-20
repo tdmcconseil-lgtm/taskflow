@@ -14,7 +14,7 @@ import { getDictionary, getLocale, zodError } from "@/lib/i18n/server";
 import { locales, defaultLocale, type Locale } from "@/lib/i18n/config";
 import { isEmailDomainAllowed } from "@/lib/email-domains";
 import { composeName } from "@/lib/name";
-import { seatCheck } from "@/lib/billing/budget";
+import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
 import { logMembershipEvent } from "@/lib/billing/membership-events";
 import { PLAN_LIMITS } from "@/lib/plans";
 
@@ -50,10 +50,16 @@ export async function createWorkspace(_prev: FormState, formData: FormData): Pro
     return { error: zodError(t, parsed.error.issues[0]?.message) };
   }
 
+  // « Offre payante seulement à partir de 6 utilisateurs » : un espace tout juste
+  // créé n'a qu'un seul utilisateur actif (le créateur), donc en deçà de la
+  // franchise. On force l'offre gratuite ; l'admin pourra passer à une offre
+  // payante une fois l'équipe constituée (≥ 6 utilisateurs).
+  const plan = isPaidPlan(parsed.data.plan) ? "FREE" : parsed.data.plan;
+
   const ws = await prisma.workspace.create({
     data: {
       name: parsed.data.name,
-      plan: parsed.data.plan,
+      plan,
       members: { create: { userId: user.id, role: "OWNER" } },
     },
   });

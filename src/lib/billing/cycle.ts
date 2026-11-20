@@ -26,7 +26,7 @@ import { prisma } from "@/lib/prisma";
 import { isPaidPlan, unitPriceCents } from "@/lib/billing/budget";
 import { billableUserCount } from "@/lib/billing/usage";
 import { chargeInvoiceViaStripe } from "@/lib/billing/stripe-charge";
-import type { WorkspacePlan } from "@/lib/plans";
+import { FREE_SEATS, billableSeats, type WorkspacePlan } from "@/lib/plans";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 // Échéance d'une facture mensuelle : 30 jours après la fin du mois facturé.
@@ -42,13 +42,16 @@ export function dayCount(start: Date, end: Date): number {
   return Math.max(0, Math.round((end.getTime() - start.getTime()) / DAY_MS));
 }
 
-// Montant d'un segment en centimes : utilisateurs × prix unitaire × prorata, arrondi.
+// Montant d'un segment en centimes : sièges FACTURÉS × prix unitaire × prorata,
+// arrondi. La franchise FREE_SEATS est retranchée ici (billableSeats) : on reçoit
+// le nombre d'utilisateurs ACTIFS sur le segment et on ne facture que ceux au-delà
+// de la franchise. 5 actifs ou moins → 0 €.
 export function segmentAmountCents(
-  billableUsers: number,
+  activeUsers: number,
   unitCents: number,
   days: number,
 ): number {
-  return Math.round(billableUsers * unitCents * prorata(days));
+  return Math.round(billableSeats(activeUsers) * unitCents * prorata(days));
 }
 
 // Premier jour (minuit UTC) du mois civil de `d`. Les dates de facturation sont
@@ -146,14 +149,31 @@ export async function runNightlyForWorkspace(
   ws: WorkspaceBilling,
   today: Date,
 ): Promise<number> {
+  // Rétrogradation automatique vers l'offre gratuite (décision produit) : un espace
+  // PAYANT dont le nombre d'utilisateurs actifs est retombé dans la franchise
+  // (≤ FREE_SEATS) ne facture plus rien ; plutôt que de le maintenir en payant à
+  // 0 €, on le repasse en Gratuit. On synthétise un changement d'offre en attente
+  // vers FREE, traité comme tout changement (clôture du segment payant au prorata,
+  // bascule le soir même). La décision se prend au traitement de nuit, sur le
+  // nombre d'actifs COURANT : une équipe repassée au-dessus de la franchise entre
+  // le départ d'un membre et la nuit n'est donc jamais rétrogradée à tort. Un choix
+  // explicite déjà en attente (p.ex. une montée d'offre) n'est pas écrasé.
+  let pendingPlan = ws.pendingPlan;
+  if (isPaidPlan(ws.plan) && pendingPlan == null) {
+    const activeNow = await prisma.membership.count({
+      where: { workspaceId: ws.id, deactivatedAt: null },
+    });
+    if (activeNow <= FREE_SEATS) pendingPlan = "FREE";
+  }
+
   const plan = planNightly(
-    { plan: ws.plan, segmentStart: ws.billingCycleStart, pendingPlan: ws.pendingPlan },
+    { plan: ws.plan, segmentStart: ws.billingCycleStart, pendingPlan },
     today,
   );
 
   const rows = await Promise.all(
     plan.segments.map(async (seg) => {
-      const users = await billableUserCount(ws.id, seg.start, seg.end);
+      const active = await billableUserCount(ws.id, seg.start, seg.end);
       const unit = unitPriceCents(seg.plan);
       const days = dayCount(seg.start, seg.end);
       return {
@@ -162,9 +182,11 @@ export async function runNightlyForWorkspace(
         startedAt: seg.start,
         endedAt: seg.end,
         days,
-        billableUsers: users,
+        // Sièges facturés (franchise FREE_SEATS retranchée) : le montant du segment
+        // en découle directement (sièges facturés × prix × prorata).
+        billableUsers: billableSeats(active),
         unitPriceCents: unit,
-        amountCents: segmentAmountCents(users, unit, days),
+        amountCents: segmentAmountCents(active, unit, days),
       };
     }),
   );

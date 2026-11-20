@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth/dal";
 import { ensureAdmin } from "@/lib/auth/guards";
 import { seatCheck, isPaidPlan } from "@/lib/billing/budget";
 import { currentBillingDay } from "@/lib/billing/cycle";
-import { type WorkspacePlan } from "@/lib/plans";
+import { FREE_SEATS, type WorkspacePlan } from "@/lib/plans";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 import { normalizeDomains, isEmailDomainAllowed } from "@/lib/email-domains";
 
@@ -175,17 +175,34 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
     prisma.workspace.findUnique({ where: { id: workspaceId }, select: { plan: true } }),
   ]);
 
+  const currentPlan = workspace?.plan ?? "FREE";
+  // Montant saisi, repassé dans l'URL pour que le formulaire se rouvre sur ce que
+  // l'utilisateur venait de saisir — et non la valeur en base — afin que l'alerte
+  // porte bien sur ce qu'il s'apprête à valider.
+  const triedBudget = budgetEuros == null ? "" : `&triedBudget=${budgetEuros}`;
+
+  // Garde-fou « offre payante réservée aux équipes qui dépassent la franchise » :
+  // on refuse d'ACTIVER une offre payante (depuis l'offre gratuite) tant que
+  // l'espace n'a pas atteint le plafond gratuit de FREE_SEATS utilisateurs — en
+  // deçà, l'offre gratuite suffit et la facture serait nulle. On autorise la
+  // bascule DÈS que les FREE_SEATS places gratuites sont occupées, pour que
+  // l'équipe puisse croître au-delà (sinon un espace plein à FREE_SEATS ne
+  // pourrait ni ajouter de membre en gratuit, ni passer en payant → impasse).
+  // (Un espace déjà payant qui repasse sous le seuil est rétrogradé vers l'offre
+  // gratuite par le traitement de nuit — cf. runNightlyForWorkspace ; ce garde-fou
+  // ne concerne que l'ACTIVATION d'une offre payante depuis l'offre gratuite.)
+  if (isPaidPlan(plan) && !isPaidPlan(currentPlan) && activeMembers < FREE_SEATS) {
+    redirect(
+      `/app/workspaces/${workspaceId}/administration?planError=paidPlanMinSeats&tried=${plan}${triedBudget}`,
+    );
+  }
+
   const issue = seatCheck(plan, budgetCapCents, activeMembers);
   if (issue) {
-    // On renvoie aussi le montant tenté (triedBudget) pour que le formulaire se
-    // rouvre sur ce que l'utilisateur venait de saisir — et non la valeur en
-    // base — afin que l'alerte porte bien sur ce qu'il s'apprête à valider.
-    const tb = budgetEuros == null ? "" : `&triedBudget=${budgetEuros}`;
-    redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}${tb}`);
+    redirect(`/app/workspaces/${workspaceId}/administration?planError=${issue}&tried=${plan}${triedBudget}`);
   }
 
   const base = `/app/workspaces/${workspaceId}/administration`;
-  const currentPlan = workspace?.plan ?? "FREE";
 
   if (plan === currentPlan) {
     // Même offre : simple ajustement du plafond, immédiat. On vide aussi tout

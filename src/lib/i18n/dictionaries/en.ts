@@ -190,7 +190,7 @@ const en: Dictionary = {
     seatUsage: "{used} / {max} seats reserved",
     perMemberCost: "Each active member: {price} / month",
     billedUserMonthWarning:
-      "Heads-up: any member you add counts as one full user-month billed at full price, even if active only briefly and even if deactivated right after.",
+      "The first {free} users are free. Beyond that, any member you add counts as one full user-month billed at full price, even if active only briefly and even if deactivated right after.",
     invite: "Invite a member",
     you: "(you)",
     deactivated: "deactivated",
@@ -307,6 +307,12 @@ const en: Dictionary = {
       "You are nearing your plan limit for: {items}. Consider upgrading your subscription.",
     pendingPlanNotice:
       "Change to {plan} saved: it will take effect at the next nightly run.",
+    downgradeImminentNotice:
+      "Your workspace now has only {n} active user(s), within the {free} free seats: it will automatically return to the Free plan at the next nightly run (the paid portion of the current month is still billed pro rata).",
+    planErrorPaidMinSeats:
+      "The free plan covers up to {free} users — your workspace has {n}. A paid plan only bills users beyond {free}; you can switch once the {free} free seats are taken.",
+    paidMinSeatsWarning:
+      "The free plan covers up to {free} users — you have {m}. A paid plan is only useful beyond that; stay on the free plan for now.",
   },
   billingInfo: {
     title: "How billing works",
@@ -325,12 +331,16 @@ const en: Dictionary = {
         body: "Anyone who held a seat, even briefly during the month, counts as one unit, at full price (no proration). The same user only counts once, even if added and removed several times.",
       },
       {
+        title: "The first 5 are free",
+        body: "A 5-user allowance applies to every plan: you only pay for users beyond the fifth. A team of 5 people or fewer pays nothing.",
+      },
+      {
         title: "Prices",
-        body: "Free: €0. PRO: €3 per user per month. BUSINESS: €6 per user per month.",
+        body: "Free: €0. PRO: €3 per user per month, beyond 5. BUSINESS: €6 per user per month, beyond 5.",
       },
       {
         title: "Free plan",
-        body: "Limited to 3 members, with no invoice at all. Beyond that, move to a paid plan.",
+        body: "Up to 5 members, with no invoice at all. Beyond that, move to a paid plan.",
       },
       {
         title: "Rotate your team",
@@ -395,8 +405,10 @@ const en: Dictionary = {
       "Late payment incurs late-payment interest at the statutory rate, plus a fixed €40 recovery fee (business customers).",
     currentEstimateNote:
       "Estimate as of now: the final amount is set when the month closes.",
-    usersSectionTitle: "Billed users",
-    empty: "No user billed for this period.",
+    usersSectionTitle: "Active users for the period",
+    franchiseNote:
+      "The first {free} users are included free: {billed} billed out of {active} active.",
+    empty: "No active user for this period.",
     anonymized: "Anonymized account",
     stillActive: "still active",
   },
@@ -808,6 +820,8 @@ const en: Dictionary = {
     advMultiDesc: "Interface in English, French and Spanish, with a per-user preference.",
     offersTitle: "Simple plans",
     offersSubtitle: "Flat per-user pricing, no volume discounts.",
+    franchiseBanner: "Your first {free} users are free — you only pay for the rest.",
+    priceAboveFranchise: "per user beyond {free}",
     billingMonthly: "Monthly",
     billingYearly: "Yearly",
     billingYearlyNote: "2 months free",
@@ -822,7 +836,7 @@ const en: Dictionary = {
     rowStorage: "Storage",
     rowSpecifics: "Included",
     freePrice: "0 €",
-    freeSeats: "up to 3",
+    freeSeats: "up to 5",
     freeStorage: "2 GB",
     freeSpec: "The essentials to get started",
     proSeats: "Unlimited",
