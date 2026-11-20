@@ -1053,6 +1053,7 @@ const it: Dictionary = {
 
   discovery: {
     menuToggle: "Modalità scoperta",
+    menuOpenSettings: "Impostazioni della modalità scoperta",
     settingsTitle: "Modalità scoperta",
     settingsIntro:
       "Aiuto per iniziare: un tour di benvenuto e poi fumetti «?» sulle funzioni principali. Disattivabile in qualsiasi momento.",

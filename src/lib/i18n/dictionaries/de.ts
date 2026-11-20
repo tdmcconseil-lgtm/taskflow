@@ -1053,6 +1053,7 @@ const de: Dictionary = {
 
   discovery: {
     menuToggle: "Entdeckungsmodus",
+    menuOpenSettings: "Einstellungen des Entdeckungsmodus",
     settingsTitle: "Entdeckungsmodus",
     settingsIntro:
       "Hilfe für den Einstieg: eine Willkommenstour und danach „?“-Sprechblasen an den wichtigsten Funktionen. Jederzeit deaktivierbar.",
