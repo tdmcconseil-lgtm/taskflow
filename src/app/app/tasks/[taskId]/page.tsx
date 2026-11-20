@@ -384,7 +384,7 @@ export default async function TaskDetailPage({
           banner={
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                <dt className="text-xs text-zinc-400 dark:text-zinc-500">
                   {t.task.assignee}
                   <HintBubble anchor="assigner" className="ml-1.5" />
                 </dt>
@@ -400,7 +400,7 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                <dt className="text-xs text-zinc-400 dark:text-zinc-500">
                   {t.task.dueDate}
                   <HintBubble anchor="echeance" className="ml-1.5" />
                 </dt>
@@ -413,7 +413,7 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                <dt className="text-xs text-zinc-400 dark:text-zinc-500">
                   {t.task.priority}
                   <HintBubble anchor="priorite" className="ml-1.5" />
                 </dt>
