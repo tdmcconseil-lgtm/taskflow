@@ -307,6 +307,8 @@ const de: Dictionary = {
       "Du näherst dich deinem Tariflimit für: {items}. Erwäge ein Upgrade deines Abonnements.",
     pendingPlanNotice:
       "Wechsel zu {plan} gespeichert: Er wird beim nächsten nächtlichen Lauf wirksam.",
+    downgradeImminentNotice:
+      "Ihr Bereich hat nur noch {n} aktive(n) Nutzer, innerhalb der {free} kostenlosen Plätze: Er wechselt beim nächsten nächtlichen Lauf automatisch zurück zum kostenlosen Tarif (der kostenpflichtige Anteil des laufenden Monats wird anteilig berechnet).",
     planErrorPaidMinSeats:
       "Der kostenlose Tarif deckt bis zu {free} Nutzer ab — dein Bereich hat {n}. Ein kostenpflichtiger Tarif berechnet nur Nutzer über {free}; du kannst wechseln, sobald die {free} kostenlosen Plätze belegt sind.",
     paidMinSeatsWarning:

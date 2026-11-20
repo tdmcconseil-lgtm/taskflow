@@ -307,6 +307,8 @@ const it: Dictionary = {
       "Ti stai avvicinando al limite del tuo piano per: {items}. Valuta di aggiornare l'abbonamento.",
     pendingPlanNotice:
       "Modifica a {plan} salvata: avrà effetto alla prossima elaborazione notturna.",
+    downgradeImminentNotice:
+      "Il tuo spazio ha solo {n} utente/i attivo/i, entro i {free} posti gratuiti: tornerà automaticamente al piano Gratuito alla prossima elaborazione notturna (la parte a pagamento del mese in corso è fatturata in proporzione).",
     planErrorPaidMinSeats:
       "Il piano gratuito copre fino a {free} utenti — il tuo spazio ne ha {n}. Un piano a pagamento fattura solo gli utenti oltre {free}; potrai passare una volta occupati i {free} posti gratuiti.",
     paidMinSeatsWarning:

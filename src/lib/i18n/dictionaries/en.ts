@@ -307,6 +307,8 @@ const en: Dictionary = {
       "You are nearing your plan limit for: {items}. Consider upgrading your subscription.",
     pendingPlanNotice:
       "Change to {plan} saved: it will take effect at the next nightly run.",
+    downgradeImminentNotice:
+      "Your workspace now has only {n} active user(s), within the {free} free seats: it will automatically return to the Free plan at the next nightly run (the paid portion of the current month is still billed pro rata).",
     planErrorPaidMinSeats:
       "The free plan covers up to {free} users — your workspace has {n}. A paid plan only bills users beyond {free}; you can switch once the {free} free seats are taken.",
     paidMinSeatsWarning:

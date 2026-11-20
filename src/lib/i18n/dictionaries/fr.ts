@@ -306,6 +306,8 @@ const fr = {
       "Vous approchez de la limite de votre formule pour : {items}. Pensez à faire évoluer l'abonnement.",
     pendingPlanNotice:
       "Changement vers {plan} enregistré : il sera pris en compte au prochain traitement de nuit.",
+    downgradeImminentNotice:
+      "Votre espace ne compte plus que {n} utilisateur(s) actif(s), dans la limite des {free} places gratuites : il repassera automatiquement en offre Gratuite au prochain traitement de nuit (la part payante du mois en cours reste facturée au prorata).",
     planErrorPaidMinSeats:
       "L'offre gratuite couvre jusqu'à {free} utilisateurs — votre espace en a {n}. Une offre payante ne facture que les utilisateurs au-delà de {free} ; vous pourrez y passer une fois les {free} places gratuites occupées.",
     paidMinSeatsWarning:
