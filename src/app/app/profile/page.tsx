@@ -44,11 +44,13 @@ export default async function ProfilePage({ searchParams }: PageProps<"/app/prof
   // confirmation après un enregistrement (mot de passe / email → Connexion,
   // notifications → Notifications, sinon Identité).
   const initialTab =
-    sp.notifSaved === "1"
-      ? "notifications"
-      : sp.pwChanged === "1" || sp.emailSent === "1" || sp.emailChanged === "1"
-        ? "connexion"
-        : "identite";
+    sp.tab === "decouverte"
+      ? "decouverte"
+      : sp.notifSaved === "1"
+        ? "notifications"
+        : sp.pwChanged === "1" || sp.emailSent === "1" || sp.emailChanged === "1"
+          ? "connexion"
+          : "identite";
 
   const banner =
     sp.saved === "1"
