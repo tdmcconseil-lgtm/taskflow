@@ -19,7 +19,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { getDiscoverySettings } from "@/lib/discovery.server";
 import { DiscoveryProvider } from "@/components/DiscoveryProvider";
-import { DiscoveryMenuToggle } from "@/components/DiscoveryMenuToggle";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -172,8 +171,17 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
       {/* Thème clair / sombre : interrupteur tout en bas du menu (vert = sombre). */}
       <ThemeToggle label={t.theme.darkMode} initialDark={initialDark} />
 
-      {/* Mode découverte : aide à la prise en main (tour + bulles « ? »). */}
-      <DiscoveryMenuToggle />
+      {/* Mode découverte : lien vers les réglages d'aide (interrupteur + revoir
+          le tour), dans l'onglet « Découverte » du profil. */}
+      <Link
+        href="/app/profile?tab=decouverte"
+        className="mt-2 flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      >
+        <span>{t.discovery.menuToggle}</span>
+        <span aria-hidden className="text-zinc-400 dark:text-zinc-500">
+          →
+        </span>
+      </Link>
     </>
   );
 
