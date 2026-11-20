@@ -33,7 +33,7 @@ export function DescriptionReveal({
     <div className="space-y-4 border-t border-zinc-200 pt-4 dark:border-zinc-800">
       {banner}
       <dl>
-        <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+        <dt className="text-xs text-zinc-400 dark:text-zinc-500">
           {t.task.description}
           <HintBubble anchor="description" className="ml-1.5" />
         </dt>
