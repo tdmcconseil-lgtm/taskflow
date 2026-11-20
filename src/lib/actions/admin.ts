@@ -188,8 +188,9 @@ export async function setPlanAndBudget(formData: FormData): Promise<void> {
   // bascule DÈS que les FREE_SEATS places gratuites sont occupées, pour que
   // l'équipe puisse croître au-delà (sinon un espace plein à FREE_SEATS ne
   // pourrait ni ajouter de membre en gratuit, ni passer en payant → impasse).
-  // (Un espace déjà payant qui repasserait sous le seuil n'est pas rétrogradé
-  // ici — il est simplement facturé 0 € via la franchise.)
+  // (Un espace déjà payant qui repasse sous le seuil est rétrogradé vers l'offre
+  // gratuite par le traitement de nuit — cf. runNightlyForWorkspace ; ce garde-fou
+  // ne concerne que l'ACTIVATION d'une offre payante depuis l'offre gratuite.)
   if (isPaidPlan(plan) && !isPaidPlan(currentPlan) && activeMembers < FREE_SEATS) {
     redirect(
       `/app/workspaces/${workspaceId}/administration?planError=paidPlanMinSeats&tried=${plan}${triedBudget}`,
