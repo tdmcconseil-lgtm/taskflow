@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ASSIGNEE_SELECT, toAssigneeInfo, type AssigneeInfo, type RawTask } from "@/lib/task-tree";
 import { describeActivity, aspectLabel, joinWithAnd } from "@/lib/activity-text";
-import type { TaskActivityType } from "@/generated/prisma/client";
+import type { Prisma, TaskActivityType } from "@/generated/prisma/client";
 import type { TaskTab } from "@/lib/view";
 import type { Dictionary } from "@/lib/i18n/dictionaries/fr";
 import type { SortState } from "@/lib/sort";
@@ -139,7 +139,30 @@ function groupEvents(rows: EventRow[], readAt: Date | null, t: Dictionary): Even
   });
 }
 
-// Flux d'événements de l'utilisateur, groupé, du plus récent au plus ancien.
+// Ordonnancement SQL du flux d'activité selon le critère de tri demandé. Les
+// événements sont le flux d'activité (modèle TaskActivity) : ils n'ont qu'une
+// date (celle de l'activité) et le titre de la tâche concernée.
+//
+// IMPORTANT : ce tri est poussé dans la requête, donc appliqué AVANT le `take`,
+// pour que la fenêtre récupérée soit bien celle que le tri réclame. En triant en
+// mémoire après un `take` figé sur « createdAt desc », « date ascendante » ou
+// « titre » ne réordonnaient que les N activités les plus récentes, sans jamais
+// faire remonter les vraies plus anciennes (résultat faux dès que l'espace
+// dépasse la limite).
+function activityOrderBy(
+  sort: SortState,
+): Prisma.TaskActivityOrderByWithRelationInput[] {
+  if (sort.key === "titre") {
+    // Tri par titre de la tâche concernée ; date en critère secondaire stable.
+    return [{ task: { title: sort.dir } }, { createdAt: "desc" }];
+  }
+  return [{ createdAt: sort.dir }];
+}
+
+// Flux d'événements de l'utilisateur, groupé. Le tri demandé (date, du plus
+// récent au plus ancien par défaut) détermine la fenêtre des `limit` activités
+// récupérées. Le flux reste par nature plafonné à `limit` éléments, quel que
+// soit le tri.
 export async function getEventFeed(
   userId: string,
   readAt: Date | null,
@@ -152,14 +175,14 @@ export async function getEventFeed(
   const followed = await followedTaskIds(userId);
   const rows = await prisma.taskActivity.findMany({
     where: whereForUser(userId, followed, includeOwn, workspaceId),
-    orderBy: { createdAt: "desc" },
+    orderBy: activityOrderBy(sort),
     take: limit,
     select: EVENT_SELECT,
   });
+  // Les lignes arrivent déjà dans l'ordre demandé ; le regroupement (par groupId)
+  // peut légèrement décaler l'ordre au niveau des groupes, d'où ce tri final qui
+  // réordonne les groupes selon le même critère, au sein de la fenêtre récupérée.
   const groups = groupEvents(rows as EventRow[], readAt, t);
-  // Les événements sont le flux d'activité : ils n'ont qu'une date (celle de
-  // l'activité) et le titre de la tâche concernée. On trie le flux groupé selon
-  // le critère choisi (date par défaut, du plus récent au plus ancien).
   const dir = sort.dir === "asc" ? 1 : -1;
   groups.sort((a, b) => {
     switch (sort.key) {
