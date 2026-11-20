@@ -127,6 +127,16 @@ model User {
   // Pseudo affiché dans le module Idées (choisi une fois puis réutilisé).
   // null = pas encore choisi ; demandé à la première idée ou au premier pouce.
   pseudo         String?
+  // --- Mode découverte (aide à la prise en main, réglé par utilisateur) ---
+  // Interrupteur global de l'aide contextuelle : tour de bienvenue + bulles « ? ».
+  // Activé par défaut ; désactivable depuis le menu profil ou les réglages.
+  discoveryMode   Boolean   @default(true)
+  // Horodatage de la première complétion (ou du passage) du tour de bienvenue.
+  // null = tour jamais vu → affiché au prochain chargement si le mode est actif.
+  tourCompletedAt DateTime?
+  // Ancres (slugs) des bulles d'aide que l'utilisateur a masquées (« Ne plus
+  // afficher »). Synchronisé entre appareils puisque stocké en base.
+  dismissedHints  String[]  @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

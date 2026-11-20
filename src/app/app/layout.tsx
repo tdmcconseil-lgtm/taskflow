@@ -17,6 +17,9 @@ import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { MenuLocaleSwitcher } from "@/components/MenuLocaleSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { getDiscoverySettings } from "@/lib/discovery.server";
+import { DiscoveryProvider } from "@/components/DiscoveryProvider";
+import { DiscoveryMenuToggle } from "@/components/DiscoveryMenuToggle";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const user = await requireUser();
@@ -27,6 +30,9 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
   // le bon état dès le rendu serveur. Absent = choix jamais fait (préférence système).
   const themeCookie = (await cookies()).get("tf_theme")?.value;
   const initialDark = themeCookie === "dark" ? true : themeCookie === "light" ? false : undefined;
+
+  // Réglages du mode découverte (aide à la prise en main) de l'utilisateur.
+  const discovery = await getDiscoverySettings(user.id);
 
   // Espaces où l'utilisateur est administrateur (il y voit tous les projets).
   const memberships = await prisma.membership.findMany({
@@ -165,11 +171,19 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
       {/* Thème clair / sombre : interrupteur tout en bas du menu (vert = sombre). */}
       <ThemeToggle label={t.theme.darkMode} initialDark={initialDark} />
+
+      {/* Mode découverte : aide à la prise en main (tour + bulles « ? »). */}
+      <DiscoveryMenuToggle />
     </>
   );
 
   return (
-    <div className="flex min-h-full flex-1">
+    <DiscoveryProvider
+      initialEnabled={discovery.enabled}
+      initialDismissed={discovery.dismissedHints}
+      tourCompleted={discovery.tourCompleted}
+    >
+      <div className="flex min-h-full flex-1">
       <KeyboardShortcuts
         labels={{
           title: t.shortcuts.title,
@@ -222,6 +236,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </div>
-    </div>
+      </div>
+    </DiscoveryProvider>
   );
 }

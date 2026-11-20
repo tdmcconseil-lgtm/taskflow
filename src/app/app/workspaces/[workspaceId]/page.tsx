@@ -10,6 +10,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { getEventFeed } from "@/lib/events";
 import { getDiscussionRows } from "@/lib/discussions";
 import { TaskCollection } from "@/components/TaskCollection";
+import { HintBubble } from "@/components/HintBubble";
 import { TypeIcon } from "@/components/TypeIcon";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
@@ -135,6 +136,7 @@ export default async function WorkspacePage({
       toggleBase={`/app/workspaces/${workspace.id}`}
       newTaskHref={isArchived ? null : `/app/tasks/new?workspace=${workspace.id}`}
       newTaskLabel={t.task.newProject}
+      newHint="nouvelle-tache"
       workspaceId={workspace.id}
       reorderScope={{
         parentId: null,
@@ -272,6 +274,7 @@ export default async function WorkspacePage({
           <h1 className="text-2xl font-semibold tracking-tight">
             <span className="text-zinc-400 dark:text-zinc-500">{t.workspace.prefix} </span>
             {workspace.name}
+            <HintBubble anchor="projet-tache" className="ml-2" />
           </h1>
         </div>
         {isAdmin && (

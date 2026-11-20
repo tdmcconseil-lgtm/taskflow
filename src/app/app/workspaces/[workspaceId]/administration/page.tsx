@@ -15,6 +15,7 @@ import { isEmailDomainAllowed } from "@/lib/email-domains";
 import { UsagePanel } from "@/components/UsagePanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { BillingInfo } from "@/components/BillingInfo";
+import { HintBubble } from "@/components/HintBubble";
 import { BillingGuide } from "@/components/BillingGuide";
 import {
   unarchiveWorkspace,
@@ -451,17 +452,23 @@ export default async function WorkspaceAdminPage({
         }
         consommation={<UsagePanel plan={workspace.plan} metrics={usageMetrics} t={t} />}
         facturation={
-          <BillingInfo
-            t={t}
-            plan={workspace.plan}
-            pendingPlan={workspace.pendingPlan}
-            billableUsers={billableUsers}
-            workspaceId={workspace.id}
-            invoices={invoices}
-            locale={locale}
-            stripeEnabled={isStripeConfigured()}
-            cardOnFile={workspace.stripeDefaultPaymentMethodId !== null}
-          />
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              <span>{t.workspace.tabBilling}</span>
+              <HintBubble anchor="facturation" />
+            </div>
+            <BillingInfo
+              t={t}
+              plan={workspace.plan}
+              pendingPlan={workspace.pendingPlan}
+              billableUsers={billableUsers}
+              workspaceId={workspace.id}
+              invoices={invoices}
+              locale={locale}
+              stripeEnabled={isStripeConfigured()}
+              cardOnFile={workspace.stripeDefaultPaymentMethodId !== null}
+            />
+          </div>
         }
         modeEmploi={<BillingGuide t={t} />}
         archivage={isOwner ? archivagePanel : undefined}

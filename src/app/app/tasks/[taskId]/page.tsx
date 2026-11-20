@@ -13,6 +13,7 @@ import { TaskTabs } from "@/components/TaskTabs";
 import { ScrollToTarget } from "@/components/ScrollToTarget";
 import { TaskFollowers } from "@/components/TaskFollowers";
 import { DescriptionReveal } from "@/components/DescriptionReveal";
+import { HintBubble } from "@/components/HintBubble";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskCollection } from "@/components/TaskCollection";
 import { TypeIcon } from "@/components/TypeIcon";
@@ -383,7 +384,10 @@ export default async function TaskDetailPage({
           banner={
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.task.assignee}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                  {t.task.assignee}
+                  <HintBubble anchor="assigner" className="ml-1.5" />
+                </dt>
                 <dd className="mt-1 text-sm">
                   {task.assignee ? (
                     <span className="inline-flex items-center gap-2">
@@ -396,7 +400,10 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.task.dueDate}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                  {t.task.dueDate}
+                  <HintBubble anchor="echeance" className="ml-1.5" />
+                </dt>
                 <dd
                   className={`mt-1 text-sm ${
                     overdue ? "font-medium text-red-600 dark:text-red-400" : ""
@@ -406,7 +413,10 @@ export default async function TaskDetailPage({
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{t.task.priority}</dt>
+                <dt className="text-xs uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                  {t.task.priority}
+                  <HintBubble anchor="priorite" className="ml-1.5" />
+                </dt>
                 <dd className="mt-1">
                   <PriorityBadge priority={task.priority} />
                 </dd>
@@ -440,6 +450,7 @@ export default async function TaskDetailPage({
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel={t.task.newSubtask}
+            newHint="sous-tache"
             workspaceId={task.workspaceId}
             reorderScope={{
               parentId: task.id,

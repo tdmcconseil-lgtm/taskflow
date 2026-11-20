@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useT } from "@/lib/i18n/context";
 
-type ProfileTab = "identite" | "connexion" | "notifications";
+type ProfileTab = "identite" | "connexion" | "notifications" | "decouverte";
 
 // Onglets de la page profil, sur le même modèle que AdminTabs.
 //   1. Identité — photo + nom/prénom (la langue vit dans la barre de menu)
@@ -15,11 +15,13 @@ export function ProfileTabs({
   identite,
   connexion,
   notifications,
+  decouverte,
   initialTab = "identite",
 }: {
   identite: ReactNode;
   connexion: ReactNode;
   notifications: ReactNode;
+  decouverte: ReactNode;
   initialTab?: ProfileTab;
 }) {
   const [active, setActive] = useState<ProfileTab>(initialTab);
@@ -35,6 +37,7 @@ export function ProfileTabs({
     { key: "identite", label: dict.profile.identity },
     { key: "connexion", label: dict.profile.tabLogin },
     { key: "notifications", label: dict.profile.notifications },
+    { key: "decouverte", label: dict.discovery.settingsTitle },
   ];
 
   return (
@@ -65,6 +68,7 @@ export function ProfileTabs({
         <div hidden={active !== "identite"}>{identite}</div>
         <div hidden={active !== "connexion"}>{connexion}</div>
         <div hidden={active !== "notifications"}>{notifications}</div>
+        <div hidden={active !== "decouverte"}>{decouverte}</div>
       </div>
     </div>
   );

@@ -1036,6 +1036,103 @@ const de: Dictionary = {
     colMembers: "Aktive Mitglieder",
     colCreated: "Erstellt am",
   },
+
+  discovery: {
+    menuToggle: "Entdeckungsmodus",
+    settingsTitle: "Entdeckungsmodus",
+    settingsIntro:
+      "Hilfe für den Einstieg: eine Willkommenstour und danach „?“-Sprechblasen an den wichtigsten Funktionen. Jederzeit deaktivierbar.",
+    settingsToggle: "Entdeckungsmodus aktivieren",
+    replayTour: "Willkommenstour erneut ansehen",
+    badgeLabel: "Hilfe",
+    progress: "{current}/{total}",
+    gotIt: "Verstanden",
+    dismiss: "Nicht mehr anzeigen",
+    tour: {
+      skip: "Überspringen",
+      next: "Weiter",
+      back: "Zurück",
+      done: "Fertig",
+      step: "Schritt {current} von {total}",
+      endNote: "Der Entdeckungsmodus bleibt aktiv – achten Sie auf die ?, um mehr zu erfahren.",
+      steps: {
+        welcome: {
+          title: "Willkommen",
+          body: "Das ist Ihr getRIDA-Bereich. In 4 Schritten lernen Sie das Wesentliche kennen.",
+        },
+        create: {
+          title: "Erstellen",
+          body: "Erstellen Sie ein Projekt, dann Aufgaben – und Unteraufgaben, ohne Tiefenbegrenzung.",
+        },
+        organize: {
+          title: "Organisieren",
+          body: "Zuweisen, terminieren, priorisieren. Die Aufgabenkarte bündelt alles.",
+        },
+        visualize: {
+          title: "Visualisieren",
+          body: "Wechseln Sie zwischen Tafel- und Listenansicht; ordnen Sie in der Hierarchie neu.",
+        },
+        collaborate: {
+          title: "Zusammenarbeiten",
+          body: "Laden Sie Ihre Kolleg:innen ein und bestimmen Sie, wer auf jedes Projekt zugreift.",
+        },
+      },
+    },
+    hints: {
+      "projet-tache": {
+        title: "Projekte und Aufgaben",
+        body: "Ein Projekt enthält Aufgaben; eine Aufgabe kann Unteraufgaben haben, ohne Tiefenbegrenzung.",
+      },
+      "nouvelle-tache": {
+        title: "Aufgabe hinzufügen",
+        body: "Erstellen Sie hier eine Aufgabe, geben Sie ihr einen Titel und füllen Sie dann ihre Karte aus.",
+      },
+      "sous-tache": {
+        title: "Unteraufgaben",
+        body: "Teilen Sie eine Aufgabe in Unteraufgaben auf, um den Fortschritt Schritt für Schritt zu verfolgen.",
+      },
+      assigner: {
+        title: "Zuweisen",
+        body: "Weisen Sie die Aufgabe einem Mitglied zu: Es findet sie in seiner Liste.",
+      },
+      echeance: {
+        title: "Fälligkeit",
+        body: "Legen Sie eine Frist fest; überfällige Aufgaben werden gekennzeichnet.",
+      },
+      priorite: {
+        title: "Priorität",
+        body: "Geben Sie die Wichtigkeit an, damit das Team weiß, womit es beginnen soll.",
+      },
+      description: {
+        title: "Beschreibung",
+        body: "Die erste Zeile ist auf einen Blick sichtbar; „Mehr anzeigen“ klappt den Rest auf.",
+      },
+      vues: {
+        title: "Ansicht wechseln",
+        body: "Wechseln Sie zwischen Tafel- (Kanban) und Listenansicht, je nach Arbeitsweise.",
+      },
+      reordonner: {
+        title: "Neu ordnen",
+        body: "Im Bearbeitungsmodus eine Aufgabe nach oben/unten verschieben oder ihre Zuordnung ändern.",
+      },
+      inviter: {
+        title: "Mitglied einladen",
+        body: "Fügen Sie Ihre Kolleg:innen per E-Mail hinzu. Ab 5 Nutzenden wechselt der Bereich in einen kostenpflichtigen Tarif.",
+      },
+      acces: {
+        title: "Zugriffssteuerung",
+        body: "Wählen Sie, wer dieses Projekt sieht: der gesamte Bereich oder nur eingeladene Mitglieder.",
+      },
+      idees: {
+        title: "Ideen",
+        body: "Schlagen Sie Verbesserungsideen vor und stimmen Sie ab, getrennt von den täglichen Aufgaben.",
+      },
+      facturation: {
+        title: "Tarif & Abrechnung",
+        body: "Behalten Sie Ihren Tarif, die abgerechneten Nutzenden und Ihre Rechnungen im Blick.",
+      },
+    },
+  },
 };
 
 export default de;
