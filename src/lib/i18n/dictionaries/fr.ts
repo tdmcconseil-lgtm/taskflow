@@ -541,6 +541,28 @@ const fr = {
     empty:
       "Aucune discussion. Suivez une tâche ou écrivez un message pour en voir apparaître ici.",
   },
+  sort: {
+    by: "Trier par",
+    asc: "Croissant",
+    desc: "Décroissant",
+    task: {
+      echeance: "Échéance",
+      priorite: "Priorité",
+      titre: "Titre",
+      creation: "Date de création",
+      statut: "Statut",
+      assigne: "Assigné à",
+    },
+    discussion: {
+      activite: "Dernière activité",
+      creation: "Date de création",
+      titre: "Titre",
+    },
+    event: {
+      date: "Date",
+      titre: "Titre",
+    },
+  },
   descriptionReveal: {
     show: "Afficher la description",
     hide: "Masquer la description",

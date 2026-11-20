@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge, PriorityBadge } from "@/components/badges";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { parseSort, taskOrderBy, sortControlProps } from "@/lib/sort";
+import { SortControl } from "@/components/SortControl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
@@ -14,22 +16,27 @@ export async function generateMetadata(): Promise<Metadata> {
 // Page dédiée « Mes tâches à faire » (comme Discussions et Événements). Liste
 // les tâches assignées à l'utilisateur et non terminées, toutes espaces
 // confondus, triées par échéance. Déplacée depuis l'accueil.
-export default async function TasksPage() {
+export default async function TasksPage({
+  searchParams,
+}: PageProps<"/app/tasks">) {
   const user = await requireUser();
   const t = await getDictionary();
   const locale = await getLocale();
+  const sp = await searchParams;
+  const sort = parseSort("task", sp);
 
   const myTasks = await prisma.task.findMany({
     where: { assigneeId: user.id, status: { not: "DONE" } },
-    orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+    orderBy: taskOrderBy(sort),
     include: { workspace: { select: { id: true, name: true } } },
     take: 50,
   });
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t.dashboard.myTasks}</h1>
+        {myTasks.length > 0 && <SortControl {...sortControlProps("task", sp, t)} />}
       </div>
 
       {myTasks.length === 0 ? (
