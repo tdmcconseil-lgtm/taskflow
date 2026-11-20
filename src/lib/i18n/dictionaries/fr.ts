@@ -1057,6 +1057,7 @@ const fr = {
   // Mode découverte — aide à la prise en main (tour de bienvenue + bulles « ? »).
   discovery: {
     menuToggle: "Mode découverte",
+    menuOpenSettings: "Réglages du mode découverte",
     settingsTitle: "Mode découverte",
     settingsIntro:
       "L'aide à la prise en main : un tour de bienvenue, puis des bulles « ? » sur les fonctions clés. Désactivable à tout moment.",

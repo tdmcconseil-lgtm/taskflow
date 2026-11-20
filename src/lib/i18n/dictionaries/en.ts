@@ -1053,6 +1053,7 @@ const en: Dictionary = {
 
   discovery: {
     menuToggle: "Discovery mode",
+    menuOpenSettings: "Discovery mode settings",
     settingsTitle: "Discovery mode",
     settingsIntro:
       "Onboarding help: a welcome tour, then “?” bubbles on the key features. Can be turned off at any time.",

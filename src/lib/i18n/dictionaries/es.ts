@@ -1053,6 +1053,7 @@ const es: Dictionary = {
 
   discovery: {
     menuToggle: "Modo descubrimiento",
+    menuOpenSettings: "Ajustes del modo descubrimiento",
     settingsTitle: "Modo descubrimiento",
     settingsIntro:
       "Ayuda para empezar: un recorrido de bienvenida y luego burbujas «?» en las funciones clave. Se puede desactivar en cualquier momento.",
