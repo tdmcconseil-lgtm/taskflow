@@ -4,6 +4,7 @@ import { getDictionary } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { PricingTable } from "@/components/PricingTable";
 import { buttonClass } from "@/components/Button";
+import { FREE_SEATS } from "@/lib/plans";
 
 // Page de garde publique (vitrine). Un visiteur connecté voit « Ouvrir mon
 // espace » au lieu des appels à l'inscription (cf. cahier des charges).
@@ -33,6 +34,9 @@ export default async function Home() {
     { q: t.landing.faq2Q, a: t.landing.faq2A },
     { q: t.landing.faq3Q, a: t.landing.faq3A },
     { q: t.landing.faq4Q, a: t.landing.faq4A },
+    // Franchise de sièges gratuits : le nombre vient de plans.ts (FREE_SEATS),
+    // jamais recopié en dur dans la copie.
+    { q: t.landing.faq5Q, a: t.landing.faq5A.replace("{free}", String(FREE_SEATS)) },
   ];
 
   return (
