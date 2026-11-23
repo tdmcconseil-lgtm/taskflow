@@ -18,12 +18,14 @@ export function isPaidPlan(plan: WorkspacePlan): boolean {
 // Nombre de sièges autorisés pour un espace.
 // FREE : la limite de la formule (FREE_SEATS). Payant : la franchise FREE_SEATS
 // (toujours gratuite) + les sièges couverts par le plafond (plafond / prix
-// unitaire) ; si le plafond n'est pas défini, 0 (aucun membre ne peut être
-// ajouté). Exemple : PRO, plafond 15 € → 5 gratuits + 5 facturés = 10 sièges.
+// unitaire). Si le plafond n'est pas défini, on applique la seule franchise
+// (FREE_SEATS gratuits, aucun siège facturé) — comme un plafond nul : la
+// franchise reste toujours ouverte. Exemple : PRO, plafond 15 € → 5 gratuits +
+// 5 facturés = 10 sièges.
 export function maxSeats(plan: WorkspacePlan, budgetCapCents: number | null): number {
   const def = PLAN_DEFS[plan];
   if (def.priceCentsPerUser === 0) return def.members;
-  if (budgetCapCents == null) return 0;
+  if (budgetCapCents == null) return FREE_SEATS;
   return FREE_SEATS + Math.floor(budgetCapCents / def.priceCentsPerUser);
 }
 
