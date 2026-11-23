@@ -807,7 +807,7 @@ const fr = {
     heroPrimary: "Commencer gratuitement",
     heroNoCard: "Sans carte bancaire",
     trustEu: "Hébergé en Europe",
-    trustLangs: "Trois langues : FR · EN · ES",
+    trustLangs: "Cinq langues : FR · EN · ES · DE · IT",
     trustStorage: "Stockage inclus",
     advantagesTitle: "Pourquoi getRIDA",
     advFloorTitle: "Prix plancher",
@@ -818,7 +818,7 @@ const fr = {
     advSimpleTitle: "Simplicité",
     advSimpleDesc: "Sous-tâches imbriquées, vues liste et tableau, discussions et décisions réunies.",
     advMultiTitle: "Multilingue",
-    advMultiDesc: "Interface en français, anglais et espagnol, avec une préférence par utilisateur.",
+    advMultiDesc: "Interface en français, anglais, espagnol, allemand et italien, avec une préférence par utilisateur.",
     offersTitle: "Des offres simples",
     offersSubtitle: "Tarif plat par utilisateur, sans dégressivité.",
     franchiseBanner:
