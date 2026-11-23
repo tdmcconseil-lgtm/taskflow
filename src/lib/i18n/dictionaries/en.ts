@@ -858,6 +858,8 @@ const en: Dictionary = {
     faq3A: "Yes. Paid plans have no commitment; you can return to the free plan whenever you like.",
     faq4Q: "Can I try without paying?",
     faq4A: "Yes: the Free plan is free with no credit card, and the Pro plan offers a free 1-month trial.",
+    faq5Q: "How does billing work?",
+    faq5A: "You pay per active user per month — but your first {free} users are always free, on every plan. Beyond that, only the additional users are billed, at your plan's rate.",
     finalTitle: "Create your workspace in minutes",
     finalSubtitle: "Free to start, no credit card.",
     finalCta: "Start for free",

@@ -858,6 +858,8 @@ const it: Dictionary = {
     faq3A: "Sì. I piani a pagamento sono senza vincoli; puoi tornare al piano gratuito quando vuoi.",
     faq4Q: "Posso provare senza pagare?",
     faq4A: "Sì: il piano Free è gratuito e senza carta di credito, e il piano Pro offre una prova gratuita di un mese.",
+    faq5Q: "Come funziona la fatturazione?",
+    faq5A: "Paghi per utente attivo al mese, ma i tuoi primi {free} utenti sono sempre gratuiti, in tutti i piani. Oltre questa soglia, vengono fatturati solo gli utenti aggiuntivi, alla tariffa del tuo piano.",
     finalTitle: "Crea il tuo spazio di lavoro in pochi minuti",
     finalSubtitle: "Gratis per iniziare, senza carta di credito.",
     finalCta: "Inizia gratis",

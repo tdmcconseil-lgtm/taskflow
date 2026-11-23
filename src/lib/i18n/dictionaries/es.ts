@@ -858,6 +858,8 @@ const es: Dictionary = {
     faq3A: "Sí. Los planes de pago no tienen compromiso; puedes volver al plan gratuito cuando quieras.",
     faq4Q: "¿Puedo probar sin pagar?",
     faq4A: "Sí: el plan Free es gratuito y sin tarjeta, y el plan Pro ofrece una prueba gratuita de un mes.",
+    faq5Q: "¿Cómo funciona la facturación?",
+    faq5A: "Pagas por usuario activo y mes, pero tus primeros {free} usuarios son siempre gratuitos, en todos los planes. A partir de ahí, solo se facturan los usuarios adicionales, a la tarifa de tu plan.",
     finalTitle: "Crea tu espacio en unos minutos",
     finalSubtitle: "Gratis para empezar, sin tarjeta.",
     finalCta: "Empezar gratis",

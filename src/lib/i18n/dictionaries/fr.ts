@@ -860,6 +860,8 @@ const fr = {
     faq3A: "Oui. Les offres payantes sont sans engagement ; vous pouvez revenir à l'offre gratuite quand vous le souhaitez.",
     faq4Q: "Puis-je essayer sans payer ?",
     faq4A: "Oui : l'offre Free est gratuite et sans carte bancaire, et l'offre Pro propose un essai gratuit d'un mois.",
+    faq5Q: "Comment fonctionne la facturation ?",
+    faq5A: "Vous payez par utilisateur actif et par mois — mais vos {free} premiers utilisateurs restent gratuits sur toutes les offres. Au-delà, seuls les utilisateurs supplémentaires sont facturés, au tarif de l'offre choisie.",
     finalTitle: "Créez votre espace en quelques minutes",
     finalSubtitle: "Gratuit pour commencer, sans carte bancaire.",
     finalCta: "Commencer gratuitement",

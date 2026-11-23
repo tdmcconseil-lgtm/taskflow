@@ -858,6 +858,8 @@ const de: Dictionary = {
     faq3A: "Ja. Kostenpflichtige Tarife sind ohne Bindung; du kannst jederzeit zum kostenlosen Tarif zurückkehren.",
     faq4Q: "Kann ich ohne Zahlung testen?",
     faq4A: "Ja: Der Free-Tarif ist kostenlos und ohne Kreditkarte, und der Pro-Tarif bietet einen kostenlosen Testmonat.",
+    faq5Q: "Wie funktioniert die Abrechnung?",
+    faq5A: "Du zahlst pro aktivem Nutzer und Monat — aber deine ersten {free} Nutzer sind in jedem Tarif immer kostenlos. Darüber hinaus werden nur die zusätzlichen Nutzer zum Preis deines Tarifs berechnet.",
     finalTitle: "Erstelle deinen Arbeitsbereich in wenigen Minuten",
     finalSubtitle: "Kostenlos zum Starten, ohne Kreditkarte.",
     finalCta: "Kostenlos starten",
