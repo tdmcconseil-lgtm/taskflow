@@ -37,7 +37,8 @@ const fr = {
   // Pages comparatives (acquisition SEO). `asana` = première page « getRIDA vs X ».
   // Faits Asana vérifiés le 24/11 contre asana.com/pricing (source officielle) :
   //  - offre gratuite « Personal » = 2 utilisateurs (et non 10) ;
-  //  - paliers payants : Starter (10,99 $/u/mois annuel), Advanced (24,99 $), Enterprise(+) ;
+  //  - paliers payants : Starter (10,99 $/u/mois annuel), Advanced (24,99 $), Enterprise(+) —
+  //    NB : même asana.com/fr affiche en USD, pas de tarif € officiel ;
   //  - Timeline/Gantt dès Starter, portefeuilles dès Advanced ; 100+ intégrations ;
   //  - hébergement : États-Unis par défaut, résidence UE (Francfort) en option Enterprise+
   //    (asana.com/inside-asana/eu-data-center) ; ~13 langues d'interface.
@@ -59,7 +60,7 @@ const fr = {
       colAdvantage: "Avantage",
       advEqual: "Égalité",
       rows: [
-        { label: "Prix par utilisateur", getrida: "Tarif plancher, vos premiers utilisateurs gratuits", asana: "Gratuit jusqu’à 2 utilisateurs, puis paliers payants plus chers", adv: "g" },
+        { label: "Prix par utilisateur", getrida: "Tarif plancher, vos premiers utilisateurs gratuits", asana: "Gratuit jusqu’à 2 utilisateurs ; puis Starter 10,99 $ et Advanced 24,99 $ par utilisateur/mois (annuel)", adv: "g" },
         { label: "Hébergement des données", getrida: "Europe", asana: "États-Unis par défaut ; résidence UE (Francfort) en option sur Enterprise+", adv: "g" },
         { label: "Souveraineté et export", getrida: "Données maîtrisées, exportables à tout moment", asana: "Export possible, données hors UE par défaut", adv: "g" },
         { label: "Sous-tâches imbriquées", getrida: "Oui, imbrication profonde", asana: "Oui", adv: "eq" },
@@ -94,7 +95,7 @@ const fr = {
       finalSub: "Gratuit pour commencer, sans carte bancaire. Vos données en Europe, votre équipe dans sa langue.",
       finalCtaCreate: "Créer mon espace",
       finalCtaDiscover: "Découvrir getRIDA",
-      footnote: "Comparatif fourni à titre indicatif. Asana est une marque de sa société respective.",
+      footnote: "Comparatif fourni à titre indicatif ; tarifs Asana en USD, facturation annuelle (source asana.com). Asana est une marque de sa société respective.",
     },
   },
   update: {

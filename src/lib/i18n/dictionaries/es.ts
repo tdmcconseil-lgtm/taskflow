@@ -49,7 +49,7 @@ const es: Dictionary = {
       colAdvantage: "Ventaja",
       advEqual: "Empate",
       rows: [
-        { label: "Precio por usuario", getrida: "Precio mínimo, tus primeros usuarios gratis", asana: "Gratis hasta 2 usuarios, luego planes de pago más caros", adv: "g" },
+        { label: "Precio por usuario", getrida: "Precio mínimo, tus primeros usuarios gratis", asana: "Gratis hasta 2 usuarios; luego Starter 10,99 $ y Advanced 24,99 $ por usuario/mes (anual)", adv: "g" },
         { label: "Alojamiento de los datos", getrida: "Europa", asana: "Estados Unidos por defecto; residencia en la UE (Fráncfort) opcional en Enterprise+", adv: "g" },
         { label: "Soberanía y exportación", getrida: "Datos bajo tu control, exportables en cualquier momento", asana: "Exportación posible, datos fuera de la UE por defecto", adv: "g" },
         { label: "Subtareas anidadas", getrida: "Sí, anidación profunda", asana: "Sí", adv: "eq" },
@@ -84,7 +84,7 @@ const es: Dictionary = {
       finalSub: "Gratis para empezar, sin tarjeta. Tus datos en Europa, tu equipo en su idioma.",
       finalCtaCreate: "Crear mi espacio",
       finalCtaDiscover: "Descubrir getRIDA",
-      footnote: "Comparativa facilitada a título informativo. Asana es una marca de su respectiva empresa.",
+      footnote: "Comparativa facilitada a título informativo; precios de Asana en USD, facturación anual (fuente asana.com). Asana es una marca de su respectiva empresa.",
     },
   },
   update: {

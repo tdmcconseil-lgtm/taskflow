@@ -49,7 +49,7 @@ const en: Dictionary = {
       colAdvantage: "Advantage",
       advEqual: "Tie",
       rows: [
-        { label: "Price per user", getrida: "Floor pricing, your first users free", asana: "Free up to 2 users, then pricier paid tiers", adv: "g" },
+        { label: "Price per user", getrida: "Floor pricing, your first users free", asana: "Free up to 2 users; then Starter $10.99 and Advanced $24.99 per user/month (billed annually)", adv: "g" },
         { label: "Data hosting", getrida: "Europe", asana: "United States by default; EU residency (Frankfurt) as an Enterprise+ option", adv: "g" },
         { label: "Sovereignty and export", getrida: "Data you control, exportable anytime", asana: "Export available, data outside the EU by default", adv: "g" },
         { label: "Nested subtasks", getrida: "Yes, deep nesting", asana: "Yes", adv: "eq" },
@@ -84,7 +84,7 @@ const en: Dictionary = {
       finalSub: "Free to start, no credit card. Your data in Europe, your team in its own language.",
       finalCtaCreate: "Create my workspace",
       finalCtaDiscover: "Discover getRIDA",
-      footnote: "Comparison provided for information only. Asana is a trademark of its respective company.",
+      footnote: "Comparison provided for information only; Asana prices in USD, billed annually (source asana.com). Asana is a trademark of its respective company.",
     },
   },
   update: {

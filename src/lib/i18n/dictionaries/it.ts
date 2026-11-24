@@ -49,7 +49,7 @@ const it: Dictionary = {
       colAdvantage: "Vantaggio",
       advEqual: "Pari",
       rows: [
-        { label: "Prezzo per utente", getrida: "Prezzo minimo, i tuoi primi utenti gratis", asana: "Gratis fino a 2 utenti, poi piani a pagamento più cari", adv: "g" },
+        { label: "Prezzo per utente", getrida: "Prezzo minimo, i tuoi primi utenti gratis", asana: "Gratis fino a 2 utenti; poi Starter 10,99 $ e Advanced 24,99 $ per utente/mese (annuale)", adv: "g" },
         { label: "Hosting dei dati", getrida: "Europa", asana: "Stati Uniti per impostazione predefinita; residenza UE (Francoforte) opzionale con Enterprise+", adv: "g" },
         { label: "Sovranità ed esportazione", getrida: "Dati sotto il tuo controllo, esportabili in qualsiasi momento", asana: "Esportazione possibile, dati fuori dalla UE per impostazione predefinita", adv: "g" },
         { label: "Sottoattività annidate", getrida: "Sì, annidamento profondo", asana: "Sì", adv: "eq" },
@@ -84,7 +84,7 @@ const it: Dictionary = {
       finalSub: "Gratis per iniziare, senza carta. I tuoi dati in Europa, il tuo team nella sua lingua.",
       finalCtaCreate: "Crea il mio spazio",
       finalCtaDiscover: "Scopri getRIDA",
-      footnote: "Comparativo fornito a titolo indicativo. Asana è un marchio della rispettiva società.",
+      footnote: "Comparativo fornito a titolo indicativo; prezzi Asana in USD, fatturazione annuale (fonte asana.com). Asana è un marchio della rispettiva società.",
     },
   },
   update: {
