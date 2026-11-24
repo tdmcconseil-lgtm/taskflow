@@ -143,6 +143,7 @@ const fr = {
     overview: "Voici un aperçu de votre travail.",
     myTasks: "Mes tâches à faire",
     noMyTasks: "Aucune tâche ne vous est assignée pour le moment.",
+    showProjects: "Afficher mes projets",
     myWorkspaces: "Mes espaces de travail",
     newWorkspace: "Nouvel espace",
     noWorkspaces: "Aucun espace actif. Créez-en un pour commencer.",

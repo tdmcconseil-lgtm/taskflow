@@ -144,6 +144,7 @@ const en: Dictionary = {
     overview: "Here's an overview of your work.",
     myTasks: "My tasks to do",
     noMyTasks: "No tasks are assigned to you right now.",
+    showProjects: "Show my projects",
     myWorkspaces: "My workspaces",
     newWorkspace: "New workspace",
     noWorkspaces: "No active workspace. Create one to get started.",

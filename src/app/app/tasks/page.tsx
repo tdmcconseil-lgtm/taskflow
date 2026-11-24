@@ -7,6 +7,8 @@ import { formatDate, isOverdue } from "@/lib/labels";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { parseSort, taskOrderBy, sortControlProps } from "@/lib/sort";
 import { SortControl } from "@/components/SortControl";
+import { TypeIcon } from "@/components/TypeIcon";
+import { TasksProjectFilter } from "@/components/TasksProjectFilter";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
@@ -24,9 +26,16 @@ export default async function TasksPage({
   const locale = await getLocale();
   const sp = await searchParams;
   const sort = parseSort("task", sp);
+  // Toggle « Afficher mes projets » activé par défaut ; ?projects=0 exclut les
+  // projets (tâches racines) de la liste via un filtre SQL.
+  const showProjects = sp.projects !== "0";
 
   const myTasks = await prisma.task.findMany({
-    where: { assigneeId: user.id, status: { not: "DONE" } },
+    where: {
+      assigneeId: user.id,
+      status: { not: "DONE" },
+      ...(showProjects ? {} : { parentId: { not: null } }),
+    },
     orderBy: taskOrderBy(sort),
     include: { workspace: { select: { id: true, name: true } } },
     take: 50,
@@ -36,7 +45,10 @@ export default async function TasksPage({
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{t.dashboard.myTasks}</h1>
-        {myTasks.length > 0 && <SortControl {...sortControlProps("task", sp, t)} />}
+        <div className="flex flex-wrap items-center gap-3">
+          <TasksProjectFilter showProjects={showProjects} />
+          <SortControl {...sortControlProps("task", sp, t)} />
+        </div>
       </div>
 
       {myTasks.length === 0 ? (
@@ -49,12 +61,18 @@ export default async function TasksPage({
             <li key={task.id} className="bg-white px-4 py-2.5 dark:bg-zinc-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <Link
-                    href={`/app/tasks/${task.id}`}
-                    className="block truncate font-medium hover:underline"
-                  >
-                    {task.title}
-                  </Link>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <TypeIcon
+                      isProject={task.parentId === null}
+                      label={task.parentId === null ? t.task.prefixProject : t.task.prefixTask}
+                    />
+                    <Link
+                      href={`/app/tasks/${task.id}`}
+                      className="truncate font-medium hover:underline"
+                    >
+                      {task.title}
+                    </Link>
+                  </div>
                   <Link
                     href={`/app/workspaces/${task.workspace.id}`}
                     className="text-xs text-zinc-500 dark:text-zinc-400 hover:underline"
