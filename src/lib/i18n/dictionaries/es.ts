@@ -144,9 +144,9 @@ const es: Dictionary = {
         intro:
           "monday.com es un «Work OS» versátil, personalizable hasta el infinito a través de su marketplace. getRIDA hace la elección contraria: una herramienta simple, soberana y a precio mínimo para los equipos que quieren avanzar sin montar un sistema enrevesado. Esta es la comparación, sin rodeos.",
         cells: {
-          prix: "Gratis hasta 2 puestos; luego Basic 9 €, Standard 12 € y Pro 19 € por puesto/mes (anual, a partir de 3 puestos)",
+          prix: "Gratis hasta 2 puestos; luego (Work Management) Basic 9 €, Standard 12 € y Pro 19 € por puesto/mes (anual, a partir de 3 puestos)",
           hebergement: "Estados Unidos por defecto; región de datos UE (Fráncfort) disponible",
-          souverainete: "Exportación posible; residencia completa en la UE en los planes empresa",
+          souverainete: "Exportación posible; residencia estricta en la UE reservada a Enterprise alojado en la UE (Standard/Pro: datos posibles fuera de la UE)",
           sousTaches: "Sí, hasta 4 niveles de subelementos",
           discussions: "Hilo de actualizaciones y comentarios por elemento",
           vues: "Kanban y tablero; cronología/Gantt y calendario desde Standard",
@@ -237,8 +237,8 @@ const es: Dictionary = {
         intro:
           "ClickUp es una herramienta todo en uno muy completa (tareas, documentos, pizarras, objetivos, chat). Su riqueza tiene un reverso: un manejo a menudo considerado difícil. getRIDA apunta a la simplicidad soberana. Esto es lo que gana cada una.",
         cells: {
-          prix: "Gratis (miembros ilimitados); luego Core 9 $, Business 17 $ y Max 100 $ por usuario/mes (anual)",
-          hebergement: "Alojado en AWS; residencia en la UE (Irlanda) reservada a Enterprise",
+          prix: "Gratis (miembros ilimitados); luego Core 12 $, Business 25 $ y Max 120 $ por usuario/mes (anual, USD), más Enterprise con presupuesto",
+          hebergement: "Alojado en AWS; residencia en la UE (Irlanda) reservada a Enterprise, sin coste adicional",
           souverainete: "Exportación posible; residencia en la UE solo en Enterprise",
           sousTaches: "Sí, hasta 7 niveles",
           discussions: "Comentarios y chat integrado",

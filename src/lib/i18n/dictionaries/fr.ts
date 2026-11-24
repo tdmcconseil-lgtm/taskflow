@@ -163,9 +163,9 @@ const fr = {
         intro:
           "monday.com est un « Work OS » polyvalent, personnalisable à l’infini via sa marketplace. getRIDA fait le choix inverse : un outil simple, souverain et à prix plancher pour les équipes qui veulent avancer sans monter une usine à gaz. Voici la comparaison, sans détour.",
         cells: {
-          prix: "Gratuit jusqu’à 2 sièges ; puis Basic 9 €, Standard 12 € et Pro 19 € par siège/mois (annuel, à partir de 3 sièges)",
+          prix: "Gratuit jusqu’à 2 sièges ; puis (offre Work Management) Basic 9 €, Standard 12 € et Pro 19 € par siège/mois (annuel, à partir de 3 sièges)",
           hebergement: "États-Unis par défaut ; région de données UE (Francfort) disponible",
-          souverainete: "Export possible ; résidence UE complète sur les offres entreprise",
+          souverainete: "Export possible ; résidence UE stricte réservée à l’Enterprise hébergé en UE (Standard/Pro : données possibles hors UE)",
           sousTaches: "Oui, jusqu’à 4 niveaux de sous-éléments",
           discussions: "Fil de mises à jour et commentaires par élément",
           vues: "Kanban et tableau ; chronologie/Gantt et calendrier dès Standard",
@@ -256,8 +256,8 @@ const fr = {
         intro:
           "ClickUp est un outil tout-en-un très complet (tâches, docs, tableaux blancs, objectifs, chat). Sa richesse a un revers : une prise en main souvent jugée raide. getRIDA vise la simplicité souveraine. Voici où chacun l’emporte.",
         cells: {
-          prix: "Gratuit (membres illimités) ; puis Core 9 $, Business 17 $ et Max 100 $ par utilisateur/mois (annuel)",
-          hebergement: "Hébergé sur AWS ; résidence UE (Irlande) réservée à l’Enterprise",
+          prix: "Gratuit (membres illimités) ; puis Core 12 $, Business 25 $ et Max 120 $ par utilisateur/mois (annuel, USD), plus Enterprise sur devis",
+          hebergement: "Hébergé sur AWS ; résidence UE (Irlande) réservée à l’Enterprise, sans surcoût",
           souverainete: "Export possible ; résidence UE seulement en Enterprise",
           sousTaches: "Oui, jusqu’à 7 niveaux",
           discussions: "Commentaires et chat intégré",

@@ -144,9 +144,9 @@ const de: Dictionary = {
         intro:
           "monday.com ist ein vielseitiges „Work OS“, über seinen Marketplace nahezu unbegrenzt anpassbar. getRIDA trifft die umgekehrte Wahl: ein einfaches, souveränes Tool zum Tiefstpreis für Teams, die vorankommen wollen, ohne eine überkomplexe Maschinerie aufzubauen. Hier der Vergleich, ohne Umschweife.",
         cells: {
-          prix: "Kostenlos bis 2 Plätze; dann Basic 9 €, Standard 12 € und Pro 19 € pro Platz/Monat (jährlich, ab 3 Plätzen)",
+          prix: "Kostenlos bis 2 Plätze; dann (Work Management) Basic 9 €, Standard 12 € und Pro 19 € pro Platz/Monat (jährlich, ab 3 Plätzen)",
           hebergement: "Standardmäßig USA; EU-Datenregion (Frankfurt) verfügbar",
-          souverainete: "Export möglich; vollständige EU-Residenz bei den Enterprise-Angeboten",
+          souverainete: "Export möglich; strikte EU-Residenz nur bei EU-gehostetem Enterprise (Standard/Pro: Daten ggf. außerhalb der EU)",
           sousTaches: "Ja, bis zu 4 Ebenen von Unterelementen",
           discussions: "Update-Verlauf und Kommentare pro Element",
           vues: "Kanban und Board; Zeitleiste/Gantt und Kalender ab Standard",
@@ -237,8 +237,8 @@ const de: Dictionary = {
         intro:
           "ClickUp ist ein sehr umfassendes All-in-One-Tool (Aufgaben, Dokumente, Whiteboards, Ziele, Chat). Sein Reichtum hat eine Kehrseite: eine oft als steil empfundene Einarbeitung. getRIDA setzt auf souveräne Einfachheit. Hier gewinnt jeweils, wer.",
         cells: {
-          prix: "Kostenlos (unbegrenzte Mitglieder); dann Core 9 $, Business 17 $ und Max 100 $ pro Nutzer/Monat (jährlich)",
-          hebergement: "Auf AWS gehostet; EU-Residenz (Irland) nur im Enterprise-Plan",
+          prix: "Kostenlos (unbegrenzte Mitglieder); dann Core 12 $, Business 25 $ und Max 120 $ pro Nutzer/Monat (jährlich, USD), plus Enterprise auf Anfrage",
+          hebergement: "Auf AWS gehostet; EU-Residenz (Irland) nur im Enterprise-Plan, ohne Aufpreis",
           souverainete: "Export möglich; EU-Residenz nur im Enterprise",
           sousTaches: "Ja, bis zu 7 Ebenen",
           discussions: "Kommentare und integrierter Chat",

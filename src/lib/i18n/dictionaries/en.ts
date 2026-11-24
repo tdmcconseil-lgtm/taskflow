@@ -144,9 +144,9 @@ const en: Dictionary = {
         intro:
           "monday.com is a versatile ‘Work OS’, endlessly customizable through its marketplace. getRIDA makes the opposite choice: a simple, sovereign, floor-priced tool for teams that want to move forward without building an over-engineered machine. Here’s the comparison, straight up.",
         cells: {
-          prix: "Free up to 2 seats; then Basic €9, Standard €12 and Pro €19 per seat/month (annually, from 3 seats)",
+          prix: "Free up to 2 seats; then (Work Management) Basic €9, Standard €12 and Pro €19 per seat/month (annually, from 3 seats)",
           hebergement: "United States by default; EU data region (Frankfurt) available",
-          souverainete: "Export available; full EU residency on enterprise plans",
+          souverainete: "Export available; strict EU residency reserved for EU-hosted Enterprise (Standard/Pro: data may leave the EU)",
           sousTaches: "Yes, up to 4 levels of subitems",
           discussions: "Updates feed and comments per item",
           vues: "Kanban and table; timeline/Gantt and calendar from Standard",
@@ -237,8 +237,8 @@ const en: Dictionary = {
         intro:
           "ClickUp is a very complete all-in-one tool (tasks, docs, whiteboards, goals, chat). Its richness has a downside: a learning curve often seen as steep. getRIDA aims for sovereign simplicity. Here’s where each one wins.",
         cells: {
-          prix: "Free (unlimited members); then Core $9, Business $17 and Max $100 per user/month (billed annually)",
-          hebergement: "Hosted on AWS; EU residency (Ireland) reserved for Enterprise",
+          prix: "Free (unlimited members); then Core $12, Business $25 and Max $120 per user/month (billed annually, USD), plus Enterprise on quote",
+          hebergement: "Hosted on AWS; EU residency (Ireland) reserved for Enterprise, at no extra cost",
           souverainete: "Export available; EU residency only on Enterprise",
           sousTaches: "Yes, up to 7 levels",
           discussions: "Comments and built-in chat",
