@@ -47,7 +47,7 @@ export default async function TasksPage({
         <h1 className="text-2xl font-semibold tracking-tight">{t.dashboard.myTasks}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <TasksProjectFilter showProjects={showProjects} />
-          {myTasks.length > 0 && <SortControl {...sortControlProps("task", sp, t)} />}
+          <SortControl {...sortControlProps("task", sp, t)} />
         </div>
       </div>
 
