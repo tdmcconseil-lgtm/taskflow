@@ -30,43 +30,52 @@ const en: Dictionary = {
         description:
           "getRIDA or Asana? Compare pricing, European hosting, features and data sovereignty. Try it free, no credit card required, in a few minutes.",
       },
+      comparatifMonday: {
+        title: "getRIDA vs monday.com — comparison",
+        description:
+          "getRIDA or monday.com? Compare per-seat pricing, European hosting, features and data sovereignty. Try it free, no credit card required today.",
+      },
+      comparatifTrello: {
+        title: "getRIDA vs Trello — comparison",
+        description:
+          "getRIDA or Trello? Compare pricing, European hosting, subtasks, views and data sovereignty. Try it free, no credit card required, in minutes.",
+      },
+      comparatifNotion: {
+        title: "getRIDA vs Notion — comparison",
+        description:
+          "getRIDA or Notion? Compare pricing, European hosting, ready-to-use task management and data sovereignty. Try it free, no credit card required.",
+      },
+      comparatifClickup: {
+        title: "getRIDA vs ClickUp — comparison",
+        description:
+          "getRIDA or ClickUp? Compare pricing, European hosting, simplicity and data sovereignty. Try it free, no credit card required, in a few minutes.",
+      },
     },
   },
   comparatif: {
-    asana: {
+    shared: {
       eyebrow: "Comparison",
       heroTitle: "Project management at the price of storage — and hosted in Europe.",
-      heroSub:
-        "Asana is a solid choice. But if your team wants the essentials without paying a premium, with your data in Europe and an interface in 5 languages, getRIDA is for you.",
       ctaTry: "Try getRIDA for free",
       ctaSee: "See the comparison",
       trust: ["Hosted in Europe", "5 languages", "No credit card", "Storage included"],
-      intro:
-        "getRIDA and Asana serve the same goal: bringing a team’s projects, tasks and conversations together. Asana targets large organizations and advanced workflows; getRIDA targets teams that want a simple, sovereign, affordable tool. Here’s where each one wins, honestly.",
       tableEyebrow: "Point by point",
-      tableTitle: "getRIDA vs Asana, criterion by criterion",
+      tableTitle: "getRIDA vs {rival}, criterion by criterion",
       colCriterion: "Criterion",
       colAdvantage: "Advantage",
       advEqual: "Tie",
       rows: [
-        { label: "Price per user", getrida: "Floor pricing, your first users free", asana: "Free up to 2 users; then Starter $10.99 and Advanced $24.99 per user/month (billed annually)", adv: "g" },
-        { label: "Data hosting", getrida: "Europe", asana: "United States by default; EU residency (Frankfurt) as an Enterprise+ option", adv: "g" },
-        { label: "Sovereignty and export", getrida: "Data you control, exportable anytime", asana: "Export available, data outside the EU by default", adv: "g" },
-        { label: "Nested subtasks", getrida: "Yes, deep nesting", asana: "Yes", adv: "eq" },
-        { label: "Discussions and decisions", getrida: "Built into the project natively", asana: "Comments on tasks", adv: "g" },
-        { label: "Advanced views (timeline, portfolios)", getrida: "List and board views", asana: "Timeline, Gantt, portfolios, calendar", adv: "r" },
-        { label: "Automations and integrations", getrida: "Smaller ecosystem", asana: "Advanced rules and a large integration catalog", adv: "r" },
-        { label: "Interface languages", getrida: "5 (FR, EN, ES, DE, IT)", asana: "More than a dozen", adv: "r" },
+        { key: "prix", label: "Price per user", getrida: "Floor pricing, your first users free" },
+        { key: "hebergement", label: "Data hosting", getrida: "Europe" },
+        { key: "souverainete", label: "Sovereignty and export", getrida: "Data you control, exportable anytime" },
+        { key: "sousTaches", label: "Nested subtasks", getrida: "Yes, deep nesting" },
+        { key: "discussions", label: "Discussions and decisions", getrida: "Built into the project natively" },
+        { key: "vues", label: "Advanced views (timeline, portfolios)", getrida: "List and board views" },
+        { key: "automatisations", label: "Automations and integrations", getrida: "Smaller ecosystem" },
+        { key: "langues", label: "Interface languages", getrida: "5 (FR, EN, ES, DE, IT)" },
       ],
-      pickAsanaTitle: "Choose Asana",
       pickGetridaTitle: "Choose getRIDA",
       pickIf: "if…",
-      pickAsana: [
-        "You’re a large organization with complex workflows.",
-        "You need advanced timelines, portfolios and workload views.",
-        "Powerful automations are central to your processes.",
-        "You rely on a large ecosystem of third-party integrations.",
-      ],
       pickGetrida: [
         "You want the essentials without paying a premium, from your very first users.",
         "European hosting and data sovereignty matter to you.",
@@ -75,16 +84,167 @@ const en: Dictionary = {
       ],
       faqEyebrow: "Frequently asked questions",
       faqTitle: "Before you switch tools",
-      faq: [
-        { q: "Can I migrate my projects from Asana?", a: "Yes. You recreate your projects and import your tasks, then invite your team. Your data stays exportable at any time, with no lock-in." },
-        { q: "Is getRIDA really cheaper?", a: "getRIDA charges a flat rate per user, and your first users are free. For a small team, the bill is markedly lower than a paid Asana plan." },
-        { q: "What do you give up by leaving Asana?", a: "The most advanced views, some automations and the large integration catalog. If those are essential to you, Asana remains a good choice — we’d rather say so." },
-      ],
       finalTitle: "Try getRIDA in minutes",
       finalSub: "Free to start, no credit card. Your data in Europe, your team in its own language.",
       finalCtaCreate: "Create my workspace",
       finalCtaDiscover: "Discover getRIDA",
-      footnote: "Comparison provided for information only; Asana prices in USD, billed annually (source asana.com). Asana is a trademark of its respective company.",
+    },
+    apps: {
+      asana: {
+        name: "Asana",
+        heroSub:
+          "Asana is a solid choice. But if your team wants the essentials without paying a premium, with your data in Europe and an interface in 5 languages, getRIDA is for you.",
+        intro:
+          "getRIDA and Asana serve the same goal: bringing a team’s projects, tasks and conversations together. Asana targets large organizations and advanced workflows; getRIDA targets teams that want a simple, sovereign, affordable tool. Here’s where each one wins, honestly.",
+        cells: {
+          prix: "Free up to 2 users; then Starter $10.99 and Advanced $24.99 per user/month (billed annually)",
+          hebergement: "United States by default; EU residency (Frankfurt) as an Enterprise+ option",
+          souverainete: "Export available, data outside the EU by default",
+          sousTaches: "Yes",
+          discussions: "Comments on tasks",
+          vues: "Timeline, Gantt, portfolios, calendar",
+          automatisations: "Advanced rules and a large integration catalog",
+          langues: "More than a dozen",
+        },
+        adv: { prix: "g", hebergement: "g", souverainete: "g", sousTaches: "eq", discussions: "g", vues: "r", automatisations: "r", langues: "r" },
+        pickRivalTitle: "Choose Asana",
+        pickRival: [
+          "You’re a large organization with complex workflows.",
+          "You need advanced timelines, portfolios and workload views.",
+          "Powerful automations are central to your processes.",
+          "You rely on a large ecosystem of third-party integrations.",
+        ],
+        faq: [
+          { q: "Can I migrate my projects from Asana?", a: "Yes. You recreate your projects and import your tasks, then invite your team. Your data stays exportable at any time, with no lock-in." },
+          { q: "Is getRIDA really cheaper?", a: "getRIDA charges a flat rate per user, and your first users are free. For a small team, the bill is markedly lower than a paid Asana plan." },
+          { q: "What do you give up by leaving Asana?", a: "The most advanced views, some automations and the large integration catalog. If those are essential to you, Asana remains a good choice — we’d rather say so." },
+        ],
+        footnote: "Comparison for information only; Asana prices in USD, billed annually (source asana.com). Asana is a trademark of its respective company.",
+      },
+      monday: {
+        name: "monday.com",
+        heroSub:
+          "monday.com is a powerful, highly visual platform. But if you want the essentials without paying a premium per seat, with your data in Europe and a predictable bill, getRIDA gets straight to the point.",
+        intro:
+          "monday.com is a versatile ‘Work OS’, endlessly customizable through its marketplace. getRIDA makes the opposite choice: a simple, sovereign, floor-priced tool for teams that want to move forward without building an over-engineered machine. Here’s the comparison, straight up.",
+        cells: {
+          prix: "Free up to 2 seats; then Basic €9, Standard €12 and Pro €19 per seat/month (annually, from 3 seats)",
+          hebergement: "United States by default; EU data region (Frankfurt) available",
+          souverainete: "Export available; full EU residency on enterprise plans",
+          sousTaches: "Yes, up to 4 levels of subitems",
+          discussions: "Updates feed and comments per item",
+          vues: "Kanban and table; timeline/Gantt and calendar from Standard",
+          automatisations: "Automations and integrations metered in actions/month; 850+ apps",
+          langues: "Around fifteen",
+        },
+        adv: { prix: "g", hebergement: "g", souverainete: "g", sousTaches: "eq", discussions: "g", vues: "r", automatisations: "r", langues: "r" },
+        pickRivalTitle: "Choose monday.com",
+        pickRival: [
+          "You want a highly visual, highly customizable platform.",
+          "You equip several teams (project, CRM, marketing) in one place.",
+          "Advanced timelines, dashboards and workload views are key.",
+          "You rely on a large marketplace of apps and integrations.",
+        ],
+        faq: [
+          { q: "Isn’t monday.com more complete?", a: "Yes, on feature breadth and customization. getRIDA embraces the opposite: doing the essentials very well, with no setup and no per-seat cost creep." },
+          { q: "Will I pay less with getRIDA?", a: "Very likely. monday.com bills per seat with a 3-seat minimum; getRIDA gives you your first users free and charges floor pricing." },
+          { q: "And my data?", a: "With getRIDA, it’s in Europe by default and exportable at any time. With monday.com, the EU region exists but full residency depends on the plan." },
+        ],
+        footnote: "Comparison for information only; monday.com prices checked on Nov 24, 2026, billed annually, display depends on region (source monday.com). monday.com is a trademark of its respective company.",
+      },
+      trello: {
+        name: "Trello",
+        heroSub:
+          "Trello excels through its kanban simplicity. But as soon as you want subtasks, structured discussions and data in Europe, getRIDA takes over without moving you up a price tier.",
+        intro:
+          "Trello (Atlassian group) is the best-known kanban tool: cards, lists, and that’s it — its strength. getRIDA targets teams that need one notch more (subtasks, decisions, sovereignty) without switching to a complex suite. Here’s where each one wins.",
+        cells: {
+          prix: "Free up to 10 boards/10 collaborators; then Standard $5, Premium $10 and Enterprise $17.50 per user/month (billed annually)",
+          hebergement: "United States; no EU data residency option",
+          souverainete: "Export available; data hosted in the United States",
+          sousTaches: "Flat checklists, no native nested subtasks",
+          discussions: "Comments on cards",
+          vues: "Kanban for everyone; calendar, timeline and table from Premium",
+          automatisations: "Butler automation included; 200+ Power-Ups and integrations",
+          langues: "More than twenty",
+        },
+        adv: { prix: "g", hebergement: "g", souverainete: "g", sousTaches: "g", discussions: "g", vues: "r", automatisations: "r", langues: "r" },
+        pickRivalTitle: "Choose Trello",
+        pickRival: [
+          "Your needs fit entirely in a simple kanban board.",
+          "You want to get started in minutes, with no learning curve.",
+          "You already use the Atlassian ecosystem (Jira, Confluence).",
+          "You value the many Power-Ups in the Trello marketplace.",
+        ],
+        faq: [
+          { q: "Isn’t Trello simpler?", a: "For pure kanban, yes. getRIDA stays simple but adds what Trello soon lacks: nested subtasks, plus discussions and decisions brought together in the project." },
+          { q: "Will my data be in Europe?", a: "With getRIDA, yes, by default. Trello hosts data in the United States and offers no EU residency." },
+          { q: "Can I keep my advanced views?", a: "Trello’s calendar, timeline and table views are paid (Premium). getRIDA offers list and board views; the most advanced ones stay on Trello’s side." },
+        ],
+        footnote: "Comparison for information only; Trello prices checked on Nov 24, 2026, billed annually, in USD, display depends on region (source trello.com / atlassian.com). Trello is a trademark of its respective company.",
+      },
+      notion: {
+        name: "Notion",
+        heroSub:
+          "Notion is a workspace of rare flexibility. But to manage projects, everything has to be built. getRIDA does the work from the moment you open it, with your data in Europe and an interface in 5 languages.",
+        intro:
+          "Notion shines for documentation and custom databases. The trade-off: project management has to be cobbled together (subtasks, views, tracking you build yourself). getRIDA is ready to use for tasks and teams. Here’s the honest comparison.",
+        cells: {
+          prix: "Free (unlimited members); then Plus €9.50 and Business €19.50 per member/month",
+          hebergement: "United States by default; EU residency (Frankfurt) reserved for Enterprise",
+          souverainete: "Export available; EU residency only on Enterprise",
+          sousTaches: "Via a database you must configure (subitems)",
+          discussions: "Comments on pages",
+          vues: "Table, list, kanban, calendar, gallery, timeline",
+          automatisations: "Buttons (all plans), basic automations (paid), public API",
+          langues: "Around twenty (depending on the source)",
+        },
+        adv: { prix: "g", hebergement: "g", souverainete: "g", sousTaches: "g", discussions: "g", vues: "r", automatisations: "r", langues: "r" },
+        pickRivalTitle: "Choose Notion",
+        pickRival: [
+          "You want a documentation space and custom databases.",
+          "You like to shape everything yourself, blank page included.",
+          "The team wiki matters as much as task tracking.",
+          "You’re willing to configure your views and your project tracking.",
+        ],
+        faq: [
+          { q: "Doesn’t Notion already do all of this?", a: "By building it, yes. getRIDA offers ready-to-use task management, with no databases or relations to set up." },
+          { q: "Notion’s free plan is generous, isn’t it?", a: "Yes, with unlimited members. But for real team tracking, automations and EU residency quickly move to the paid or Enterprise plans." },
+          { q: "Is my data in Europe?", a: "With getRIDA, by default. With Notion, EU residency (Frankfurt) is reserved for the Enterprise plan." },
+        ],
+        footnote: "Comparison for information only; Notion prices checked on Nov 24, 2026, shown in euros (source notion.com). Notion is a trademark of its respective company.",
+      },
+      clickup: {
+        name: "ClickUp",
+        heroSub:
+          "ClickUp piles on features. getRIDA makes the opposite bet: the essentials, right away, with no learning curve, with your data in Europe and floor pricing.",
+        intro:
+          "ClickUp is a very complete all-in-one tool (tasks, docs, whiteboards, goals, chat). Its richness has a downside: a learning curve often seen as steep. getRIDA aims for sovereign simplicity. Here’s where each one wins.",
+        cells: {
+          prix: "Free (unlimited members); then Core $9, Business $17 and Max $100 per user/month (billed annually)",
+          hebergement: "Hosted on AWS; EU residency (Ireland) reserved for Enterprise",
+          souverainete: "Export available; EU residency only on Enterprise",
+          sousTaches: "Yes, up to 7 levels",
+          discussions: "Comments and built-in chat",
+          vues: "Very many: list, board, calendar, Gantt, workload…",
+          automatisations: "Native automations; 1000+ integrations",
+          langues: "Six (including FR, EN, ES, DE, IT)",
+        },
+        adv: { prix: "g", hebergement: "g", souverainete: "g", sousTaches: "eq", discussions: "eq", vues: "r", automatisations: "r", langues: "eq" },
+        pickRivalTitle: "Choose ClickUp",
+        pickRival: [
+          "You want an all-in-one tool covering as many cases as possible.",
+          "Very advanced views (Gantt, workload) are essential.",
+          "You accept a longer learning curve in exchange for the richness.",
+          "You want docs, whiteboards and goals in the same tool.",
+        ],
+        faq: [
+          { q: "Doesn’t ClickUp offer more features?", a: "Yes, by far. getRIDA embraces doing less, but without the complexity: your teams are up and running immediately." },
+          { q: "Is it cheaper with getRIDA?", a: "For a small team, yes: your first users are free and pricing stays at the floor, without stacking up feature tiers." },
+          { q: "Where is my data hosted?", a: "With getRIDA, in Europe by default. With ClickUp, EU residency (Ireland) is reserved for the Enterprise plan." },
+        ],
+        footnote: "Comparison for information only; ClickUp prices checked on Nov 24, 2026, billed annually, subject to promotions (source clickup.com). ClickUp is a trademark of its respective company.",
+      },
     },
   },
   update: {
