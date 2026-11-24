@@ -1123,6 +1123,8 @@ const de: Dictionary = {
     footerLegal: "Impressum",
     footerTerms: "AGB",
     footerPrivacy: "Datenschutz",
+    footerCompare: "Vergleiche",
+    compareCta: "getRIDA mit Asana, monday.com, Trello, Notion und ClickUp vergleichen",
     footerRights: "Alle Rechte vorbehalten.",
   },
   emailDomains: {

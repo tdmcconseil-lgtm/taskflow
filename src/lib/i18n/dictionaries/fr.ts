@@ -1145,6 +1145,8 @@ const fr = {
     footerLegal: "Mentions légales",
     footerTerms: "CGU",
     footerPrivacy: "Confidentialité",
+    footerCompare: "Comparatifs",
+    compareCta: "Comparez getRIDA à Asana, monday.com, Trello, Notion et ClickUp",
     footerRights: "Tous droits réservés.",
   },
   emailDomains: {

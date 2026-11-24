@@ -160,6 +160,16 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Lien contextuel vers le comparateur (maillage interne SEO) */}
+        <div className="mx-auto w-full max-w-6xl px-4 pb-2 text-center sm:px-6">
+          <Link
+            href="/comparatif"
+            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            {t.landing.compareCta} →
+          </Link>
+        </div>
+
         {/* Offres */}
         <section className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
           <div className="text-center">
@@ -219,6 +229,9 @@ export default async function Home() {
               className="font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
             >
               {isAuthed ? t.landing.openApp : t.landing.signIn}
+            </Link>
+            <Link href="/comparatif" className="hover:text-zinc-900 dark:hover:text-white">
+              {t.landing.footerCompare}
             </Link>
             <Link href="/" className="hover:text-zinc-900 dark:hover:text-white">
               {t.landing.footerLegal}
