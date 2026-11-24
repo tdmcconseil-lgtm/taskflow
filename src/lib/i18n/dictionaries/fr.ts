@@ -35,6 +35,13 @@ const fr = {
     },
   },
   // Pages comparatives (acquisition SEO). `asana` = première page « getRIDA vs X ».
+  // Faits Asana vérifiés le 24/11 contre asana.com/pricing (source officielle) :
+  //  - offre gratuite « Personal » = 2 utilisateurs (et non 10) ;
+  //  - paliers payants : Starter (10,99 $/u/mois annuel), Advanced (24,99 $), Enterprise(+) ;
+  //  - Timeline/Gantt dès Starter, portefeuilles dès Advanced ; 100+ intégrations ;
+  //  - hébergement : États-Unis par défaut, résidence UE (Francfort) en option Enterprise+
+  //    (asana.com/inside-asana/eu-data-center) ; ~13 langues d'interface.
+  // Tarifs volontairement qualitatifs dans le tableau (ils évoluent) ; à re-vérifier avant toute màj.
   comparatif: {
     asana: {
       eyebrow: "Comparatif",
@@ -52,12 +59,12 @@ const fr = {
       colAdvantage: "Avantage",
       advEqual: "Égalité",
       rows: [
-        { label: "Prix par utilisateur", getrida: "Tarif plancher, vos premiers utilisateurs gratuits", asana: "Gratuit jusqu’à 10 utilisateurs, puis paliers payants plus chers", adv: "g" },
-        { label: "Hébergement des données", getrida: "Europe", asana: "Principalement États-Unis", adv: "g" },
+        { label: "Prix par utilisateur", getrida: "Tarif plancher, vos premiers utilisateurs gratuits", asana: "Gratuit jusqu’à 2 utilisateurs, puis paliers payants plus chers", adv: "g" },
+        { label: "Hébergement des données", getrida: "Europe", asana: "États-Unis par défaut ; résidence UE (Francfort) en option sur Enterprise+", adv: "g" },
         { label: "Souveraineté et export", getrida: "Données maîtrisées, exportables à tout moment", asana: "Export possible, données hors UE par défaut", adv: "g" },
         { label: "Sous-tâches imbriquées", getrida: "Oui, imbrication profonde", asana: "Oui", adv: "eq" },
         { label: "Discussions et décisions", getrida: "Réunies nativement au projet", asana: "Commentaires sur les tâches", adv: "g" },
-        { label: "Vues avancées (timeline, portefeuilles)", getrida: "Vues liste et tableau", asana: "Timeline, portefeuilles, charge, calendrier", adv: "r" },
+        { label: "Vues avancées (timeline, portefeuilles)", getrida: "Vues liste et tableau", asana: "Timeline, Gantt, portefeuilles, calendrier", adv: "r" },
         { label: "Automatisations et intégrations", getrida: "Écosystème réduit", asana: "Règles avancées et large catalogue d’intégrations", adv: "r" },
         { label: "Langues d’interface", getrida: "5 (FR, EN, ES, DE, IT)", asana: "Plus d’une dizaine", adv: "r" },
       ],
