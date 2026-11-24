@@ -25,6 +25,66 @@ const it: Dictionary = {
         description:
           "Crea gratis il tuo spazio getRIDA e riunisci progetti, attività e decisioni del tuo team. Senza carta di credito.",
       },
+      comparatifAsana: {
+        title: "getRIDA vs Asana — comparativo",
+        description:
+          "getRIDA o Asana? Confronta prezzo, hosting in Europa, funzionalità e sovranità dei dati. Provalo gratis, senza carta di credito.",
+      },
+    },
+  },
+  comparatif: {
+    asana: {
+      eyebrow: "Comparativo",
+      heroTitle: "La gestione dei progetti al prezzo dello spazio — e ospitata in Europa.",
+      heroSub:
+        "Asana è una scelta solida. Ma se il tuo team vuole l’essenziale senza pagare di più, con i tuoi dati in Europa e un’interfaccia in 5 lingue, getRIDA fa per te.",
+      ctaTry: "Prova getRIDA gratis",
+      ctaSee: "Vedi il comparativo",
+      trust: ["Ospitato in Europa", "5 lingue", "Senza carta", "Spazio incluso"],
+      intro:
+        "getRIDA e Asana servono lo stesso scopo: riunire progetti, attività e conversazioni di un team. Asana punta alle grandi organizzazioni e ai flussi di lavoro avanzati; getRIDA punta ai team che vogliono uno strumento semplice, sovrano e dal prezzo contenuto. Ecco dove vince ciascuno, onestamente.",
+      tableEyebrow: "Punto per punto",
+      tableTitle: "getRIDA vs Asana, criterio per criterio",
+      colCriterion: "Criterio",
+      colAdvantage: "Vantaggio",
+      advEqual: "Pari",
+      rows: [
+        { label: "Prezzo per utente", getrida: "Prezzo minimo, i tuoi primi utenti gratis", asana: "Gratis fino a 10 utenti, poi piani a pagamento più cari", adv: "g" },
+        { label: "Hosting dei dati", getrida: "Europa", asana: "Principalmente Stati Uniti", adv: "g" },
+        { label: "Sovranità ed esportazione", getrida: "Dati sotto il tuo controllo, esportabili in qualsiasi momento", asana: "Esportazione possibile, dati fuori dalla UE per impostazione predefinita", adv: "g" },
+        { label: "Sottoattività annidate", getrida: "Sì, annidamento profondo", asana: "Sì", adv: "eq" },
+        { label: "Discussioni e decisioni", getrida: "Riunite in modo nativo nel progetto", asana: "Commenti sulle attività", adv: "g" },
+        { label: "Viste avanzate (timeline, portfoli)", getrida: "Viste elenco e bacheca", asana: "Timeline, portfoli, carico, calendario", adv: "r" },
+        { label: "Automazioni e integrazioni", getrida: "Ecosistema ridotto", asana: "Regole avanzate e ampio catalogo di integrazioni", adv: "r" },
+        { label: "Lingue dell’interfaccia", getrida: "5 (FR, EN, ES, DE, IT)", asana: "Più di una dozzina", adv: "r" },
+      ],
+      pickAsanaTitle: "Scegli Asana",
+      pickGetridaTitle: "Scegli getRIDA",
+      pickIf: "se…",
+      pickAsana: [
+        "Sei una grande organizzazione con flussi di lavoro complessi.",
+        "Hai bisogno di timeline, portfoli e viste di carico avanzate.",
+        "Le automazioni potenti sono al centro dei tuoi processi.",
+        "Dipendi da un ampio ecosistema di integrazioni di terze parti.",
+      ],
+      pickGetrida: [
+        "Vuoi l’essenziale senza pagare di più, fin dai primi utenti.",
+        "L’hosting in Europa e la sovranità dei dati contano per te.",
+        "Preferisci uno strumento semplice che riunisce attività, discussioni e decisioni.",
+        "Il tuo team lavora in più lingue (FR, EN, ES, DE, IT).",
+      ],
+      faqEyebrow: "Domande frequenti",
+      faqTitle: "Prima di cambiare strumento",
+      faq: [
+        { q: "Posso migrare i miei progetti da Asana?", a: "Sì. Ricrei i tuoi progetti e importi le tue attività, poi inviti il tuo team. I tuoi dati restano esportabili in qualsiasi momento, senza vincoli." },
+        { q: "getRIDA è davvero più economico?", a: "getRIDA applica una tariffa fissa per utente, e i tuoi primi utenti sono gratis. Per un piccolo team, la spesa è nettamente inferiore a un piano a pagamento di Asana." },
+        { q: "Cosa si perde lasciando Asana?", a: "Le viste più avanzate, alcune automazioni e l’ampio catalogo di integrazioni. Se ti sono essenziali, Asana resta una buona scelta — preferiamo dirlo." },
+      ],
+      finalTitle: "Prova getRIDA in pochi minuti",
+      finalSub: "Gratis per iniziare, senza carta. I tuoi dati in Europa, il tuo team nella sua lingua.",
+      finalCtaCreate: "Crea il mio spazio",
+      finalCtaDiscover: "Scopri getRIDA",
+      footnote: "Comparativo fornito a titolo indicativo. Asana è un marchio della rispettiva società.",
     },
   },
   update: {

@@ -25,6 +25,66 @@ const en: Dictionary = {
         description:
           "Create your free getRIDA workspace and bring your team’s projects, tasks and decisions together. No credit card required.",
       },
+      comparatifAsana: {
+        title: "getRIDA vs Asana — comparison",
+        description:
+          "getRIDA or Asana? Compare pricing, European hosting, features and data sovereignty. Try it free, no credit card required, in a few minutes.",
+      },
+    },
+  },
+  comparatif: {
+    asana: {
+      eyebrow: "Comparison",
+      heroTitle: "Project management at the price of storage — and hosted in Europe.",
+      heroSub:
+        "Asana is a solid choice. But if your team wants the essentials without paying a premium, with your data in Europe and an interface in 5 languages, getRIDA is for you.",
+      ctaTry: "Try getRIDA for free",
+      ctaSee: "See the comparison",
+      trust: ["Hosted in Europe", "5 languages", "No credit card", "Storage included"],
+      intro:
+        "getRIDA and Asana serve the same goal: bringing a team’s projects, tasks and conversations together. Asana targets large organizations and advanced workflows; getRIDA targets teams that want a simple, sovereign, affordable tool. Here’s where each one wins, honestly.",
+      tableEyebrow: "Point by point",
+      tableTitle: "getRIDA vs Asana, criterion by criterion",
+      colCriterion: "Criterion",
+      colAdvantage: "Advantage",
+      advEqual: "Tie",
+      rows: [
+        { label: "Price per user", getrida: "Floor pricing, your first users free", asana: "Free up to 10 users, then pricier paid tiers", adv: "g" },
+        { label: "Data hosting", getrida: "Europe", asana: "Mainly United States", adv: "g" },
+        { label: "Sovereignty and export", getrida: "Data you control, exportable anytime", asana: "Export available, data outside the EU by default", adv: "g" },
+        { label: "Nested subtasks", getrida: "Yes, deep nesting", asana: "Yes", adv: "eq" },
+        { label: "Discussions and decisions", getrida: "Built into the project natively", asana: "Comments on tasks", adv: "g" },
+        { label: "Advanced views (timeline, portfolios)", getrida: "List and board views", asana: "Timeline, portfolios, workload, calendar", adv: "r" },
+        { label: "Automations and integrations", getrida: "Smaller ecosystem", asana: "Advanced rules and a large integration catalog", adv: "r" },
+        { label: "Interface languages", getrida: "5 (FR, EN, ES, DE, IT)", asana: "More than a dozen", adv: "r" },
+      ],
+      pickAsanaTitle: "Choose Asana",
+      pickGetridaTitle: "Choose getRIDA",
+      pickIf: "if…",
+      pickAsana: [
+        "You’re a large organization with complex workflows.",
+        "You need advanced timelines, portfolios and workload views.",
+        "Powerful automations are central to your processes.",
+        "You rely on a large ecosystem of third-party integrations.",
+      ],
+      pickGetrida: [
+        "You want the essentials without paying a premium, from your very first users.",
+        "European hosting and data sovereignty matter to you.",
+        "You prefer a simple tool that brings tasks, discussions and decisions together.",
+        "Your team works in several languages (FR, EN, ES, DE, IT).",
+      ],
+      faqEyebrow: "Frequently asked questions",
+      faqTitle: "Before you switch tools",
+      faq: [
+        { q: "Can I migrate my projects from Asana?", a: "Yes. You recreate your projects and import your tasks, then invite your team. Your data stays exportable at any time, with no lock-in." },
+        { q: "Is getRIDA really cheaper?", a: "getRIDA charges a flat rate per user, and your first users are free. For a small team, the bill is markedly lower than a paid Asana plan." },
+        { q: "What do you give up by leaving Asana?", a: "The most advanced views, some automations and the large integration catalog. If those are essential to you, Asana remains a good choice — we’d rather say so." },
+      ],
+      finalTitle: "Try getRIDA in minutes",
+      finalSub: "Free to start, no credit card. Your data in Europe, your team in its own language.",
+      finalCtaCreate: "Create my workspace",
+      finalCtaDiscover: "Discover getRIDA",
+      footnote: "Comparison provided for information only. Asana is a trademark of its respective company.",
     },
   },
   update: {
