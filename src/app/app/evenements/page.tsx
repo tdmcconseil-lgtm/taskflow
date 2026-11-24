@@ -10,7 +10,7 @@ import { SortControl } from "@/components/SortControl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.events} — getRIDA` };
+  return { title: t.pageTitles.events };
 }
 
 export default async function EvenementsPage({

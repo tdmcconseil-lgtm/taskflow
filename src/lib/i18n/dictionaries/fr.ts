@@ -7,6 +7,28 @@ const fr = {
     yes: "Oui",
     no: "Non",
   },
+  // Référencement (titres + meta descriptions des pages publiques). Chaque
+  // `title` est COMPLET (marque incluse) : il est posé en `title.absolute`,
+  // donc le template "%s — getRIDA" du layout ne s'y applique pas.
+  seo: {
+    pages: {
+      home: {
+        title: "getRIDA — Gestion de projet et de tâches en équipe",
+        description:
+          "getRIDA réunit projets, tâches, discussions et décisions pour toute l’équipe. Hébergement en Europe, 5 langues, tarif plancher. Commencez gratuitement.",
+      },
+      login: {
+        title: "Connexion — getRIDA",
+        description:
+          "Connectez-vous à votre espace getRIDA pour gérer vos projets, tâches, discussions et décisions avec votre équipe.",
+      },
+      signup: {
+        title: "Créer un compte — getRIDA",
+        description:
+          "Créez gratuitement votre espace getRIDA et réunissez projets, tâches et décisions de votre équipe. Sans carte bancaire.",
+      },
+    },
+  },
   update: {
     available: "Une nouvelle version est disponible.",
     reload: "Recharger",

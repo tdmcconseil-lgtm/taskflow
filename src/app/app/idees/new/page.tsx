@@ -8,7 +8,7 @@ import { IdeaForm } from "@/components/IdeaForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.newIdea} — getRIDA` };
+  return { title: t.pageTitles.newIdea };
 }
 
 // Création d'une idée sur sa propre page dédiée (« une création = une page »).

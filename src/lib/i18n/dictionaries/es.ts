@@ -8,6 +8,25 @@ const es: Dictionary = {
     yes: "Sí",
     no: "No",
   },
+  seo: {
+    pages: {
+      home: {
+        title: "getRIDA — Gestión de proyectos y tareas en equipo",
+        description:
+          "getRIDA reúne proyectos, tareas, debates y decisiones para todo el equipo. Alojado en Europa, 5 idiomas, precio mínimo. Empieza gratis, sin tarjeta.",
+      },
+      login: {
+        title: "Iniciar sesión — getRIDA",
+        description:
+          "Inicia sesión en tu espacio getRIDA para gestionar los proyectos, tareas, debates y decisiones de tu equipo.",
+      },
+      signup: {
+        title: "Crear una cuenta — getRIDA",
+        description:
+          "Crea gratis tu espacio getRIDA y reúne los proyectos, tareas y decisiones de tu equipo. Sin tarjeta de crédito.",
+      },
+    },
+  },
   update: {
     available: "Hay una nueva versión disponible.",
     reload: "Recargar",

@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/AuthForm";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { buildPageMetadata } from "@/lib/seo/urls";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getDictionary();
-  return { title: `${t.pageTitles.login} — getRIDA` };
+  const locale = await getLocale();
+  const t = await getDictionary(locale);
+  return buildPageMetadata({ path: "/login", locale, seo: t.seo.pages.login });
 }
 
 export default async function LoginPage() {

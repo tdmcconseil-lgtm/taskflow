@@ -8,6 +8,25 @@ const en: Dictionary = {
     yes: "Yes",
     no: "No",
   },
+  seo: {
+    pages: {
+      home: {
+        title: "getRIDA — Team project and task management",
+        description:
+          "getRIDA brings projects, tasks, discussions and decisions together for your whole team. Hosted in Europe, 5 languages, floor pricing. Start for free.",
+      },
+      login: {
+        title: "Sign in — getRIDA",
+        description:
+          "Sign in to your getRIDA workspace to manage your team’s projects, tasks, discussions and decisions.",
+      },
+      signup: {
+        title: "Create an account — getRIDA",
+        description:
+          "Create your free getRIDA workspace and bring your team’s projects, tasks and decisions together. No credit card required.",
+      },
+    },
+  },
   update: {
     available: "A new version is available.",
     reload: "Reload",

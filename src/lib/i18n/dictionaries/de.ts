@@ -8,6 +8,25 @@ const de: Dictionary = {
     yes: "Ja",
     no: "Nein",
   },
+  seo: {
+    pages: {
+      home: {
+        title: "getRIDA — Projekt- und Aufgabenverwaltung im Team",
+        description:
+          "getRIDA vereint Projekte, Aufgaben, Diskussionen und Entscheidungen fürs ganze Team. In Europa gehostet, 5 Sprachen, Tiefstpreis. Kostenlos starten.",
+      },
+      login: {
+        title: "Anmelden — getRIDA",
+        description:
+          "Melden Sie sich bei Ihrem getRIDA-Arbeitsbereich an, um Projekte, Aufgaben, Diskussionen und Entscheidungen Ihres Teams zu verwalten.",
+      },
+      signup: {
+        title: "Konto erstellen — getRIDA",
+        description:
+          "Erstellen Sie kostenlos Ihren getRIDA-Arbeitsbereich und vereinen Sie Projekte, Aufgaben und Entscheidungen Ihres Teams. Ohne Kreditkarte.",
+      },
+    },
+  },
   update: {
     available: "Eine neue Version ist verfügbar.",
     reload: "Neu laden",

@@ -10,7 +10,7 @@ import { getDictionary } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.invitation} — getRIDA` };
+  return { title: t.pageTitles.invitation };
 }
 
 function Card({ children }: { children: React.ReactNode }) {

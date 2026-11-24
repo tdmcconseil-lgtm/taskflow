@@ -10,7 +10,7 @@ import { SortControl } from "@/components/SortControl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.tasks} — getRIDA` };
+  return { title: t.pageTitles.tasks };
 }
 
 // Page dédiée « Mes tâches à faire » (comme Discussions et Événements). Liste
