@@ -71,6 +71,7 @@ export type PublicRoute = {
 // consomment. En voie B, on multipliera chaque entrée par `locales`.
 export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   { path: "/", seoKey: "home", changeFrequency: "weekly", priority: 1, inSitemap: true },
+  { path: "/comparatif", seoKey: "comparateur", changeFrequency: "monthly", priority: 0.9, inSitemap: true },
   { path: "/comparatif/asana", seoKey: "comparatifAsana", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
   { path: "/comparatif/monday", seoKey: "comparatifMonday", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
   { path: "/comparatif/trello", seoKey: "comparatifTrello", changeFrequency: "monthly", priority: 0.8, inSitemap: true },

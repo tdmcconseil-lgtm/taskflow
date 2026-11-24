@@ -50,6 +50,11 @@ const de: Dictionary = {
         description:
           "getRIDA oder ClickUp? Vergleichen Sie Preis, Hosting in Europa, Einfachheit und Datensouveränität. Kostenlos testen, ohne Kreditkarte.",
       },
+      comparateur: {
+        title: "getRIDA vs Asana, monday.com, Trello, Notion & ClickUp",
+        description:
+          "Vergleichen Sie getRIDA mit Asana, monday.com, Trello, Notion und ClickUp: Preis, Hosting in Europa, Datensouveränität und Funktionen. Kostenlos starten.",
+      },
     },
   },
   comparatif: {
@@ -88,6 +93,17 @@ const de: Dictionary = {
       finalSub: "Kostenlos starten, ohne Kreditkarte. Ihre Daten in Europa, Ihr Team in seiner Sprache.",
       finalCtaCreate: "Arbeitsbereich erstellen",
       finalCtaDiscover: "getRIDA entdecken",
+    },
+    overview: {
+      heroTitle: "getRIDA im Vergleich zu den großen Projektmanagement-Tools",
+      heroSub:
+        "Vergleichen Sie getRIDA mit Asana, monday.com, Trello, Notion und ClickUp bei dem, was zählt: Preis, Hosting in Europa, Datensouveränität, Funktionen und Sprachen.",
+      intro:
+        "Eine einzige Tabelle, um getRIDA den führenden Tools des Marktes gegenüberzustellen. Wir spielen fair: Wo ein Wettbewerber besser ist, sagen wir es. Für die Details zu einer App verlinkt jede Spalte auf ihre eigene Seite.",
+      tableTitle: "getRIDA vs die führenden Tools",
+      advLegend: "Bernsteinfarbener Punkt: Der Wettbewerber gewinnt in diesem Kriterium.",
+      footnote:
+        "Vergleich ohne Gewähr; Fakten und Preise am 24. Nov. 2026 anhand der offiziellen Quellen des jeweiligen Anbieters geprüft und Änderungen vorbehalten (Aktionen, Währungen je nach Region). Jedes genannte Produkt ist eine Marke seines jeweiligen Unternehmens.",
     },
     apps: {
       asana: {

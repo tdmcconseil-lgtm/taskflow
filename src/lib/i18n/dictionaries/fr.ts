@@ -52,6 +52,11 @@ const fr = {
         description:
           "getRIDA ou ClickUp ? Comparez le prix, l’hébergement en Europe, la simplicité et la souveraineté des données. Essayez gratuitement, sans carte.",
       },
+      comparateur: {
+        title: "getRIDA vs Asana, monday.com, Trello, Notion & ClickUp",
+        description:
+          "Comparez getRIDA à Asana, monday.com, Trello, Notion et ClickUp : prix, hébergement en Europe, souveraineté et fonctionnalités. Essayez gratuitement.",
+      },
     },
   },
   // Pages comparatives (acquisition SEO). `asana` = première page « getRIDA vs X ».
@@ -103,6 +108,20 @@ const fr = {
       finalSub: "Gratuit pour commencer, sans carte bancaire. Vos données en Europe, votre équipe dans sa langue.",
       finalCtaCreate: "Créer mon espace",
       finalCtaDiscover: "Découvrir getRIDA",
+    },
+    // Page comparateur unique (`/comparatif`) : un seul tableau getRIDA vs tous
+    // les concurrents. Réutilise `shared` (lignes/critères, côté getRIDA, CTA)
+    // et `apps[*].cells/adv`. N'ajoute que le hero/intro/titre/footnote du hub.
+    overview: {
+      heroTitle: "getRIDA face aux grands outils de gestion de projet",
+      heroSub:
+        "Comparez getRIDA à Asana, monday.com, Trello, Notion et ClickUp sur les critères qui comptent : prix, hébergement en Europe, souveraineté, fonctionnalités et langues.",
+      intro:
+        "Un tableau unique pour situer getRIDA face aux principaux outils du marché. Nous jouons franc jeu : là où un concurrent fait mieux, c’est indiqué. Pour le détail d’une application, chaque colonne renvoie à sa page dédiée.",
+      tableTitle: "getRIDA vs les principaux outils",
+      advLegend: "Pastille ambre : le concurrent l’emporte sur ce critère.",
+      footnote:
+        "Comparatif fourni à titre indicatif ; faits et tarifs relevés le 24 nov. 2026 contre les sources officielles de chaque éditeur, susceptibles d’évoluer (promotions, devises selon la région). Chaque produit cité est une marque de sa société respective.",
     },
     // Un bloc par concurrent. `cells`/`adv` sont indexés par la `key` des `rows`.
     apps: {
