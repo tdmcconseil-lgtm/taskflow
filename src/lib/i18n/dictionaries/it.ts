@@ -363,7 +363,6 @@ const it: Dictionary = {
     subscribed: "Iscritto",
     edit: "Modifica",
     projectMembers: "Membri del progetto",
-    promoteToProject: "Trasforma in progetto",
     unassigned: "Non assegnata",
     noDescription: "Nessuna descrizione.",
     prefixProject: "Progetto",
@@ -800,7 +799,9 @@ const it: Dictionary = {
     moveDown: "Sposta giù",
     promote: "Sali di un livello",
     promoteShort: "Sali",
-    promoteBlocked: "Già al primo livello",
+    promoteToProjectTitle: "Trasforma in progetto (crea un nuovo progetto autonomo)",
+    promoteToProjectAdminOnly:
+      "Solo un amministratore del progetto può trasformare questa attività in progetto",
     attach: "Agganciare sotto un'altra attività",
     attachShort: "Aggancia",
     attachNoSibling: "Nessuna attività sorella disponibile",

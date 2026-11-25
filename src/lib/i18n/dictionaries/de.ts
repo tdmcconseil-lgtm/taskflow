@@ -363,7 +363,6 @@ const de: Dictionary = {
     subscribed: "Abonniert",
     edit: "Bearbeiten",
     projectMembers: "Projektmitglieder",
-    promoteToProject: "In Projekt umwandeln",
     unassigned: "Nicht zugewiesen",
     noDescription: "Keine Beschreibung.",
     prefixProject: "Projekt",
@@ -800,7 +799,9 @@ const de: Dictionary = {
     moveDown: "Nach unten",
     promote: "Eine Ebene höher",
     promoteShort: "Höher",
-    promoteBlocked: "Bereits auf oberster Ebene",
+    promoteToProjectTitle: "In ein Projekt umwandeln (erstellt ein neues eigenständiges Projekt)",
+    promoteToProjectAdminOnly:
+      "Nur ein Projektadministrator kann diese Aufgabe in ein Projekt umwandeln",
     attach: "Unter eine andere Aufgabe hängen",
     attachShort: "Einhängen",
     attachNoSibling: "Keine gleichrangige Aufgabe verfügbar",

@@ -279,16 +279,11 @@ export default async function TaskDetailPage({
   const overdue = isOverdue(task.dueDate) && task.status !== "DONE";
   const isTopLevel = task.parentId === null;
   // Projet (tâche racine) : qui peut gérer ses membres (OWNER / admin de projet) ?
+  // Sert aussi de garde pour la promotion d'une tâche de 1er niveau en projet,
+  // déclenchée depuis le bouton « Remonter » de l'éditeur de hiérarchie (le
+  // projet racine affiché ici EST le projet source de ses tâches de 1er niveau).
   const projectRoot = isTopLevel ? await getRootProject(task.id) : null;
   const canManageMembers = projectRoot ? await canManageProject(user.id, projectRoot) : false;
-
-  // « Transformer en projet » : réservé à une tâche de 1er niveau (son parent est
-  // le projet racine) et à un ADMIN de ce projet source (ou l'OWNER de l'espace).
-  const isFirstLevel = task.parentId !== null && ancestors.length === 1;
-  const sourceProject = isFirstLevel ? await getRootProject(task.id) : null;
-  const canPromoteToProject = sourceProject
-    ? await canManageProject(user.id, sourceProject)
-    : false;
 
   // Décisions propres à la tâche.
   const decisionItems = ownDecisions.map((d) => ({
@@ -382,11 +377,6 @@ export default async function TaskDetailPage({
               {t.task.projectMembers}
             </ButtonLink>
           )}
-          {canPromoteToProject && (
-            <ButtonLink href={`/app/tasks/${task.id}/promote`} variant="secondary">
-              {t.task.promoteToProject}
-            </ButtonLink>
-          )}
           <ButtonLink href={`${detailHref}?edit=1`} variant="primary" shortcutKey="e" title={`${t.task.edit} · E`}>
             {t.task.edit}
           </ButtonLink>
@@ -471,6 +461,9 @@ export default async function TaskDetailPage({
               grandParentId: task.parentId,
               grandParentTitle: ancestors[ancestors.length - 1]?.title ?? null,
             }}
+            // Sur une tâche racine (projet), « Remonter » sur une tâche de 1er
+            // niveau la transforme en projet : réservé à un admin du projet.
+            canPromoteToProject={canManageMembers}
             followedIds={followedChildIds}
             emptyLabel={isTopLevel ? t.task.noTasksInProject : t.task.noSubtasks}
           />

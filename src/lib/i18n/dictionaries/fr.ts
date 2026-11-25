@@ -382,7 +382,6 @@ const fr = {
     subscribed: "Abonné",
     edit: "Modifier",
     projectMembers: "Membres du projet",
-    promoteToProject: "Transformer en projet",
     unassigned: "Non assignée",
     noDescription: "Aucune description.",
     prefixProject: "Projet",
@@ -820,7 +819,9 @@ const fr = {
     moveDown: "Descendre",
     promote: "Remonter d'un niveau",
     promoteShort: "Remonter",
-    promoteBlocked: "Déjà au premier niveau",
+    promoteToProjectTitle: "Transformer en projet (crée un nouveau projet autonome)",
+    promoteToProjectAdminOnly:
+      "Seul un administrateur du projet peut transformer cette tâche en projet",
     attach: "Rattacher sous une autre tâche",
     attachShort: "Rattacher",
     attachNoSibling: "Aucune tâche sœur disponible",

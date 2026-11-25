@@ -27,6 +27,7 @@ export function TaskCollection({
   emptyLabel,
   workspaceId,
   reorderScope,
+  canPromoteToProject,
   followedIds,
   newHint,
 }: {
@@ -44,6 +45,10 @@ export function TaskCollection({
   // Si fourni, active le mode « édition de la hiérarchie » (réordonner, et pour
   // les sous-tâches remonter / rattacher). `parentId` null = projets racine.
   reorderScope?: HierarchyScope;
+  // Sur un projet racine : l'utilisateur peut-il transformer une tâche de 1er
+  // niveau en projet (admin du projet / OWNER d'espace) ? Débloque le bouton
+  // « Remonter » dans ce cas précis (sinon il reste indisponible).
+  canPromoteToProject?: boolean;
   // Identifiants des tâches auxquelles l'utilisateur est abonné (œil 👁).
   followedIds?: Set<string>;
 }) {
@@ -161,7 +166,12 @@ export function TaskCollection({
           {emptyLabel}
         </p>
       ) : editing && reorderScope ? (
-        <HierarchyEditor scope={reorderScope} workspaceId={workspaceId} items={siblingItems()} />
+        <HierarchyEditor
+          scope={reorderScope}
+          workspaceId={workspaceId}
+          items={siblingItems()}
+          canPromoteToProject={canPromoteToProject ?? false}
+        />
       ) : view === "arborescence" ? (
         <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-sm">
