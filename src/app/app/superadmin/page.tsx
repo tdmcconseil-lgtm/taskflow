@@ -18,7 +18,7 @@ import {
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.superadmin} — getRIDA` };
+  return { title: t.pageTitles.superadmin };
 }
 
 // Noms de marque des formules (neutres quelle que soit la langue).

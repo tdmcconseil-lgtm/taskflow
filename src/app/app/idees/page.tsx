@@ -10,7 +10,7 @@ import { toggleIdeaVote, deleteIdea } from "@/lib/actions/ideas";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.ideas} — getRIDA` };
+  return { title: t.pageTitles.ideas };
 }
 
 // Module Idées : liste transverse à l'application. Tri (pouces / récentes /

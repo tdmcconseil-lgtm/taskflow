@@ -5,6 +5,7 @@ import { getLocale, getDictionary } from "@/lib/i18n/server";
 import { I18nProvider } from "@/lib/i18n/context";
 import { InlineScript } from "@/components/InlineScript";
 import { UpdateBanner } from "@/components/UpdateBanner";
+import { APP_URL } from "@/lib/seo/urls";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "getRIDA",
+  // Base absolue pour résoudre canonical, og:image, etc. (helper SEO unique).
+  metadataBase: new URL(APP_URL),
+  // Template de titre : chaque page connectée hérite de la marque en suffixe,
+  // sauf si elle pose un `title.absolute`. L'accueil fixe son propre titre
+  // (title.absolute) via generateMetadata.
+  title: {
+    default: "getRIDA",
+    template: "%s — getRIDA",
+  },
   description: "Gestion de projets et de tâches en équipe.",
 };
 

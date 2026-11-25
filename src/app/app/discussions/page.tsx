@@ -8,7 +8,7 @@ import { SortControl } from "@/components/SortControl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.discussions} — getRIDA` };
+  return { title: t.pageTitles.discussions };
 }
 
 export default async function DiscussionsPage({

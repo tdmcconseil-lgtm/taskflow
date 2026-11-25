@@ -1,10 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/dal";
-import { getDictionary } from "@/lib/i18n/server";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { PricingTable } from "@/components/PricingTable";
 import { buttonClass } from "@/components/Button";
+import { buildPageMetadata, buildUrl } from "@/lib/seo/urls";
 import { FREE_SEATS } from "@/lib/plans";
+
+// Metadata localisée de l'accueil (titre descriptif, description 120–155 car.,
+// openGraph, twitter, canonical) — construite via le helper SEO unique.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getDictionary(locale);
+  return buildPageMetadata({ path: "/", locale, seo: t.seo.pages.home });
+}
 
 // Page de garde publique (vitrine). Un visiteur connecté voit « Ouvrir mon
 // espace » au lieu des appels à l'inscription (cf. cahier des charges).
@@ -39,8 +49,35 @@ export default async function Home() {
     { q: t.landing.faq5Q, a: t.landing.faq5A.replace("{free}", String(FREE_SEATS)) },
   ];
 
+  // Données structurées (JSON-LD) : aide les moteurs à comprendre le produit et
+  // l'éditeur. URLs via le helper SEO unique.
+  const homeUrl = buildUrl("/");
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        name: t.common.appName,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: homeUrl,
+        description: t.seo.pages.home.description,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+      },
+      {
+        "@type": "Organization",
+        name: t.common.appName,
+        url: homeUrl,
+      },
+    ],
+  };
+
   return (
     <div className="flex min-h-full flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* En-tête collant */}
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -123,6 +160,16 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Lien contextuel vers le comparateur (maillage interne SEO) */}
+        <div className="mx-auto w-full max-w-6xl px-4 pb-2 text-center sm:px-6">
+          <Link
+            href="/comparatif"
+            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            {t.landing.compareCta} →
+          </Link>
+        </div>
+
         {/* Offres */}
         <section className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
           <div className="text-center">
@@ -182,6 +229,9 @@ export default async function Home() {
               className="font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
             >
               {isAuthed ? t.landing.openApp : t.landing.signIn}
+            </Link>
+            <Link href="/comparatif" className="hover:text-zinc-900 dark:hover:text-white">
+              {t.landing.footerCompare}
             </Link>
             <Link href="/" className="hover:text-zinc-900 dark:hover:text-white">
               {t.landing.footerLegal}

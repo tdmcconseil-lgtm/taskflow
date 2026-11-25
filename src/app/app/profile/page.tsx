@@ -12,7 +12,7 @@ import { cardClass } from "@/components/ui";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getDictionary();
-  return { title: `${t.pageTitles.profile} — getRIDA` };
+  return { title: t.pageTitles.profile };
 }
 
 export default async function ProfilePage({ searchParams }: PageProps<"/app/profile">) {
