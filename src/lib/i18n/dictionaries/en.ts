@@ -363,7 +363,6 @@ const en: Dictionary = {
     subscribed: "Subscribed",
     edit: "Edit",
     projectMembers: "Project members",
-    promoteToProject: "Turn into a project",
     unassigned: "Unassigned",
     noDescription: "No description.",
     prefixProject: "Project",
@@ -800,7 +799,9 @@ const en: Dictionary = {
     moveDown: "Move down",
     promote: "Move up one level",
     promoteShort: "Move up",
-    promoteBlocked: "Already at the top level",
+    promoteToProjectTitle: "Turn into a project (creates a new standalone project)",
+    promoteToProjectAdminOnly:
+      "Only a project admin can turn this task into a project",
     attach: "Attach under another task",
     attachShort: "Attach",
     attachNoSibling: "No sibling task available",

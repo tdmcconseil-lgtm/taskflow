@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PriorityBadge } from "@/components/badges";
 import { TypeIcon } from "@/components/TypeIcon";
 import { UserAvatar } from "@/components/UserAvatar";
@@ -31,17 +32,29 @@ export function HierarchyEditor({
   scope,
   workspaceId,
   items,
+  canPromoteToProject = false,
 }: {
   scope: HierarchyScope;
   workspaceId: string;
   items: SubtaskItem[];
+  // Sur une fratrie de 1er niveau (mère = projet racine), « Remonter » ne peut
+  // pas être un #2 intra-projet : il TRANSFORME la tâche en projet autonome.
+  // Ce drapeau (admin du projet source / OWNER) autorise cette promotion ;
+  // sinon le bouton reste indisponible, comme avant.
+  canPromoteToProject?: boolean;
 }) {
   const dict = useT();
   const h = dict.hierarchy;
+  const router = useRouter();
   const { parentId, parentTitle, grandParentId, grandParentTitle } = scope;
 
   const isProjectList = parentId === null;
-  const canPromote = grandParentId !== null; // #2 possible (la mère n'est pas un projet)
+  // « Remonter » sur une tâche de 1er niveau (sa mère est un projet racine, donc
+  // grandParentId null) = PROMOTION en projet, écran de confirmation dédié
+  // /promote (alerte « vous créez un nouveau projet »). Pour une tâche plus
+  // profonde, c'est le #2 intra-projet classique (modale reparentTask).
+  const isPromotionCase = !isProjectList && grandParentId === null;
+  const canReparentUp = grandParentId !== null; // #2 possible (la mère n'est pas un projet)
   const canAttach = !isProjectList; // #3 possible (les éléments ne sont pas des projets)
 
   const [order, setOrder] = useState<SubtaskItem[]>(items);
@@ -199,16 +212,29 @@ export function HierarchyEditor({
                   <>
                     <button
                       type="button"
-                      onClick={() =>
-                        grandParentId &&
-                        setConfirm({
-                          item: t,
-                          newParentId: grandParentId,
-                          targetTitle: grandParentTitle ?? "",
-                        })
+                      onClick={() => {
+                        if (isPromotionCase) {
+                          // Promotion en projet : on envoie vers l'écran de
+                          // confirmation /promote (alerte + membres amorcés),
+                          // pas de reparent silencieux. Garde côté serveur aussi.
+                          if (canPromoteToProject) router.push(`/app/tasks/${t.id}/promote`);
+                          return;
+                        }
+                        if (grandParentId)
+                          setConfirm({
+                            item: t,
+                            newParentId: grandParentId,
+                            targetTitle: grandParentTitle ?? "",
+                          });
+                      }}
+                      disabled={isPromotionCase ? !canPromoteToProject : !canReparentUp}
+                      title={
+                        isPromotionCase
+                          ? canPromoteToProject
+                            ? h.promoteToProjectTitle
+                            : h.promoteToProjectAdminOnly
+                          : h.promote
                       }
-                      disabled={!canPromote}
-                      title={canPromote ? h.promote : h.promoteBlocked}
                       className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                     >
                       ↰ {h.promoteShort}
