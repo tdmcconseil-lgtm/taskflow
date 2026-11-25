@@ -363,6 +363,7 @@ const es: Dictionary = {
     subscribed: "Suscrito",
     edit: "Editar",
     projectMembers: "Miembros del proyecto",
+    promoteToProject: "Convertir en proyecto",
     unassigned: "Sin asignar",
     noDescription: "Sin descripción.",
     prefixProject: "Proyecto",
@@ -698,6 +699,8 @@ const es: Dictionary = {
   projectMembers: {
     title: "Miembros del proyecto",
     backToProject: "Volver al proyecto",
+    creator: "Creador",
+    creatorAccessNote: "Acceso de pleno derecho (creador del proyecto).",
     membersTitle: "Miembros",
     roleAdmin: "Administrador",
     roleMember: "Miembro",
@@ -785,6 +788,8 @@ const es: Dictionary = {
     documentAdded: "añadió el documento «{name}»",
     reparented: "movió esta tarea: {from} → {to}",
     reparentedTo: "movió esta tarea bajo {to}",
+    promotedToProject: "convirtió esta tarea en un proyecto: {from} → {to}",
+    promotedToProjectTo: "convirtió esta tarea en el proyecto {to}",
   },
 
   hierarchy: {
@@ -804,6 +809,25 @@ const es: Dictionary = {
     subtreeFollows: "Las subtareas se mueven con ella.",
     confirmMove: "Mover",
     moving: "Moviendo…",
+  },
+  promoteToProject: {
+    title: "Convertir en proyecto",
+    intro:
+      "Esta tarea se convierte en un proyecto autónomo. Sus subtareas la siguen y forman el nuevo proyecto. Las personas de abajo pasan a ser sus miembros; podrás añadir más después.",
+    backToTask: "Volver a la tarea",
+    alertTitle: "Vas a crear un nuevo proyecto",
+    alertBody:
+      "Esta tarea sale del proyecto «{project}» y se convierte en un proyecto autónomo, con sus propios miembros y sus propias reglas de acceso que gestionarás por separado.",
+    membersTitle: "Miembros del nuevo proyecto",
+    roleAdmin: "Administrador",
+    roleMember: "Miembro",
+    warningTitle: "Ten en cuenta",
+    warningRestricted:
+      "Las personas que veían estas tareas solo a través del proyecto actual, sin ser responsables de ellas, dejarán de tener acceso una vez separado el proyecto.",
+    warningWorkspace:
+      "El proyecto actual está abierto a todo el espacio: tras la conversión, solo las personas indicadas arriba verán estas tareas. Los demás miembros del espacio perderán esa vista.",
+    confirmButton: "Convertir en proyecto",
+    confirming: "Convirtiendo…",
   },
   events: {
     title: "Eventos",
@@ -1185,6 +1209,9 @@ const es: Dictionary = {
     moveInvalid: "Movimiento no permitido.",
     moveCrossProject: "Movimiento no permitido: saldría del proyecto.",
     moveIntoDescendant: "No se puede adjuntar una tarea bajo una de sus propias subtareas.",
+    alreadyProject: "Esta tarea ya es un proyecto.",
+    notFirstLevelTask: "Solo una tarea de primer nivel puede convertirse en proyecto.",
+    notProjectAdmin: "Solo un administrador del proyecto puede convertir una de sus tareas en proyecto.",
     pseudoRequired: "El seudónimo debe tener al menos 2 caracteres.",
     pseudoTooLong: "El seudónimo no debe superar los 30 caracteres.",
     parentNotFound: "Tarea principal no encontrada.",

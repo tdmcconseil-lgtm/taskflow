@@ -363,6 +363,7 @@ const de: Dictionary = {
     subscribed: "Abonniert",
     edit: "Bearbeiten",
     projectMembers: "Projektmitglieder",
+    promoteToProject: "In Projekt umwandeln",
     unassigned: "Nicht zugewiesen",
     noDescription: "Keine Beschreibung.",
     prefixProject: "Projekt",
@@ -698,6 +699,8 @@ const de: Dictionary = {
   projectMembers: {
     title: "Projektmitglieder",
     backToProject: "Zurück zum Projekt",
+    creator: "Ersteller",
+    creatorAccessNote: "Vollzugriff als Projektersteller.",
     membersTitle: "Mitglieder",
     roleAdmin: "Administrator",
     roleMember: "Mitglied",
@@ -785,6 +788,8 @@ const de: Dictionary = {
     documentAdded: "hat das Dokument „{name}“ hinzugefügt",
     reparented: "hat diese Aufgabe verschoben: {from} → {to}",
     reparentedTo: "hat diese Aufgabe unter {to} verschoben",
+    promotedToProject: "hat diese Aufgabe in ein Projekt umgewandelt: {from} → {to}",
+    promotedToProjectTo: "hat diese Aufgabe in das Projekt {to} umgewandelt",
   },
 
   hierarchy: {
@@ -804,6 +809,25 @@ const de: Dictionary = {
     subtreeFollows: "Etwaige Unteraufgaben werden mitverschoben.",
     confirmMove: "Verschieben",
     moving: "Wird verschoben…",
+  },
+  promoteToProject: {
+    title: "In ein Projekt umwandeln",
+    intro:
+      "Diese Aufgabe wird zu einem eigenständigen Projekt. Ihre Unteraufgaben folgen ihr und bilden das neue Projekt. Die unten aufgeführten Personen werden seine Mitglieder; weitere können Sie danach hinzufügen.",
+    backToTask: "Zurück zur Aufgabe",
+    alertTitle: "Sie erstellen ein neues Projekt",
+    alertBody:
+      "Diese Aufgabe verlässt das Projekt „{project}“ und wird zu einem eigenständigen Projekt mit eigenen Mitgliedern und eigenen Zugriffsregeln, die Sie separat verwalten.",
+    membersTitle: "Mitglieder des neuen Projekts",
+    roleAdmin: "Administrator",
+    roleMember: "Mitglied",
+    warningTitle: "Hinweis",
+    warningRestricted:
+      "Personen, die diese Aufgaben nur über das aktuelle Projekt sahen, ohne dafür zuständig zu sein, verlieren den Zugriff, sobald das Projekt abgetrennt ist.",
+    warningWorkspace:
+      "Das aktuelle Projekt ist für den gesamten Arbeitsbereich offen: Nach der Umwandlung sehen nur die oben aufgeführten Personen diese Aufgaben. Die übrigen Mitglieder des Arbeitsbereichs verlieren diese Sicht.",
+    confirmButton: "In ein Projekt umwandeln",
+    confirming: "Wird umgewandelt…",
   },
   events: {
     title: "Ereignisse",
@@ -1185,6 +1209,9 @@ const de: Dictionary = {
     moveInvalid: "Verschieben nicht möglich.",
     moveCrossProject: "Verschieben nicht möglich: Es würde das Projekt verlassen.",
     moveIntoDescendant: "Eine Aufgabe kann nicht unter eine ihrer eigenen Unteraufgaben gehängt werden.",
+    alreadyProject: "Diese Aufgabe ist bereits ein Projekt.",
+    notFirstLevelTask: "Nur eine Aufgabe der ersten Ebene kann in ein Projekt umgewandelt werden.",
+    notProjectAdmin: "Nur ein Projektadministrator kann eine seiner Aufgaben in ein Projekt umwandeln.",
     pseudoRequired: "Der Spitzname muss mindestens 2 Zeichen lang sein.",
     pseudoTooLong: "Der Spitzname darf 30 Zeichen nicht überschreiten.",
     parentNotFound: "Übergeordnete Aufgabe nicht gefunden.",

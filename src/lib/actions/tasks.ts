@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser, getMembership } from "@/lib/auth/dal";
-import { canAccessTask, canAccessProject, getRootProject } from "@/lib/access";
+import { canAccessTask, canAccessProject, getRootProject, canManageProject } from "@/lib/access";
 import { getDictionary, zodError } from "@/lib/i18n/server";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
@@ -496,6 +496,132 @@ export async function reparentTask(
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath(`/app/tasks/${newParentId}`);
   if (task.parentId) revalidatePath(`/app/tasks/${task.parentId}`);
+  revalidatePath(`/app/workspaces/${task.workspaceId}`);
+  return { ok: true };
+}
+
+// Résultat d'une transformation de tâche en projet : succès, ou message d'erreur
+// (déjà traduit) à afficher dans la confirmation.
+export type PromoteToProjectResult = { ok: true } | { error: string };
+
+// Transforme une TÂCHE DE 1er NIVEAU en PROJET autonome (nouvelle racine).
+// C'est le dégel ENCADRÉ du seul cas gelé par PR #1 (promotion tâche → projet) :
+// la tâche (parentId → null) devient un projet restreint ; son sous-arbre
+// d'actions la suit (nouvelle racine). Réservé à un ADMIN du projet source (ou
+// l'OWNER de l'espace).
+//
+// Au lieu de BLOQUER quand un porteur n'a pas accès, on AMORCE le membership du
+// nouveau projet (Thibaut l'autorise explicitement) : a minima l'opérateur
+// (ADMIN) + tous les porteurs (assignees) du sous-arbre (MEMBER). L'auteur
+// d'origine (`createdById`) est PRÉSERVÉ, pas seedé en plus : il garde l'accès
+// par la règle « créateur ». Personne du sous-arbre ne perd donc l'accès. En revanche,
+// les personnes qui n'y accédaient QUE via l'ancien projet sans être porteuses
+// perdent la vue sur le sous-arbre promu (effet voulu d'un projet à part) :
+// l'avertissement est présenté avant confirmation côté UI.
+export async function promoteTaskToProject(taskId: string): Promise<PromoteToProjectResult> {
+  const user = await requireUser();
+  const t = await getDictionary();
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      title: true,
+      workspaceId: true,
+      parentId: true,
+      assigneeId: true,
+      createdById: true,
+    },
+  });
+  if (!task) return { error: t.errors.taskNotFound };
+  if (!(await getMembership(user.id, task.workspaceId))) return { error: t.errors.accessDenied };
+
+  // Déjà un projet (tâche racine) : rien à promouvoir.
+  if (task.parentId === null) return { error: t.errors.alreadyProject };
+
+  // Seule une tâche de 1er niveau (dont le parent EST un projet) peut être
+  // promue : pas de saut multi-crans depuis une action profonde.
+  const parentProject = await prisma.task.findUnique({
+    where: { id: task.parentId },
+    select: {
+      id: true,
+      title: true,
+      parentId: true,
+      workspaceId: true,
+      createdById: true,
+      visibility: true,
+    },
+  });
+  if (!parentProject) return { error: t.errors.taskNotFound };
+  if (parentProject.parentId !== null) return { error: t.errors.notFirstLevelTask };
+
+  // Autorisation : seul un ADMIN du projet source (ou l'OWNER de l'espace) peut
+  // en détacher une tâche de 1er niveau pour en faire un projet.
+  if (!(await canManageProject(user.id, parentProject))) {
+    return { error: t.errors.notProjectAdmin };
+  }
+
+  // Collecte des porteurs (assignees) de la tâche + de toute sa descendance.
+  const assigneeIds = new Set<string>();
+  if (task.assigneeId) assigneeIds.add(task.assigneeId);
+  let frontier: string[] = [task.id];
+  let depth = 0;
+  while (frontier.length > 0 && depth++ < 100) {
+    const rows = await prisma.task.findMany({
+      where: { parentId: { in: frontier } },
+      select: { id: true, assigneeId: true },
+    });
+    frontier = rows.map((r) => r.id);
+    for (const r of rows) if (r.assigneeId) assigneeIds.add(r.assigneeId);
+  }
+
+  // La tâche devient un projet restreint, rangé en fin de liste des projets.
+  // On PRÉSERVE `createdById` (auteur d'origine de la tâche).
+  const position = await prisma.task.count({
+    where: { workspaceId: task.workspaceId, parentId: null },
+  });
+  await prisma.task.update({
+    where: { id: task.id },
+    data: { parentId: null, visibility: "RESTRICTED", position },
+  });
+  // L'ordre d'affichage personnel appartenait à l'ancienne fratrie.
+  await prisma.taskOrder.deleteMany({ where: { taskId: task.id } });
+
+  // Amorçage du membership (a minima). L'opérateur est ADMIN ; les porteurs du
+  // sous-arbre sont MEMBER. L'auteur d'origine de la tâche N'EST PAS ajouté s'il
+  // n'est pas porteur : on PRÉSERVE `createdById` (décision de Thibaut), et il
+  // garde l'accès par la règle « créateur » — rendu visible dans la page des
+  // membres du projet (ligne « créateur »), sans entrée ProjectAccess.
+  const memberIds = new Set<string>(assigneeIds);
+  memberIds.delete(user.id); // l'opérateur est traité à part (ADMIN)
+  await prisma.projectAccess.upsert({
+    where: { taskId_userId: { taskId: task.id, userId: user.id } },
+    update: { role: "ADMIN" },
+    create: { taskId: task.id, userId: user.id, role: "ADMIN" },
+  });
+  for (const uid of memberIds) {
+    await prisma.projectAccess.upsert({
+      where: { taskId_userId: { taskId: task.id, userId: uid } },
+      update: {},
+      create: { taskId: task.id, userId: uid, role: "MEMBER" },
+    });
+  }
+  // L'opérateur et les porteurs suivent le nouveau projet.
+  await ensureFollow(user.id, task.id);
+  for (const uid of assigneeIds) await ensureFollow(uid, task.id);
+
+  await logActivity({
+    taskId: task.id,
+    actorId: user.id,
+    type: "PROMOTED_TO_PROJECT",
+    fromValue: parentProject.title,
+    toValue: task.title,
+  });
+
+  revalidatePath("/app");
+  revalidatePath("/app", "layout");
+  revalidatePath(`/app/tasks/${task.id}`);
+  revalidatePath(`/app/tasks/${parentProject.id}`);
   revalidatePath(`/app/workspaces/${task.workspaceId}`);
   return { ok: true };
 }

@@ -363,6 +363,7 @@ const it: Dictionary = {
     subscribed: "Iscritto",
     edit: "Modifica",
     projectMembers: "Membri del progetto",
+    promoteToProject: "Trasforma in progetto",
     unassigned: "Non assegnata",
     noDescription: "Nessuna descrizione.",
     prefixProject: "Progetto",
@@ -698,6 +699,8 @@ const it: Dictionary = {
   projectMembers: {
     title: "Membri del progetto",
     backToProject: "Torna al progetto",
+    creator: "Creatore",
+    creatorAccessNote: "Accesso di diritto (creatore del progetto).",
     membersTitle: "Membri",
     roleAdmin: "Amministratore",
     roleMember: "Membro",
@@ -785,6 +788,8 @@ const it: Dictionary = {
     documentAdded: "ha aggiunto il documento « {name} »",
     reparented: "ha spostato questa attività: {from} → {to}",
     reparentedTo: "ha spostato questa attività sotto {to}",
+    promotedToProject: "ha trasformato questa attività in un progetto: {from} → {to}",
+    promotedToProjectTo: "ha trasformato questa attività nel progetto {to}",
   },
 
   hierarchy: {
@@ -804,6 +809,25 @@ const it: Dictionary = {
     subtreeFollows: "Le eventuali sottoattività seguono lo spostamento.",
     confirmMove: "Sposta",
     moving: "Spostamento…",
+  },
+  promoteToProject: {
+    title: "Trasforma in progetto",
+    intro:
+      "Questa attività diventa un progetto autonomo. Le sue sottoattività la seguono e formano il nuovo progetto. Le persone qui sotto ne diventano membri; potrai aggiungerne altre in seguito.",
+    backToTask: "Torna all'attività",
+    alertTitle: "Stai creando un nuovo progetto",
+    alertBody:
+      "Questa attività esce dal progetto «{project}» e diventa un progetto autonomo, con i propri membri e le proprie regole di accesso che gestirai separatamente.",
+    membersTitle: "Membri del nuovo progetto",
+    roleAdmin: "Amministratore",
+    roleMember: "Membro",
+    warningTitle: "Nota",
+    warningRestricted:
+      "Le persone che vedevano queste attività solo tramite il progetto attuale, senza esserne responsabili, perderanno l'accesso una volta separato il progetto.",
+    warningWorkspace:
+      "Il progetto attuale è aperto a tutto lo spazio: dopo la trasformazione, solo le persone elencate sopra vedranno queste attività. Gli altri membri dello spazio ne perderanno la vista.",
+    confirmButton: "Trasforma in progetto",
+    confirming: "Trasformazione…",
   },
   events: {
     title: "Eventi",
@@ -1185,6 +1209,9 @@ const it: Dictionary = {
     moveInvalid: "Spostamento non consentito.",
     moveCrossProject: "Spostamento non consentito: uscirebbe dal progetto.",
     moveIntoDescendant: "Impossibile agganciare un'attività sotto una delle sue stesse sottoattività.",
+    alreadyProject: "Questa attività è già un progetto.",
+    notFirstLevelTask: "Solo un'attività di primo livello può essere trasformata in progetto.",
+    notProjectAdmin: "Solo un amministratore del progetto può trasformare una delle sue attività in progetto.",
     pseudoRequired: "Il nickname deve contenere almeno 2 caratteri.",
     pseudoTooLong: "Il nickname non deve superare i 30 caratteri.",
     parentNotFound: "Attività principale non trovata.",

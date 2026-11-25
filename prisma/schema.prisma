@@ -73,6 +73,7 @@ enum TaskActivityType {
   SUBTASK_ADDED
   SUBTASK_REMOVED
   REPARENTED // tâche déplacée dans la hiérarchie (changement de parent, intra-projet)
+  PROMOTED_TO_PROJECT // tâche de 1er niveau transformée en projet autonome (nouvelle racine)
   COMMENT_ADDED
   MENTIONED
   FOLLOWER_ADDED // ajouté comme suiveur d'une tâche (événement ciblé)

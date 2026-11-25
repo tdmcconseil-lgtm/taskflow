@@ -382,6 +382,7 @@ const fr = {
     subscribed: "Abonné",
     edit: "Modifier",
     projectMembers: "Membres du projet",
+    promoteToProject: "Transformer en projet",
     unassigned: "Non assignée",
     noDescription: "Aucune description.",
     prefixProject: "Projet",
@@ -718,6 +719,8 @@ const fr = {
   projectMembers: {
     title: "Membres du projet",
     backToProject: "Retour au projet",
+    creator: "Créateur",
+    creatorAccessNote: "Accès de plein droit (créateur du projet).",
     membersTitle: "Membres",
     roleAdmin: "Administrateur",
     roleMember: "Membre",
@@ -805,6 +808,8 @@ const fr = {
     documentAdded: "a ajouté le document « {name} »",
     reparented: "a déplacé cette tâche : {from} → {to}",
     reparentedTo: "a déplacé cette tâche sous {to}",
+    promotedToProject: "a transformé cette tâche en projet : {from} → {to}",
+    promotedToProjectTo: "a transformé cette tâche en projet {to}",
   },
 
   hierarchy: {
@@ -824,6 +829,25 @@ const fr = {
     subtreeFollows: "Les éventuelles sous-tâches suivent le déplacement.",
     confirmMove: "Déplacer",
     moving: "Déplacement…",
+  },
+  promoteToProject: {
+    title: "Transformer en projet",
+    intro:
+      "Cette tâche devient un projet autonome. Ses sous-tâches la suivent et forment ce nouveau projet. Les personnes ci-dessous en deviennent membres ; vous pourrez en ajouter d'autres ensuite.",
+    backToTask: "Retour à la tâche",
+    alertTitle: "Vous créez un nouveau projet",
+    alertBody:
+      "Cette tâche quitte le projet « {project} » et devient un projet autonome, avec ses propres membres et ses propres règles d'accès que vous gérerez séparément.",
+    membersTitle: "Membres du nouveau projet",
+    roleAdmin: "Administrateur",
+    roleMember: "Membre",
+    warningTitle: "À noter",
+    warningRestricted:
+      "Les personnes qui voyaient ces tâches uniquement via le projet actuel, sans en être responsables, n'y auront plus accès une fois le projet séparé.",
+    warningWorkspace:
+      "Le projet actuel est ouvert à tout l'espace : après transformation, seules les personnes listées ci-dessus verront ces tâches. Les autres membres de l'espace en perdront la vue.",
+    confirmButton: "Transformer en projet",
+    confirming: "Transformation…",
   },
   events: {
     title: "Événements",
@@ -1207,6 +1231,9 @@ const fr = {
     moveInvalid: "Déplacement impossible.",
     moveCrossProject: "Déplacement impossible : il sortirait du projet.",
     moveIntoDescendant: "Impossible de rattacher une tâche sous l'une de ses propres sous-tâches.",
+    alreadyProject: "Cette tâche est déjà un projet.",
+    notFirstLevelTask: "Seule une tâche de premier niveau peut être transformée en projet.",
+    notProjectAdmin: "Seul un administrateur du projet peut transformer une de ses tâches en projet.",
     pseudoRequired: "Le pseudo doit faire au moins 2 caractères.",
     pseudoTooLong: "Le pseudo ne doit pas dépasser 30 caractères.",
     parentNotFound: "Tâche parente introuvable.",

@@ -282,6 +282,14 @@ export default async function TaskDetailPage({
   const projectRoot = isTopLevel ? await getRootProject(task.id) : null;
   const canManageMembers = projectRoot ? await canManageProject(user.id, projectRoot) : false;
 
+  // « Transformer en projet » : réservé à une tâche de 1er niveau (son parent est
+  // le projet racine) et à un ADMIN de ce projet source (ou l'OWNER de l'espace).
+  const isFirstLevel = task.parentId !== null && ancestors.length === 1;
+  const sourceProject = isFirstLevel ? await getRootProject(task.id) : null;
+  const canPromoteToProject = sourceProject
+    ? await canManageProject(user.id, sourceProject)
+    : false;
+
   // Décisions propres à la tâche.
   const decisionItems = ownDecisions.map((d) => ({
     id: d.id,
@@ -372,6 +380,11 @@ export default async function TaskDetailPage({
           {canManageMembers && (
             <ButtonLink href={`/app/tasks/${task.id}/members`} variant="secondary">
               {t.task.projectMembers}
+            </ButtonLink>
+          )}
+          {canPromoteToProject && (
+            <ButtonLink href={`/app/tasks/${task.id}/promote`} variant="secondary">
+              {t.task.promoteToProject}
             </ButtonLink>
           )}
           <ButtonLink href={`${detailHref}?edit=1`} variant="primary" shortcutKey="e" title={`${t.task.edit} · E`}>
