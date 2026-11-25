@@ -102,6 +102,13 @@ const de: Dictionary = {
         "Eine einzige Tabelle, um getRIDA den führenden Tools des Marktes gegenüberzustellen. Wir spielen fair: Wo ein Wettbewerber besser ist, sagen wir es. Für die Details zu einer App verlinkt jede Spalte auf ihre eigene Seite.",
       tableTitle: "getRIDA vs die führenden Tools",
       advLegend: "Bernsteinfarbener Punkt: Der Wettbewerber gewinnt in diesem Kriterium.",
+      selector: {
+        label: "getRIDA vergleichen mit",
+        slot2: "2. Tool",
+        slot3: "3. Tool",
+      },
+      winBadge: "Vorteil",
+      winLegend: "Grün: das bei diesem Kriterium am besten aufgestellte Tool.",
       footnote:
         "Vergleich ohne Gewähr; Fakten und Preise am 24. Nov. 2026 anhand der offiziellen Quellen des jeweiligen Anbieters geprüft und Änderungen vorbehalten (Aktionen, Währungen je nach Region). Jedes genannte Produkt ist eine Marke seines jeweiligen Unternehmens.",
     },

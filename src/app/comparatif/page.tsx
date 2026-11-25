@@ -5,6 +5,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { buttonClass } from "@/components/Button";
 import { buildPageMetadata } from "@/lib/seo/urls";
+import { ComparateurTable } from "./ComparateurTable";
 
 // Page comparateur UNIQUE (`/comparatif`) : un seul tableau getRIDA vs tous les
 // concurrents côte à côte. Réutilise entièrement les données existantes
@@ -27,8 +28,13 @@ export default async function ComparateurPage() {
   const s = t.comparatif.shared;
   const o = t.comparatif.overview;
 
-  // Colonnes concurrentes, dans l'ordre défini.
-  const columns = APPS.map((slug) => ({ slug, app: t.comparatif.apps[slug] }));
+  // Données sérialisables pour le comparateur interactif (composant client).
+  const apps = Object.fromEntries(
+    APPS.map((slug) => {
+      const app = t.comparatif.apps[slug];
+      return [slug, { name: app.name, cells: app.cells, adv: app.adv }];
+    }),
+  );
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -91,66 +97,21 @@ export default async function ComparateurPage() {
             {s.tableEyebrow}
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">{o.tableTitle}</h2>
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            <table className="w-full min-w-[1040px] border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-zinc-200 bg-white text-left align-bottom dark:border-zinc-800 dark:bg-zinc-900">
-                  <th className="w-44 px-4 py-3 font-semibold">{s.colCriterion}</th>
-                  <th className="w-48 bg-indigo-50/60 px-4 py-3 font-semibold text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300">
-                    getRIDA
-                  </th>
-                  {columns.map(({ slug, app }) => (
-                    <th key={slug} className="w-44 px-4 py-3 font-semibold">
-                      <Link
-                        href={`/comparatif/${slug}`}
-                        className="underline-offset-2 hover:underline"
-                      >
-                        {app.name}
-                      </Link>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {s.rows.map((row) => {
-                  const cells = columns.map(({ slug, app }) => {
-                    const appCells = app.cells as Record<string, string>;
-                    const appAdv = app.adv as Record<string, string>;
-                    return { slug, value: appCells[row.key], rivalWins: appAdv[row.key] === "r" };
-                  });
-                  return (
-                    <tr key={row.key} className="border-b border-zinc-200 align-top last:border-0 dark:border-zinc-800">
-                      <th scope="row" className="px-4 py-3 text-left font-semibold">
-                        {row.label}
-                      </th>
-                      <td className="bg-indigo-50/40 px-4 py-3 text-zinc-700 dark:bg-indigo-950/20 dark:text-zinc-200">
-                        {row.getrida}
-                      </td>
-                      {cells.map(({ slug, value, rivalWins }) => (
-                        <td key={slug} className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-400">
-                          <span className="flex gap-1.5">
-                            {rivalWins && (
-                              <span
-                                aria-hidden
-                                title={o.advLegend}
-                                className="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-amber-500"
-                              />
-                            )}
-                            <span>{value}</span>
-                          </span>
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400">
-            <span className="flex items-center gap-1.5">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-              {o.advLegend}
-            </span>
+          <div className="mt-6">
+            <ComparateurTable
+              rows={s.rows.map((row) => ({ key: row.key, label: row.label, getrida: row.getrida }))}
+              apps={apps}
+              order={[...APPS]}
+              labels={{
+                getrida: "getRIDA",
+                criterion: s.colCriterion,
+                selectorLabel: o.selector.label,
+                slot2: o.selector.slot2,
+                slot3: o.selector.slot3,
+                winBadge: o.winBadge,
+                winLegend: o.winLegend,
+              }}
+            />
           </div>
         </section>
 

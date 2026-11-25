@@ -102,6 +102,13 @@ const it: Dictionary = {
         "Una sola tabella per collocare getRIDA rispetto ai principali strumenti del mercato. Giochiamo a carte scoperte: dove un concorrente fa meglio, lo indichiamo. Per il dettaglio di ogni app, ogni colonna rimanda alla sua pagina dedicata.",
       tableTitle: "getRIDA vs i principali strumenti",
       advLegend: "Pallino ambra: il concorrente vince su quel criterio.",
+      selector: {
+        label: "Confronta getRIDA con",
+        slot2: "2° strumento",
+        slot3: "3° strumento",
+      },
+      winBadge: "Vantaggio",
+      winLegend: "Verde: lo strumento messo meglio su quel criterio.",
       footnote:
         "Confronto fornito a titolo indicativo; dati e prezzi rilevati il 24 nov. 2026 dalle fonti ufficiali di ciascun fornitore e soggetti a variazioni (promozioni, valute a seconda della regione). Ogni prodotto citato è un marchio della rispettiva società.",
     },

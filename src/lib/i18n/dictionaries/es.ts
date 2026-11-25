@@ -102,6 +102,13 @@ const es: Dictionary = {
         "Una única tabla para situar getRIDA frente a las principales herramientas del mercado. Jugamos limpio: allí donde un competidor lo hace mejor, lo indicamos. Para el detalle de cada aplicación, cada columna enlaza con su página dedicada.",
       tableTitle: "getRIDA vs las principales herramientas",
       advLegend: "Punto ámbar: el competidor gana en ese criterio.",
+      selector: {
+        label: "Comparar getRIDA con",
+        slot2: "2.ª herramienta",
+        slot3: "3.ª herramienta",
+      },
+      winBadge: "Ventaja",
+      winLegend: "Verde: la herramienta mejor posicionada en ese criterio.",
       footnote:
         "Comparativa facilitada a título indicativo; datos y precios consultados el 24 nov. 2026 en las fuentes oficiales de cada proveedor y sujetos a cambios (promociones, divisas según la región). Cada producto citado es una marca de su empresa respectiva.",
     },

@@ -120,6 +120,13 @@ const fr = {
         "Un tableau unique pour situer getRIDA face aux principaux outils du marché. Nous jouons franc jeu : là où un concurrent fait mieux, c’est indiqué. Pour le détail d’une application, chaque colonne renvoie à sa page dédiée.",
       tableTitle: "getRIDA vs les principaux outils",
       advLegend: "Pastille ambre : le concurrent l’emporte sur ce critère.",
+      selector: {
+        label: "Comparer getRIDA avec",
+        slot2: "2ᵉ outil",
+        slot3: "3ᵉ outil",
+      },
+      winBadge: "Avantage",
+      winLegend: "Vert : l’outil le mieux placé sur ce critère.",
       footnote:
         "Comparatif fourni à titre indicatif ; faits et tarifs relevés le 24 nov. 2026 contre les sources officielles de chaque éditeur, susceptibles d’évoluer (promotions, devises selon la région). Chaque produit cité est une marque de sa société respective.",
     },

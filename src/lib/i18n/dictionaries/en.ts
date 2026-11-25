@@ -102,6 +102,13 @@ const en: Dictionary = {
         "A single table to place getRIDA against the market's leading tools. We play fair: wherever a competitor does better, we say so. For the detail on any app, each column links to its dedicated page.",
       tableTitle: "getRIDA vs the leading tools",
       advLegend: "Amber dot: the competitor wins on that criterion.",
+      selector: {
+        label: "Compare getRIDA with",
+        slot2: "2nd tool",
+        slot3: "3rd tool",
+      },
+      winBadge: "Advantage",
+      winLegend: "Green: the best-placed tool on that criterion.",
       footnote:
         "Comparison provided for guidance only; facts and prices checked on Nov 24, 2026 against each vendor's official sources and subject to change (promotions, region-dependent currencies). Each product named is a trademark of its respective company.",
     },
