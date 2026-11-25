@@ -575,18 +575,6 @@ export async function promoteTaskToProject(taskId: string): Promise<PromoteToPro
     for (const r of rows) if (r.assigneeId) assigneeIds.add(r.assigneeId);
   }
 
-  // La tâche devient un projet restreint, rangé en fin de liste des projets.
-  // On PRÉSERVE `createdById` (auteur d'origine de la tâche).
-  const position = await prisma.task.count({
-    where: { workspaceId: task.workspaceId, parentId: null },
-  });
-  await prisma.task.update({
-    where: { id: task.id },
-    data: { parentId: null, visibility: "RESTRICTED", position },
-  });
-  // L'ordre d'affichage personnel appartenait à l'ancienne fratrie.
-  await prisma.taskOrder.deleteMany({ where: { taskId: task.id } });
-
   // Amorçage du membership (a minima). L'opérateur est ADMIN ; les porteurs du
   // sous-arbre sont MEMBER. L'auteur d'origine de la tâche N'EST PAS ajouté s'il
   // n'est pas porteur : on PRÉSERVE `createdById` (décision de Thibaut), et il
@@ -594,19 +582,43 @@ export async function promoteTaskToProject(taskId: string): Promise<PromoteToPro
   // membres du projet (ligne « créateur »), sans entrée ProjectAccess.
   const memberIds = new Set<string>(assigneeIds);
   memberIds.delete(user.id); // l'opérateur est traité à part (ADMIN)
-  await prisma.projectAccess.upsert({
-    where: { taskId_userId: { taskId: task.id, userId: user.id } },
-    update: { role: "ADMIN" },
-    create: { taskId: task.id, userId: user.id, role: "ADMIN" },
-  });
-  for (const uid of memberIds) {
-    await prisma.projectAccess.upsert({
-      where: { taskId_userId: { taskId: task.id, userId: uid } },
-      update: {},
-      create: { taskId: task.id, userId: uid, role: "MEMBER" },
+
+  // ATOMIQUE : le passage en projet RESTRICTED et l'amorçage des membres ne
+  // doivent pas pouvoir se dissocier. Sinon un échec survenant APRÈS l'update
+  // mais AVANT la fin du seed laisserait une tâche devenue projet restreint sans
+  // ses membres amorcés → les porteurs du sous-arbre (voire l'opérateur)
+  // perdraient l'accès, exactement ce que la feature doit empêcher. ensureFollow
+  // et logActivity utilisent le client global et restent après le commit ; les
+  // revalidatePath aussi (invalidations de cache, pas des écritures DB).
+  await prisma.$transaction(async (tx) => {
+    // La tâche devient un projet restreint, rangé en fin de liste des projets.
+    // On PRÉSERVE `createdById` (auteur d'origine de la tâche).
+    const position = await tx.task.count({
+      where: { workspaceId: task.workspaceId, parentId: null },
     });
-  }
-  // L'opérateur et les porteurs suivent le nouveau projet.
+    await tx.task.update({
+      where: { id: task.id },
+      data: { parentId: null, visibility: "RESTRICTED", position },
+    });
+    // L'ordre d'affichage personnel appartenait à l'ancienne fratrie.
+    await tx.taskOrder.deleteMany({ where: { taskId: task.id } });
+    // Opérateur ADMIN.
+    await tx.projectAccess.upsert({
+      where: { taskId_userId: { taskId: task.id, userId: user.id } },
+      update: { role: "ADMIN" },
+      create: { taskId: task.id, userId: user.id, role: "ADMIN" },
+    });
+    // Porteurs du sous-arbre MEMBER.
+    for (const uid of memberIds) {
+      await tx.projectAccess.upsert({
+        where: { taskId_userId: { taskId: task.id, userId: uid } },
+        update: {},
+        create: { taskId: task.id, userId: uid, role: "MEMBER" },
+      });
+    }
+  });
+
+  // L'opérateur et les porteurs suivent le nouveau projet (après le commit).
   await ensureFollow(user.id, task.id);
   for (const uid of assigneeIds) await ensureFollow(uid, task.id);
 
