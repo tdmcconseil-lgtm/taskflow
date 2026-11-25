@@ -59,6 +59,17 @@ export default async function ProjectMembersPage({
   // Membres de l'espace pas encore sur le projet (pour le formulaire d'ajout).
   const addable = members.filter((m) => !accessUserIds.has(m.user.id));
 
+  // Créateur du projet : il a accès de plein droit (règle « créateur ») même
+  // sans entrée ProjectAccess — cas d'un projet issu de la transformation d'une
+  // tâche, dont on préserve l'auteur d'origine. On l'affiche pour éviter toute
+  // incohérence « a accès mais absent de la liste ».
+  const creatorGhost = !accessUserIds.has(root.createdById)
+    ? await prisma.user.findUnique({
+        where: { id: root.createdById },
+        select: { ...ASSIGNEE_SELECT, email: true },
+      })
+    : null;
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -113,6 +124,21 @@ export default async function ProjectMembersPage({
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">{t.projectMembers.membersTitle}</h2>
         <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          {creatorGhost && (
+            <li className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 dark:bg-zinc-900">
+              <div className="flex min-w-0 items-center gap-3">
+                <UserAvatar user={toAssigneeInfo(creatorGhost)!} className="h-9 w-9" />
+                <div className="min-w-0">
+                  <p className="font-medium">{creatorGhost.name}</p>
+                  <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{creatorGhost.email}</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500">{t.projectMembers.creatorAccessNote}</p>
+                </div>
+              </div>
+              <span className="shrink-0 rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                {t.projectMembers.creator}
+              </span>
+            </li>
+          )}
           {access.map((a) => {
             const info = toAssigneeInfo(a.user)!;
             const isSelf = a.user.id === user.id;

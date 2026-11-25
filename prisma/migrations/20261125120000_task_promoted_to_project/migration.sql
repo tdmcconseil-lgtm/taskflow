@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TaskActivityType" ADD VALUE 'PROMOTED_TO_PROJECT';

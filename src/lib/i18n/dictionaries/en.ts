@@ -363,6 +363,7 @@ const en: Dictionary = {
     subscribed: "Subscribed",
     edit: "Edit",
     projectMembers: "Project members",
+    promoteToProject: "Turn into a project",
     unassigned: "Unassigned",
     noDescription: "No description.",
     prefixProject: "Project",
@@ -698,6 +699,8 @@ const en: Dictionary = {
   projectMembers: {
     title: "Project members",
     backToProject: "Back to project",
+    creator: "Creator",
+    creatorAccessNote: "Full access as the project creator.",
     membersTitle: "Members",
     roleAdmin: "Administrator",
     roleMember: "Member",
@@ -785,6 +788,8 @@ const en: Dictionary = {
     documentAdded: "added the document “{name}”",
     reparented: "moved this task: {from} → {to}",
     reparentedTo: "moved this task under {to}",
+    promotedToProject: "turned this task into a project: {from} → {to}",
+    promotedToProjectTo: "turned this task into the project {to}",
   },
 
   hierarchy: {
@@ -804,6 +809,25 @@ const en: Dictionary = {
     subtreeFollows: "Any subtasks move along with it.",
     confirmMove: "Move",
     moving: "Moving…",
+  },
+  promoteToProject: {
+    title: "Turn into a project",
+    intro:
+      "This task becomes a standalone project. Its subtasks follow and make up the new project. The people below become its members; you can add more afterwards.",
+    backToTask: "Back to the task",
+    alertTitle: "You're creating a new project",
+    alertBody:
+      "This task leaves the project “{project}” and becomes a standalone project, with its own members and its own access rules that you'll manage separately.",
+    membersTitle: "Members of the new project",
+    roleAdmin: "Admin",
+    roleMember: "Member",
+    warningTitle: "Note",
+    warningRestricted:
+      "People who could see these tasks only through the current project, without being responsible for them, will lose access once the project is separated.",
+    warningWorkspace:
+      "The current project is open to the whole workspace: after the change, only the people listed above will see these tasks. The other workspace members will lose that view.",
+    confirmButton: "Turn into a project",
+    confirming: "Converting…",
   },
   events: {
     title: "Events",
@@ -1185,6 +1209,9 @@ const en: Dictionary = {
     moveInvalid: "Move not allowed.",
     moveCrossProject: "Move not allowed: it would leave the project.",
     moveIntoDescendant: "A task cannot be attached under one of its own subtasks.",
+    alreadyProject: "This task is already a project.",
+    notFirstLevelTask: "Only a first-level task can be turned into a project.",
+    notProjectAdmin: "Only a project admin can turn one of its tasks into a project.",
     pseudoRequired: "The nickname must be at least 2 characters.",
     pseudoTooLong: "The nickname must not exceed 30 characters.",
     parentNotFound: "Parent task not found.",
