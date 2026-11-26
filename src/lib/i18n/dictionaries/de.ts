@@ -807,6 +807,7 @@ const de: Dictionary = {
       "Nur ein Projektadministrator kann diese Aufgabe in ein Projekt umwandeln",
     attach: "Unter eine andere Aufgabe hängen",
     attachShort: "Einhängen",
+    attachToProjectShort: "Zuordnen",
     attachNoSibling: "Keine gleichrangige Aufgabe verfügbar",
     attachPickSibling: "Einhängen unter…",
     confirmTitle: "In der Hierarchie verschieben",

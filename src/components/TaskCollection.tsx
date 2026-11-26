@@ -28,6 +28,7 @@ export function TaskCollection({
   workspaceId,
   reorderScope,
   canPromoteToProject,
+  manageableProjectIds,
   followedIds,
   newHint,
 }: {
@@ -49,6 +50,10 @@ export function TaskCollection({
   // niveau en projet (admin du projet / OWNER d'espace) ? Débloque le bouton
   // « Remonter » dans ce cas précis (sinon il reste indisponible).
   canPromoteToProject?: boolean;
+  // Sur une liste de PROJETS racine (espace) : identifiants des projets que
+  // l'utilisateur ADMINISTRE. Active, par ligne, l'action « Rattacher à un
+  // projet… » de l'éditeur de hiérarchie (gating par projet, cf. page espace).
+  manageableProjectIds?: string[];
   // Identifiants des tâches auxquelles l'utilisateur est abonné (œil 👁).
   followedIds?: Set<string>;
 }) {
@@ -171,6 +176,7 @@ export function TaskCollection({
           workspaceId={workspaceId}
           items={siblingItems()}
           canPromoteToProject={canPromoteToProject ?? false}
+          manageableProjectIds={manageableProjectIds}
         />
       ) : view === "arborescence" ? (
         <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">

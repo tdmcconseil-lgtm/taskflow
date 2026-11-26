@@ -807,6 +807,7 @@ const it: Dictionary = {
       "Solo un amministratore del progetto può trasformare questa attività in progetto",
     attach: "Agganciare sotto un'altra attività",
     attachShort: "Aggancia",
+    attachToProjectShort: "Collega",
     attachNoSibling: "Nessuna attività sorella disponibile",
     attachPickSibling: "Aggancia sotto…",
     confirmTitle: "Sposta nella gerarchia",

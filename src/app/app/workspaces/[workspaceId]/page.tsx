@@ -123,6 +123,23 @@ export default async function WorkspacePage({
     visibleRoots = roots.filter((r) => allowedIds.has(r.id));
   }
 
+  // Projets que l'utilisateur ADMINISTRE (canManageProject) parmi ceux visibles :
+  // sert à activer, par ligne, l'action « Rattacher » dans l'éditeur de hiérarchie.
+  // Contrairement à la promotion (un seul drapeau pour une fratrie homogène), ici
+  // l'utilisateur peut gérer certains projets de la liste et pas d'autres.
+  // canManageProject = OWNER de l'espace, ou entrée ProjectAccess rôle ADMIN.
+  const visibleRootIds = visibleRoots.map((r) => r.id);
+  let manageableProjectIds: string[];
+  if (membership.role === "OWNER") {
+    manageableProjectIds = visibleRootIds;
+  } else {
+    const adminAccess = await prisma.projectAccess.findMany({
+      where: { userId: user.id, role: "ADMIN", taskId: { in: visibleRootIds } },
+      select: { taskId: true },
+    });
+    manageableProjectIds = adminAccess.map((a) => a.taskId);
+  }
+
   const roleLabel = (r: "OWNER" | "ADMIN" | "MEMBER") =>
     r === "MEMBER" ? t.members.roleUser : t.members.roleAdmin;
 
@@ -144,6 +161,7 @@ export default async function WorkspacePage({
         grandParentId: null,
         grandParentTitle: null,
       }}
+      manageableProjectIds={manageableProjectIds}
       followedIds={followedIds}
       emptyLabel={t.task.noProjects}
     />

@@ -807,6 +807,7 @@ const es: Dictionary = {
       "Solo un administrador del proyecto puede convertir esta tarea en proyecto",
     attach: "Adjuntar bajo otra tarea",
     attachShort: "Adjuntar",
+    attachToProjectShort: "Adjuntar",
     attachNoSibling: "No hay ninguna tarea hermana disponible",
     attachPickSibling: "Adjuntar bajo…",
     confirmTitle: "Mover en la jerarquía",

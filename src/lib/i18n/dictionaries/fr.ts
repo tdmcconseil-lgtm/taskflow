@@ -827,6 +827,7 @@ const fr = {
       "Seul un administrateur du projet peut transformer cette tâche en projet",
     attach: "Rattacher sous une autre tâche",
     attachShort: "Rattacher",
+    attachToProjectShort: "Rattacher",
     attachNoSibling: "Aucune tâche sœur disponible",
     attachPickSibling: "Rattacher sous…",
     confirmTitle: "Déplacer dans la hiérarchie",
