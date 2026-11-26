@@ -4,9 +4,15 @@ import { getCurrentUser } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { PricingTable } from "@/components/PricingTable";
+import { ComparateurTable } from "@/components/ComparateurTable";
+import { LandingSubNav } from "@/components/LandingSubNav";
 import { buttonClass } from "@/components/Button";
 import { buildPageMetadata, buildUrl } from "@/lib/seo/urls";
 import { FREE_SEATS } from "@/lib/plans";
+
+// Ordre des colonnes concurrentes du comparateur (slugs = clés de
+// `t.comparatif.apps`). getRIDA est toujours la 1re colonne (figée).
+const COMPARE_APPS = ["asana", "monday", "trello", "notion", "clickup"] as const;
 
 // Metadata localisée de l'accueil (titre descriptif, description 120–155 car.,
 // openGraph, twitter, canonical) — construite via le helper SEO unique.
@@ -49,6 +55,27 @@ export default async function Home() {
     { q: t.landing.faq5Q, a: t.landing.faq5A.replace("{free}", String(FREE_SEATS)) },
   ];
 
+  // Comparateur intégré à l'accueil (section #comparatif). Mêmes données que
+  // l'ancienne route `/comparatif` : `t.comparatif.shared` (côté getRIDA +
+  // critères) et `t.comparatif.apps[*]` (valeurs concurrentes). Sérialisées
+  // pour le composant client partagé `ComparateurTable`.
+  const cmp = t.comparatif.shared;
+  const cmpOverview = t.comparatif.overview;
+  const compareApps = Object.fromEntries(
+    COMPARE_APPS.map((slug) => {
+      const app = t.comparatif.apps[slug];
+      return [slug, { name: app.name, cells: app.cells, adv: app.adv }];
+    }),
+  );
+
+  // Sous-navigation collante par thèmes (scroll-spy côté client).
+  const navItems = [
+    { id: "avantages", label: t.landing.nav.advantages },
+    { id: "comparatif", label: t.landing.nav.comparatif },
+    { id: "tarifs", label: t.landing.nav.pricing },
+    { id: "faq", label: t.landing.nav.faq },
+  ];
+
   // Données structurées (JSON-LD) : aide les moteurs à comprendre le produit et
   // l'éditeur. URLs via le helper SEO unique.
   const homeUrl = buildUrl("/");
@@ -73,36 +100,46 @@ export default async function Home() {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
+    // `overflow-y-auto` + `h-full` : l'accueil défile DANS ce conteneur (et non
+    // sur le document). Indispensable pour que l'en-tête + la sous-nav restent
+    // réellement collants : `<body>` a une hauteur fixe (globals `height:100%`),
+    // donc un simple `position: sticky` accroché au document se décrocherait au
+    // bout d'un écran. Le scroll interne rend le `sticky top-0` fiable, et le
+    // `scroll-mt-*` des sections compense la hauteur en-tête + sous-nav.
+    <div className="flex h-full flex-1 flex-col overflow-y-auto scroll-smooth motion-reduce:scroll-auto">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* En-tête collant */}
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
-            {t.common.appName}
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LocaleSwitcher />
-            {isAuthed ? (
-              <Link href="/app" className={buttonClass("primary", "md")}>
-                {t.landing.openApp}
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="hidden text-sm font-medium text-zinc-600 hover:text-zinc-900 sm:inline dark:text-zinc-300 dark:hover:text-white">
-                  {t.landing.signIn}
+      {/* En-tête + sous-nav collants (un seul conteneur sticky : la sous-nav
+          reste accrochée juste sous l'en-tête quand on défile). */}
+      <div className="sticky top-0 z-20">
+        <header className="border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+            <Link href="/" className="text-lg font-semibold tracking-tight">
+              {t.common.appName}
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LocaleSwitcher />
+              {isAuthed ? (
+                <Link href="/app" className={buttonClass("primary", "md")}>
+                  {t.landing.openApp}
                 </Link>
-                <Link href="/signup" className={buttonClass("primary", "md")}>
-                  {t.landing.signUp}
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link href="/login" className="hidden text-sm font-medium text-zinc-600 hover:text-zinc-900 sm:inline dark:text-zinc-300 dark:hover:text-white">
+                    {t.landing.signIn}
+                  </Link>
+                  <Link href="/signup" className={buttonClass("primary", "md")}>
+                    {t.landing.signUp}
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+        <LandingSubNav items={navItems} />
+      </div>
 
       <main className="flex-1">
         {/* Hero */}
@@ -143,7 +180,7 @@ export default async function Home() {
         </section>
 
         {/* Avantages */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
+        <section id="avantages" className="mx-auto w-full max-w-6xl scroll-mt-28 px-4 py-14 sm:px-6">
           <h2 className="text-center text-2xl font-semibold tracking-tight">
             {t.landing.advantagesTitle}
           </h2>
@@ -160,18 +197,36 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Lien contextuel vers le comparateur (maillage interne SEO) */}
-        <div className="mx-auto w-full max-w-6xl px-4 pb-2 text-center sm:px-6">
-          <Link
-            href="/comparatif"
-            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-          >
-            {t.landing.compareCta} →
-          </Link>
-        </div>
+        {/* Comparatif intégré (ancien `/comparatif`, désormais sur l'accueil) :
+            courte intro + tableau interactif complet (sélecteur conservé). */}
+        <section id="comparatif" className="mx-auto w-full max-w-6xl scroll-mt-28 px-4 py-14 sm:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+              {cmp.eyebrow}
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">{cmpOverview.tableTitle}</h2>
+            <p className="mx-auto mt-3 text-zinc-600 dark:text-zinc-400">{cmpOverview.heroSub}</p>
+          </div>
+          <div className="mt-10">
+            <ComparateurTable
+              rows={cmp.rows.map((row) => ({ key: row.key, label: row.label, getrida: row.getrida }))}
+              apps={compareApps}
+              order={[...COMPARE_APPS]}
+              labels={{
+                getrida: "getRIDA",
+                criterion: cmp.colCriterion,
+                selectorLabel: cmpOverview.selector.label,
+                slot2: cmpOverview.selector.slot2,
+                slot3: cmpOverview.selector.slot3,
+                winBadge: cmpOverview.winBadge,
+                winLegend: cmpOverview.winLegend,
+              }}
+            />
+          </div>
+        </section>
 
-        {/* Offres */}
-        <section className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
+        {/* Offres / Tarifs */}
+        <section id="tarifs" className="mx-auto w-full max-w-5xl scroll-mt-28 px-4 py-14 sm:px-6">
           <div className="text-center">
             <h2 className="text-2xl font-semibold tracking-tight">{t.landing.offersTitle}</h2>
             <p className="mx-auto mt-3 max-w-xl text-zinc-600 dark:text-zinc-400">
@@ -184,7 +239,7 @@ export default async function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-6">
+        <section id="faq" className="mx-auto w-full max-w-3xl scroll-mt-28 px-4 py-14 sm:px-6">
           <h2 className="text-center text-2xl font-semibold tracking-tight">{t.landing.faqTitle}</h2>
           <div className="mt-8 divide-y divide-zinc-200 overflow-hidden rounded-2xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
             {faqs.map((f) => (
@@ -201,7 +256,7 @@ export default async function Home() {
 
         {/* Appel final */}
         {!isAuthed && (
-          <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
+          <section id="commencer" className="mx-auto w-full max-w-6xl scroll-mt-28 px-4 py-14 sm:px-6">
             <div className="rounded-3xl border border-indigo-200 bg-indigo-50 px-6 py-12 text-center dark:border-indigo-900 dark:bg-indigo-950/30">
               <h2 className="text-2xl font-semibold tracking-tight">{t.landing.finalTitle}</h2>
               <p className="mt-3 text-zinc-600 dark:text-zinc-300">{t.landing.finalSubtitle}</p>
@@ -230,9 +285,9 @@ export default async function Home() {
             >
               {isAuthed ? t.landing.openApp : t.landing.signIn}
             </Link>
-            <Link href="/comparatif" className="hover:text-zinc-900 dark:hover:text-white">
+            <a href="#comparatif" className="hover:text-zinc-900 dark:hover:text-white">
               {t.landing.footerCompare}
-            </Link>
+            </a>
             <Link href="/" className="hover:text-zinc-900 dark:hover:text-white">
               {t.landing.footerLegal}
             </Link>

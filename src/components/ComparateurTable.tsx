@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 // Comparateur interactif : getRIDA est TOUJOURS la 1re colonne (figée) ; un
 // sélecteur en tête choisit les 2 autres outils affichés côte à côte. Le
@@ -108,9 +107,7 @@ export function ComparateurTable({ rows, apps, order, labels }: Props) {
               </th>
               {shown.map((slug) => (
                 <th key={slug} className="w-1/3 px-4 py-3 font-semibold">
-                  <Link href={`/comparatif/${slug}`} className="underline-offset-2 hover:underline">
-                    {apps[slug].name}
-                  </Link>
+                  {apps[slug].name}
                 </th>
               ))}
             </tr>

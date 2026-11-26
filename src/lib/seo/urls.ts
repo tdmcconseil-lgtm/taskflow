@@ -71,12 +71,10 @@ export type PublicRoute = {
 // consomment. En voie B, on multipliera chaque entrée par `locales`.
 export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   { path: "/", seoKey: "home", changeFrequency: "weekly", priority: 1, inSitemap: true },
-  { path: "/comparatif", seoKey: "comparateur", changeFrequency: "monthly", priority: 0.9, inSitemap: true },
-  { path: "/comparatif/asana", seoKey: "comparatifAsana", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
-  { path: "/comparatif/monday", seoKey: "comparatifMonday", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
-  { path: "/comparatif/trello", seoKey: "comparatifTrello", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
-  { path: "/comparatif/notion", seoKey: "comparatifNotion", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
-  { path: "/comparatif/clickup", seoKey: "comparatifClickup", changeFrequency: "monthly", priority: 0.8, inSitemap: true },
+  // Le comparatif est désormais INTÉGRÉ à l'accueil (section #comparatif) : plus
+  // de route `/comparatif` ni de fiches `/comparatif/<app>` → retirées du
+  // sitemap. Pas de redirection 301 (site encore non indexé). Les clés de dict
+  // `t.comparatif.*` / `seo.pages.comparateur` restent (servies par le tableau).
   { path: "/login", seoKey: "login", changeFrequency: "monthly", priority: 0.3, inSitemap: true },
   { path: "/signup", seoKey: "signup", changeFrequency: "monthly", priority: 0.5, inSitemap: true },
 ] as const;
