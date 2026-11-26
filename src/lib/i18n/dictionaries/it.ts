@@ -363,6 +363,7 @@ const it: Dictionary = {
     subscribed: "Iscritto",
     edit: "Modifica",
     projectMembers: "Membri del progetto",
+    attachToProject: "Collega a un progetto…",
     unassigned: "Non assegnata",
     noDescription: "Nessuna descrizione.",
     prefixProject: "Progetto",
@@ -789,6 +790,8 @@ const it: Dictionary = {
     reparentedTo: "ha spostato questa attività sotto {to}",
     promotedToProject: "ha trasformato questa attività in un progetto: {from} → {to}",
     promotedToProjectTo: "ha trasformato questa attività nel progetto {to}",
+    attachedToProject: "ha collegato questo progetto sotto un altro: {from} → {to}",
+    attachedToProjectTo: "ha collegato questo progetto sotto {to}",
   },
 
   hierarchy: {
@@ -829,6 +832,42 @@ const it: Dictionary = {
       "Il progetto attuale è aperto a tutto lo spazio: dopo la trasformazione, solo le persone elencate sopra vedranno queste attività. Gli altri membri dello spazio ne perderanno la vista.",
     confirmButton: "Trasforma in progetto",
     confirming: "Trasformazione…",
+  },
+  attachToProject: {
+    title: "Collega questo progetto sotto un altro progetto",
+    backToProject: "Torna al progetto",
+    intro:
+      "«{source}» diventerà una parte di «{target}». Il suo accesso non dipenderà più dai propri membri, ma da quelli del progetto di destinazione.",
+    pickIntro:
+      "Scegli il progetto sotto cui collegare «{project}». Vengono mostrati solo i progetti che amministri in questo spazio.",
+    pickEmpty:
+      "Nessun progetto di destinazione disponibile: devi essere amministratore di un altro progetto di questo spazio.",
+    pickSelect: "Scegli",
+    targetLabel: "Progetto di destinazione",
+    changeTarget: "Cambia progetto di destinazione",
+    workspaceNoticeTitle: "Da notare",
+    workspaceNoticeBody:
+      "«{source}» era aperto a tutto lo spazio. Dopo il collegamento non lo è più: segue ora l'accesso di «{target}».",
+    blockersTitle: "Collegamento bloccato: alcune persone perderebbero l'accesso",
+    blockersBody:
+      "Le persone seguenti hanno accesso a «{source}» (responsabili, membri o creatore) ma non a «{target}». Il collegamento toglierebbe loro l'accesso. Aggiungile prima a «{target}», oppure rimuovile da «{source}», poi riprova.",
+    blockerReason: "senza accesso a «{target}»",
+    exposureTitle: "Il team del progetto di destinazione scoprirà questo progetto",
+    exposureBody:
+      "Collegando «{source}» sotto «{target}», le persone seguenti — che hanno accesso a «{target}» ma non ancora a «{source}» — vedranno ora tutto il suo contenuto.",
+    exposureEmpty:
+      "Nessuno di nuovo otterrà l'accesso: il team del progetto di destinazione ha già accesso a questo progetto.",
+    confirmButton: "Collega questo progetto",
+    confirming: "Collegamento…",
+    blockedHint: "Pulsante disattivato finché ci sono persone che perderebbero l'accesso.",
+    errNotAProject: "Solo un progetto (attività radice) può essere collegato sotto un altro progetto.",
+    errTargetNotProject: "Il progetto di destinazione non è stato trovato o non è un progetto.",
+    errCycle: "Impossibile collegare un progetto sotto sé stesso.",
+    errCrossWorkspace: "Entrambi i progetti devono appartenere allo stesso spazio di lavoro.",
+    errNotProjectAdmin:
+      "Devi essere amministratore del progetto di origine e del progetto di destinazione.",
+    errBlocked:
+      "Collegamento impossibile: alcune persone perderebbero l'accesso. Risolvi i blocchi e riprova.",
   },
   events: {
     title: "Eventi",

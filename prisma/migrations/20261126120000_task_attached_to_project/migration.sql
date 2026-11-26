@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TaskActivityType" ADD VALUE 'ATTACHED_TO_PROJECT';

@@ -382,6 +382,7 @@ const fr = {
     subscribed: "Abonné",
     edit: "Modifier",
     projectMembers: "Membres du projet",
+    attachToProject: "Rattacher à un projet…",
     unassigned: "Non assignée",
     noDescription: "Aucune description.",
     prefixProject: "Projet",
@@ -809,6 +810,8 @@ const fr = {
     reparentedTo: "a déplacé cette tâche sous {to}",
     promotedToProject: "a transformé cette tâche en projet : {from} → {to}",
     promotedToProjectTo: "a transformé cette tâche en projet {to}",
+    attachedToProject: "a rattaché ce projet sous un autre : {from} → {to}",
+    attachedToProjectTo: "a rattaché ce projet sous {to}",
   },
 
   hierarchy: {
@@ -849,6 +852,45 @@ const fr = {
       "Le projet actuel est ouvert à tout l'espace : après transformation, seules les personnes listées ci-dessus verront ces tâches. Les autres membres de l'espace en perdront la vue.",
     confirmButton: "Transformer en projet",
     confirming: "Transformation…",
+  },
+  attachToProject: {
+    title: "Rattacher ce projet sous un autre projet",
+    backToProject: "Retour au projet",
+    intro:
+      "« {source} » deviendra une sous-partie de « {target} ». Son accès ne dépendra plus de ses propres membres, mais de ceux du projet d'accueil.",
+    // Sélecteur du projet d'accueil
+    pickIntro:
+      "Choisissez le projet sous lequel rattacher « {project} ». Seuls les projets que vous administrez dans cet espace sont proposés.",
+    pickEmpty:
+      "Aucun projet d'accueil disponible : vous devez être administrateur d'un autre projet de cet espace.",
+    pickSelect: "Choisir",
+    // Confirmation
+    targetLabel: "Projet d'accueil",
+    changeTarget: "Changer de projet d'accueil",
+    workspaceNoticeTitle: "À noter",
+    workspaceNoticeBody:
+      "« {source} » était ouvert à tout l'espace. Après rattachement, il ne l'est plus : il suit désormais l'accès de « {target} ».",
+    blockersTitle: "Rattachement bloqué : des personnes perdraient l'accès",
+    blockersBody:
+      "Les personnes ci-dessous ont accès à « {source} » (responsables, membres ou créateur) mais pas à « {target} ». Le rattachement leur retirerait l'accès. Ajoutez-les d'abord à « {target} », ou retirez-les de « {source} », puis réessayez.",
+    blockerReason: "sans accès à « {target} »",
+    exposureTitle: "L'équipe du projet d'accueil va découvrir ce projet",
+    exposureBody:
+      "En rattachant « {source} » sous « {target} », les personnes ci-dessous — qui ont accès à « {target} » mais pas encore à « {source} » — verront désormais tout son contenu.",
+    exposureEmpty:
+      "Personne de nouveau n'y gagnera l'accès : l'équipe du projet d'accueil a déjà accès à ce projet.",
+    confirmButton: "Rattacher ce projet",
+    confirming: "Rattachement…",
+    blockedHint: "Bouton désactivé tant qu'il reste des personnes qui perdraient l'accès.",
+    // Erreurs de l'action
+    errNotAProject: "Seul un projet (tâche racine) peut être rattaché sous un autre projet.",
+    errTargetNotProject: "Le projet d'accueil est introuvable ou n'est pas un projet.",
+    errCycle: "Impossible de rattacher un projet sous lui-même.",
+    errCrossWorkspace: "Les deux projets doivent appartenir au même espace de travail.",
+    errNotProjectAdmin:
+      "Vous devez être administrateur du projet d'origine et du projet d'accueil.",
+    errBlocked:
+      "Rattachement impossible : des personnes perdraient l'accès. Résolvez les blocages puis réessayez.",
   },
   events: {
     title: "Événements",
