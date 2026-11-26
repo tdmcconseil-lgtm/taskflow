@@ -139,7 +139,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
 
   const nav = (
     <>
-      <Link href="/app" className="mb-6 block text-lg font-semibold tracking-tight">
+      <Link href="/" className="mb-6 block text-lg font-semibold tracking-tight">
         {t.common.appName}
       </Link>
 
@@ -205,7 +205,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
           <div className="flex items-center gap-2">
             {/* Menu en tiroir (mobile) : reprend la même navigation */}
             <MobileDrawer>{nav}</MobileDrawer>
-            <Link href="/app" className="text-sm font-semibold md:hidden">
+            <Link href="/" className="text-sm font-semibold md:hidden">
               {t.common.appName}
             </Link>
           </div>

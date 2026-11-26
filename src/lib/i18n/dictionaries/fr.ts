@@ -1149,7 +1149,7 @@ const fr = {
     unitNote: "Prix unitaire : {price} par utilisateur et par mois.",
   },
   landing: {
-    signIn: "Se connecter",
+    signIn: "Accès à mon compte",
     signUp: "S'inscrire",
     openApp: "Ouvrir mon espace",
     heroTitle: "Votre outil collaboratif de gestion de projet",
