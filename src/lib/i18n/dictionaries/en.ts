@@ -807,6 +807,7 @@ const en: Dictionary = {
       "Only a project admin can turn this task into a project",
     attach: "Attach under another task",
     attachShort: "Attach",
+    attachToProjectShort: "Attach",
     attachNoSibling: "No sibling task available",
     attachPickSibling: "Attach under…",
     confirmTitle: "Move in the hierarchy",

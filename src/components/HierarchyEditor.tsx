@@ -33,6 +33,7 @@ export function HierarchyEditor({
   workspaceId,
   items,
   canPromoteToProject = false,
+  manageableProjectIds,
 }: {
   scope: HierarchyScope;
   workspaceId: string;
@@ -42,6 +43,11 @@ export function HierarchyEditor({
   // Ce drapeau (admin du projet source / OWNER) autorise cette promotion ;
   // sinon le bouton reste indisponible, comme avant.
   canPromoteToProject?: boolean;
+  // Sur une liste de PROJETS racine (espace) : identifiants des projets que
+  // l'utilisateur administre. Un bouton « Rattacher à un projet… » (symétrique
+  // du « ↰ Remonter » de la promotion) les mène vers l'écran dédié /attach ;
+  // affiché seulement pour ces projets (backstop = action serveur gardée).
+  manageableProjectIds?: string[];
 }) {
   const dict = useT();
   const h = dict.hierarchy;
@@ -49,6 +55,9 @@ export function HierarchyEditor({
   const { parentId, parentTitle, grandParentId, grandParentTitle } = scope;
 
   const isProjectList = parentId === null;
+  // Projets (racine) que l'utilisateur administre : seuls ceux-là reçoivent
+  // l'entrée « Rattacher à un projet… » dans l'éditeur de hiérarchie de l'espace.
+  const manageableSet = new Set(manageableProjectIds ?? []);
   // « Remonter » sur une tâche de 1er niveau (sa mère est un projet racine, donc
   // grandParentId null) = PROMOTION en projet, écran de confirmation dédié
   // /promote (alerte « vous créez un nouveau projet »). Pour une tâche plus
@@ -208,6 +217,19 @@ export function HierarchyEditor({
 
               <div className="flex shrink-0 items-center gap-1">
                 <PriorityBadge priority={t.priority} />
+                {/* Projet racine administré : entrée vers le rattachement sous un
+                    autre projet (écran dédié /attach, sélecteur + confirmation).
+                    Symétrique du « ↰ Remonter » de la promotion. */}
+                {isProjectList && manageableSet.has(t.id) && (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/app/tasks/${t.id}/attach`)}
+                    title={dict.task.attachToProject}
+                    className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  >
+                    ↳ {h.attachToProjectShort}
+                  </button>
+                )}
                 {!isProjectList && (
                   <>
                     <button
