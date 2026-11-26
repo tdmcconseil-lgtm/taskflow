@@ -1126,7 +1126,7 @@ const de: Dictionary = {
     unitNote: "Stückpreis: {price} pro Nutzer und Monat.",
   },
   landing: {
-    signIn: "Anmelden",
+    signIn: "Zu meinem Konto",
     signUp: "Registrieren",
     openApp: "Meinen Arbeitsbereich öffnen",
     heroTitle: "Dein kollaboratives Projektmanagement-Tool",
