@@ -363,6 +363,7 @@ const en: Dictionary = {
     subscribed: "Subscribed",
     edit: "Edit",
     projectMembers: "Project members",
+    attachToProject: "Attach to a project…",
     unassigned: "Unassigned",
     noDescription: "No description.",
     prefixProject: "Project",
@@ -789,6 +790,8 @@ const en: Dictionary = {
     reparentedTo: "moved this task under {to}",
     promotedToProject: "turned this task into a project: {from} → {to}",
     promotedToProjectTo: "turned this task into the project {to}",
+    attachedToProject: "attached this project under another: {from} → {to}",
+    attachedToProjectTo: "attached this project under {to}",
   },
 
   hierarchy: {
@@ -829,6 +832,42 @@ const en: Dictionary = {
       "The current project is open to the whole workspace: after the change, only the people listed above will see these tasks. The other workspace members will lose that view.",
     confirmButton: "Turn into a project",
     confirming: "Converting…",
+  },
+  attachToProject: {
+    title: "Attach this project under another project",
+    backToProject: "Back to the project",
+    intro:
+      "“{source}” will become a part of “{target}”. Its access will no longer depend on its own members, but on those of the host project.",
+    pickIntro:
+      "Choose the project to attach “{project}” under. Only projects you administer in this workspace are listed.",
+    pickEmpty:
+      "No host project available: you must be an administrator of another project in this workspace.",
+    pickSelect: "Choose",
+    targetLabel: "Host project",
+    changeTarget: "Change host project",
+    workspaceNoticeTitle: "Note",
+    workspaceNoticeBody:
+      "“{source}” was open to the whole workspace. After attaching, it no longer is: it now follows the access of “{target}”.",
+    blockersTitle: "Attachment blocked: some people would lose access",
+    blockersBody:
+      "The people below have access to “{source}” (owners, members or creator) but not to “{target}”. Attaching would remove their access. Add them to “{target}” first, or remove them from “{source}”, then try again.",
+    blockerReason: "no access to “{target}”",
+    exposureTitle: "The host project’s team will discover this project",
+    exposureBody:
+      "By attaching “{source}” under “{target}”, the people below — who have access to “{target}” but not yet to “{source}” — will now see all of its content.",
+    exposureEmpty:
+      "No one new will gain access: the host project’s team already has access to this project.",
+    confirmButton: "Attach this project",
+    confirming: "Attaching…",
+    blockedHint: "Button disabled while some people would still lose access.",
+    errNotAProject: "Only a project (root task) can be attached under another project.",
+    errTargetNotProject: "The host project cannot be found or is not a project.",
+    errCycle: "A project cannot be attached under itself.",
+    errCrossWorkspace: "Both projects must belong to the same workspace.",
+    errNotProjectAdmin:
+      "You must be an administrator of both the source and the host project.",
+    errBlocked:
+      "Attachment not possible: some people would lose access. Resolve the blockers and try again.",
   },
   events: {
     title: "Events",

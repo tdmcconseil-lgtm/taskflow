@@ -363,6 +363,7 @@ const de: Dictionary = {
     subscribed: "Abonniert",
     edit: "Bearbeiten",
     projectMembers: "Projektmitglieder",
+    attachToProject: "Einem Projekt zuordnen…",
     unassigned: "Nicht zugewiesen",
     noDescription: "Keine Beschreibung.",
     prefixProject: "Projekt",
@@ -789,6 +790,8 @@ const de: Dictionary = {
     reparentedTo: "hat diese Aufgabe unter {to} verschoben",
     promotedToProject: "hat diese Aufgabe in ein Projekt umgewandelt: {from} → {to}",
     promotedToProjectTo: "hat diese Aufgabe in das Projekt {to} umgewandelt",
+    attachedToProject: "hat dieses Projekt einem anderen untergeordnet: {from} → {to}",
+    attachedToProjectTo: "hat dieses Projekt {to} untergeordnet",
   },
 
   hierarchy: {
@@ -829,6 +832,42 @@ const de: Dictionary = {
       "Das aktuelle Projekt ist für den gesamten Arbeitsbereich offen: Nach der Umwandlung sehen nur die oben aufgeführten Personen diese Aufgaben. Die übrigen Mitglieder des Arbeitsbereichs verlieren diese Sicht.",
     confirmButton: "In ein Projekt umwandeln",
     confirming: "Wird umgewandelt…",
+  },
+  attachToProject: {
+    title: "Dieses Projekt einem anderen Projekt unterordnen",
+    backToProject: "Zurück zum Projekt",
+    intro:
+      "„{source}“ wird Teil von „{target}“. Der Zugriff hängt dann nicht mehr von den eigenen Mitgliedern ab, sondern von denen des Zielprojekts.",
+    pickIntro:
+      "Wählen Sie das Projekt, unter dem „{project}“ eingeordnet werden soll. Es werden nur Projekte angezeigt, die Sie in diesem Arbeitsbereich verwalten.",
+    pickEmpty:
+      "Kein Zielprojekt verfügbar: Sie müssen Administrator eines anderen Projekts in diesem Arbeitsbereich sein.",
+    pickSelect: "Auswählen",
+    targetLabel: "Zielprojekt",
+    changeTarget: "Zielprojekt ändern",
+    workspaceNoticeTitle: "Hinweis",
+    workspaceNoticeBody:
+      "„{source}“ war für den gesamten Arbeitsbereich offen. Nach der Zuordnung ist es das nicht mehr: Es folgt nun dem Zugriff von „{target}“.",
+    blockersTitle: "Zuordnung blockiert: Einige Personen würden den Zugriff verlieren",
+    blockersBody:
+      "Die folgenden Personen haben Zugriff auf „{source}“ (Verantwortliche, Mitglieder oder Ersteller), aber nicht auf „{target}“. Die Zuordnung würde ihnen den Zugriff entziehen. Fügen Sie sie zuerst zu „{target}“ hinzu oder entfernen Sie sie aus „{source}“ und versuchen Sie es erneut.",
+    blockerReason: "kein Zugriff auf „{target}“",
+    exposureTitle: "Das Team des Zielprojekts wird dieses Projekt entdecken",
+    exposureBody:
+      "Durch die Zuordnung von „{source}“ unter „{target}“ sehen die folgenden Personen — die Zugriff auf „{target}“, aber noch nicht auf „{source}“ haben — nun dessen gesamten Inhalt.",
+    exposureEmpty:
+      "Niemand erhält neuen Zugriff: Das Team des Zielprojekts hat bereits Zugriff auf dieses Projekt.",
+    confirmButton: "Dieses Projekt zuordnen",
+    confirming: "Wird zugeordnet…",
+    blockedHint: "Schaltfläche deaktiviert, solange Personen den Zugriff verlieren würden.",
+    errNotAProject: "Nur ein Projekt (Wurzelaufgabe) kann einem anderen Projekt untergeordnet werden.",
+    errTargetNotProject: "Das Zielprojekt wurde nicht gefunden oder ist kein Projekt.",
+    errCycle: "Ein Projekt kann sich nicht selbst untergeordnet werden.",
+    errCrossWorkspace: "Beide Projekte müssen zum selben Arbeitsbereich gehören.",
+    errNotProjectAdmin:
+      "Sie müssen Administrator des Ausgangs- und des Zielprojekts sein.",
+    errBlocked:
+      "Zuordnung nicht möglich: Einige Personen würden den Zugriff verlieren. Beheben Sie die Blockaden und versuchen Sie es erneut.",
   },
   events: {
     title: "Ereignisse",

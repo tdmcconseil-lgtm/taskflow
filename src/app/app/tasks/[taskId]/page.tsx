@@ -377,6 +377,13 @@ export default async function TaskDetailPage({
               {t.task.projectMembers}
             </ButtonLink>
           )}
+          {/* Rattacher ce projet sous un autre projet (le démoter en sous-tâche).
+              Réservé à un admin du projet (même garde que « Membres »). */}
+          {canManageMembers && (
+            <ButtonLink href={`/app/tasks/${task.id}/attach`} variant="secondary">
+              {t.task.attachToProject}
+            </ButtonLink>
+          )}
           <ButtonLink href={`${detailHref}?edit=1`} variant="primary" shortcutKey="e" title={`${t.task.edit} · E`}>
             {t.task.edit}
           </ButtonLink>

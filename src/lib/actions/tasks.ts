@@ -10,6 +10,7 @@ import { getDictionary, zodError } from "@/lib/i18n/server";
 import { ensureFollow } from "@/lib/follow";
 import { logActivity } from "@/lib/activity";
 import { formatDate } from "@/lib/labels";
+import { computeAttachImpact } from "@/lib/attach-impact";
 
 export type FormState = { error?: string } | undefined;
 
@@ -635,6 +636,119 @@ export async function promoteTaskToProject(taskId: string): Promise<PromoteToPro
   revalidatePath(`/app/tasks/${task.id}`);
   revalidatePath(`/app/tasks/${parentProject.id}`);
   revalidatePath(`/app/workspaces/${task.workspaceId}`);
+  return { ok: true };
+}
+
+// Résultat d'un rattachement de projet : succès, ou message d'erreur (déjà
+// traduit) à afficher dans la confirmation.
+export type AttachToProjectResult = { ok: true } | { error: string };
+
+// Rattache un PROJET RACINE `projectId` (P) comme enfant de 1er niveau sous un
+// autre PROJET RACINE `targetProjectId` (Q) du MÊME espace. C'est l'inverse exact
+// de promoteTaskToProject : P (parentId null) est DÉMOTÉ en sous-tâche de Q.
+//
+// Après rattachement, la racine de P devient Q : la visibility et les
+// ProjectAccess de P deviennent inertes, l'accès à P et à tout son contenu vient
+// désormais de Q. Garde-fous (décisions validées) :
+//  - Autorisation : l'opérateur doit être ADMIN de P ET de Q.
+//  - BLOCAGE DUR : si un seul ayant-droit explicite de P (porteurs du sous-arbre
+//    ∪ membres ProjectAccess ∪ créateur) n'a pas accès à Q, on N'ÉCRIT RIEN et on
+//    renvoie une erreur. L'opérateur doit « nettoyer avant » (ajouter ces
+//    personnes à Q, ou les retirer de P) puis réessayer. La page de confirmation
+//    affiche la liste nominative et désactive le bouton ; ce contrôle serveur est
+//    la défense de dernier ressort (l'action est atteignable par POST direct).
+//  - L'exposition inverse (l'équipe de Q découvre P) est NON bloquante (alertée
+//    côté UI uniquement).
+export async function attachProjectToProject(
+  projectId: string,
+  targetProjectId: string,
+): Promise<AttachToProjectResult> {
+  const user = await requireUser();
+  const t = await getDictionary();
+  const a = t.attachToProject;
+
+  // --- Projet source P : doit être une tâche racine (un projet). ---
+  const source = await prisma.task.findUnique({
+    where: { id: projectId },
+    select: {
+      id: true,
+      title: true,
+      workspaceId: true,
+      parentId: true,
+      createdById: true,
+      visibility: true,
+    },
+  });
+  if (!source) return { error: t.errors.taskNotFound };
+  if (!(await getMembership(user.id, source.workspaceId))) return { error: t.errors.accessDenied };
+  if (source.parentId !== null) return { error: a.errNotAProject };
+
+  // --- Projet d'accueil Q : doit lui aussi être une tâche racine. ---
+  const target = await prisma.task.findUnique({
+    where: { id: targetProjectId },
+    select: {
+      id: true,
+      title: true,
+      workspaceId: true,
+      parentId: true,
+      createdById: true,
+      visibility: true,
+    },
+  });
+  if (!target || target.parentId !== null) return { error: a.errTargetNotProject };
+
+  // Anti-cycle : Q ne doit pas être P. P et Q étant deux racines distinctes,
+  // aucune ne peut être descendante de l'autre ; le seul cas de cycle est Q = P.
+  if (target.id === source.id) return { error: a.errCycle };
+
+  // Même espace uniquement.
+  if (target.workspaceId !== source.workspaceId) return { error: a.errCrossWorkspace };
+
+  // Autorisation : ADMIN des DEUX projets (OWNER de l'espace y compris).
+  const [canManageSource, canManageTarget] = await Promise.all([
+    canManageProject(user.id, source),
+    canManageProject(user.id, target),
+  ]);
+  if (!canManageSource || !canManageTarget) return { error: a.errNotProjectAdmin };
+
+  // BLOCAGE DUR : recalcul serveur de l'impact ; si un ayant-droit explicite de P
+  // n'a pas accès à Q, on refuse sans rien écrire.
+  const impact = await computeAttachImpact(source, target);
+  if (impact.blockers.length > 0) return { error: a.errBlocked };
+
+  // ATOMIQUE : la démotion de P et le nettoyage de ses ProjectAccess (devenus
+  // inertes) ne doivent pas pouvoir se dissocier. Un échec entre les deux
+  // laisserait P rattaché sous Q tout en gardant des ProjectAccess fantômes.
+  await prisma.$transaction(async (tx) => {
+    // P devient enfant de 1er niveau de Q, en dernière position.
+    const position = await tx.task.count({ where: { parentId: target.id } });
+    await tx.task.update({
+      where: { id: source.id },
+      data: { parentId: target.id, position },
+    });
+    // Les ProjectAccess de P deviennent inertes (l'accès vient de Q) : on les
+    // supprime pour éviter des entrées fantômes (D7).
+    await tx.projectAccess.deleteMany({ where: { taskId: source.id } });
+    // P n'est plus une racine : son ordre d'affichage personnel (fratrie des
+    // projets de l'espace) n'a plus lieu d'être.
+    await tx.taskOrder.deleteMany({ where: { taskId: source.id } });
+  });
+
+  // Après le commit : l'opérateur suit P, et on journalise le rattachement.
+  await ensureFollow(user.id, source.id);
+  await logActivity({
+    taskId: source.id,
+    actorId: user.id,
+    type: "ATTACHED_TO_PROJECT",
+    fromValue: source.title,
+    toValue: target.title,
+  });
+
+  revalidatePath("/app");
+  revalidatePath("/app", "layout");
+  revalidatePath(`/app/tasks/${source.id}`);
+  revalidatePath(`/app/tasks/${target.id}`);
+  revalidatePath(`/app/workspaces/${source.workspaceId}`);
   return { ok: true };
 }
 

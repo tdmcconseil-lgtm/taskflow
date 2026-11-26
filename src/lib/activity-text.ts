@@ -45,6 +45,11 @@ export function describeActivity(a: ActivityCore, t: Dictionary): string {
         return act.promotedToProject.replace("{from}", a.fromValue).replace("{to}", a.toValue);
       if (a.toValue) return act.promotedToProjectTo.replace("{to}", a.toValue);
       return act.modified;
+    case "ATTACHED_TO_PROJECT":
+      if (a.fromValue && a.toValue)
+        return act.attachedToProject.replace("{from}", a.fromValue).replace("{to}", a.toValue);
+      if (a.toValue) return act.attachedToProjectTo.replace("{to}", a.toValue);
+      return act.modified;
     case "COMMENT_ADDED":
       return act.commentAdded;
     case "MENTIONED":

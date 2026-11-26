@@ -363,6 +363,7 @@ const es: Dictionary = {
     subscribed: "Suscrito",
     edit: "Editar",
     projectMembers: "Miembros del proyecto",
+    attachToProject: "Adjuntar a un proyecto…",
     unassigned: "Sin asignar",
     noDescription: "Sin descripción.",
     prefixProject: "Proyecto",
@@ -789,6 +790,8 @@ const es: Dictionary = {
     reparentedTo: "movió esta tarea bajo {to}",
     promotedToProject: "convirtió esta tarea en un proyecto: {from} → {to}",
     promotedToProjectTo: "convirtió esta tarea en el proyecto {to}",
+    attachedToProject: "adjuntó este proyecto bajo otro: {from} → {to}",
+    attachedToProjectTo: "adjuntó este proyecto bajo {to}",
   },
 
   hierarchy: {
@@ -829,6 +832,42 @@ const es: Dictionary = {
       "El proyecto actual está abierto a todo el espacio: tras la conversión, solo las personas indicadas arriba verán estas tareas. Los demás miembros del espacio perderán esa vista.",
     confirmButton: "Convertir en proyecto",
     confirming: "Convirtiendo…",
+  },
+  attachToProject: {
+    title: "Adjuntar este proyecto bajo otro proyecto",
+    backToProject: "Volver al proyecto",
+    intro:
+      "«{source}» pasará a formar parte de «{target}». Su acceso ya no dependerá de sus propios miembros, sino de los del proyecto de acogida.",
+    pickIntro:
+      "Elige el proyecto bajo el cual adjuntar «{project}». Solo se muestran los proyectos que administras en este espacio.",
+    pickEmpty:
+      "No hay ningún proyecto de acogida disponible: debes ser administrador de otro proyecto de este espacio.",
+    pickSelect: "Elegir",
+    targetLabel: "Proyecto de acogida",
+    changeTarget: "Cambiar de proyecto de acogida",
+    workspaceNoticeTitle: "A tener en cuenta",
+    workspaceNoticeBody:
+      "«{source}» estaba abierto a todo el espacio. Tras adjuntarlo, deja de estarlo: ahora sigue el acceso de «{target}».",
+    blockersTitle: "Adjunción bloqueada: algunas personas perderían el acceso",
+    blockersBody:
+      "Las personas siguientes tienen acceso a «{source}» (responsables, miembros o creador) pero no a «{target}». Adjuntarlo les quitaría el acceso. Añádelas primero a «{target}», o quítalas de «{source}», y vuelve a intentarlo.",
+    blockerReason: "sin acceso a «{target}»",
+    exposureTitle: "El equipo del proyecto de acogida descubrirá este proyecto",
+    exposureBody:
+      "Al adjuntar «{source}» bajo «{target}», las personas siguientes —que tienen acceso a «{target}» pero aún no a «{source}»— verán ahora todo su contenido.",
+    exposureEmpty:
+      "Nadie nuevo obtendrá acceso: el equipo del proyecto de acogida ya tiene acceso a este proyecto.",
+    confirmButton: "Adjuntar este proyecto",
+    confirming: "Adjuntando…",
+    blockedHint: "Botón desactivado mientras haya personas que perderían el acceso.",
+    errNotAProject: "Solo un proyecto (tarea raíz) puede adjuntarse bajo otro proyecto.",
+    errTargetNotProject: "El proyecto de acogida no se encuentra o no es un proyecto.",
+    errCycle: "No se puede adjuntar un proyecto bajo sí mismo.",
+    errCrossWorkspace: "Ambos proyectos deben pertenecer al mismo espacio de trabajo.",
+    errNotProjectAdmin:
+      "Debes ser administrador del proyecto de origen y del proyecto de acogida.",
+    errBlocked:
+      "No se puede adjuntar: algunas personas perderían el acceso. Resuelve los bloqueos y vuelve a intentarlo.",
   },
   events: {
     title: "Eventos",
