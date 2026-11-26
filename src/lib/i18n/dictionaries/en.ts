@@ -1129,6 +1129,12 @@ const en: Dictionary = {
     signIn: "Access my account",
     signUp: "Sign up",
     openApp: "Open my workspace",
+    nav: {
+      advantages: "Advantages",
+      comparatif: "Comparison",
+      pricing: "Pricing",
+      faq: "FAQ",
+    },
     heroTitle: "Your collaborative project management tool",
     heroSubtitle:
       "Projects, tasks, discussions and decisions in one place — for the whole team, without paying a premium.",

@@ -1152,6 +1152,13 @@ const fr = {
     signIn: "Accès à mon compte",
     signUp: "S'inscrire",
     openApp: "Ouvrir mon espace",
+    // Libellés de la sous-navigation collante par thèmes (ancres de l'accueil).
+    nav: {
+      advantages: "Avantages",
+      comparatif: "Comparatif",
+      pricing: "Tarifs",
+      faq: "FAQ",
+    },
     heroTitle: "Votre outil collaboratif de gestion de projet",
     heroSubtitle:
       "Projets, tâches, discussions et décisions au même endroit — pour toute l'équipe, sans payer le prix fort.",

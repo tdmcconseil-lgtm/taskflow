@@ -1129,6 +1129,12 @@ const es: Dictionary = {
     signIn: "Acceder a mi cuenta",
     signUp: "Registrarse",
     openApp: "Abrir mi espacio",
+    nav: {
+      advantages: "Ventajas",
+      comparatif: "Comparativa",
+      pricing: "Precios",
+      faq: "FAQ",
+    },
     heroTitle: "Tu herramienta colaborativa de gestión de proyectos",
     heroSubtitle:
       "Proyectos, tareas, debates y decisiones en un solo lugar — para todo el equipo, sin pagar de más.",
