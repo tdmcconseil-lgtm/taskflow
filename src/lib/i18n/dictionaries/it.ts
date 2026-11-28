@@ -363,7 +363,7 @@ const it: Dictionary = {
     subscribed: "Iscritto",
     edit: "Modifica",
     projectMembers: "Membri del progetto",
-    attachToProject: "Collega a un progetto…",
+    attachToProject: "Sposta sotto un progetto…",
     unassigned: "Non assegnata",
     noDescription: "Nessuna descrizione.",
     prefixProject: "Progetto",
@@ -798,8 +798,6 @@ const it: Dictionary = {
     editToggle: "Modifica la gerarchia",
     editDone: "Fine",
     editingBanner: "Modalità modifica gerarchia",
-    moveUp: "Sposta su",
-    moveDown: "Sposta giù",
     promote: "Sali di un livello",
     promoteShort: "Sali",
     promoteToProjectTitle: "Trasforma in progetto (crea un nuovo progetto autonomo)",
@@ -807,7 +805,7 @@ const it: Dictionary = {
       "Solo un amministratore del progetto può trasformare questa attività in progetto",
     attach: "Agganciare sotto un'altra attività",
     attachShort: "Aggancia",
-    attachToProjectShort: "Collega",
+    attachToProjectShort: "Scendi",
     attachNoSibling: "Nessuna attività sorella disponibile",
     attachPickSibling: "Aggancia sotto…",
     confirmTitle: "Sposta nella gerarchia",
@@ -835,12 +833,12 @@ const it: Dictionary = {
     confirming: "Trasformazione…",
   },
   attachToProject: {
-    title: "Collega questo progetto sotto un altro progetto",
+    title: "Sposta questo progetto sotto un altro progetto",
     backToProject: "Torna al progetto",
     intro:
       "«{source}» diventerà una parte di «{target}». Il suo accesso non dipenderà più dai propri membri, ma da quelli del progetto di destinazione.",
     pickIntro:
-      "Scegli il progetto sotto cui collegare «{project}». Vengono mostrati solo i progetti che amministri in questo spazio.",
+      "Scegli il progetto sotto cui spostare «{project}». Vengono mostrati solo i progetti che amministri in questo spazio.",
     pickEmpty:
       "Nessun progetto di destinazione disponibile: devi essere amministratore di un altro progetto di questo spazio.",
     pickSelect: "Scegli",
@@ -848,27 +846,27 @@ const it: Dictionary = {
     changeTarget: "Cambia progetto di destinazione",
     workspaceNoticeTitle: "Da notare",
     workspaceNoticeBody:
-      "«{source}» era aperto a tutto lo spazio. Dopo il collegamento non lo è più: segue ora l'accesso di «{target}».",
-    blockersTitle: "Collegamento bloccato: alcune persone perderebbero l'accesso",
+      "«{source}» era aperto a tutto lo spazio. Dopo lo spostamento non lo è più: segue ora l'accesso di «{target}».",
+    blockersTitle: "Spostamento bloccato: alcune persone perderebbero l'accesso",
     blockersBody:
-      "Le persone seguenti hanno accesso a «{source}» (responsabili, membri o creatore) ma non a «{target}». Il collegamento toglierebbe loro l'accesso. Aggiungile prima a «{target}», oppure rimuovile da «{source}», poi riprova.",
+      "Le persone seguenti hanno accesso a «{source}» (responsabili, membri o creatore) ma non a «{target}». Lo spostamento toglierebbe loro l'accesso. Aggiungile prima a «{target}», oppure rimuovile da «{source}», poi riprova.",
     blockerReason: "senza accesso a «{target}»",
     exposureTitle: "Il team del progetto di destinazione scoprirà questo progetto",
     exposureBody:
-      "Collegando «{source}» sotto «{target}», le persone seguenti — che hanno accesso a «{target}» ma non ancora a «{source}» — vedranno ora tutto il suo contenuto.",
+      "Spostando «{source}» sotto «{target}», le persone seguenti — che hanno accesso a «{target}» ma non ancora a «{source}» — vedranno ora tutto il suo contenuto.",
     exposureEmpty:
       "Nessuno di nuovo otterrà l'accesso: il team del progetto di destinazione ha già accesso a questo progetto.",
-    confirmButton: "Collega questo progetto",
-    confirming: "Collegamento…",
+    confirmButton: "Sposta questo progetto",
+    confirming: "Spostamento…",
     blockedHint: "Pulsante disattivato finché ci sono persone che perderebbero l'accesso.",
-    errNotAProject: "Solo un progetto (attività radice) può essere collegato sotto un altro progetto.",
+    errNotAProject: "Solo un progetto (attività radice) può essere spostato sotto un altro progetto.",
     errTargetNotProject: "Il progetto di destinazione non è stato trovato o non è un progetto.",
-    errCycle: "Impossibile collegare un progetto sotto sé stesso.",
+    errCycle: "Impossibile spostare un progetto sotto sé stesso.",
     errCrossWorkspace: "Entrambi i progetti devono appartenere allo stesso spazio di lavoro.",
     errNotProjectAdmin:
       "Devi essere amministratore del progetto di origine e del progetto di destinazione.",
     errBlocked:
-      "Collegamento impossibile: alcune persone perderebbero l'accesso. Risolvi i blocchi e riprova.",
+      "Spostamento impossibile: alcune persone perderebbero l'accesso. Risolvi i blocchi e riprova.",
   },
   events: {
     title: "Eventi",
@@ -1469,7 +1467,7 @@ const it: Dictionary = {
       },
       reordonner: {
         title: "Riorganizzare",
-        body: "In modalità modifica, sposta un'attività su/giù o cambia il suo collegamento.",
+        body: "In modalità modifica, trascina un'attività per riordinarla, o cambia il suo livello con Sali / Scendi.",
       },
       inviter: {
         title: "Invitare un membro",

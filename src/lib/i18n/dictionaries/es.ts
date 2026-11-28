@@ -363,7 +363,7 @@ const es: Dictionary = {
     subscribed: "Suscrito",
     edit: "Editar",
     projectMembers: "Miembros del proyecto",
-    attachToProject: "Adjuntar a un proyecto…",
+    attachToProject: "Bajar bajo un proyecto…",
     unassigned: "Sin asignar",
     noDescription: "Sin descripción.",
     prefixProject: "Proyecto",
@@ -798,8 +798,6 @@ const es: Dictionary = {
     editToggle: "Editar la jerarquía",
     editDone: "Listo",
     editingBanner: "Modo de edición de la jerarquía",
-    moveUp: "Subir",
-    moveDown: "Bajar",
     promote: "Subir un nivel",
     promoteShort: "Subir",
     promoteToProjectTitle: "Convertir en proyecto (crea un nuevo proyecto autónomo)",
@@ -807,7 +805,7 @@ const es: Dictionary = {
       "Solo un administrador del proyecto puede convertir esta tarea en proyecto",
     attach: "Adjuntar bajo otra tarea",
     attachShort: "Adjuntar",
-    attachToProjectShort: "Adjuntar",
+    attachToProjectShort: "Bajar",
     attachNoSibling: "No hay ninguna tarea hermana disponible",
     attachPickSibling: "Adjuntar bajo…",
     confirmTitle: "Mover en la jerarquía",
@@ -835,12 +833,12 @@ const es: Dictionary = {
     confirming: "Convirtiendo…",
   },
   attachToProject: {
-    title: "Adjuntar este proyecto bajo otro proyecto",
+    title: "Bajar este proyecto bajo otro proyecto",
     backToProject: "Volver al proyecto",
     intro:
       "«{source}» pasará a formar parte de «{target}». Su acceso ya no dependerá de sus propios miembros, sino de los del proyecto de acogida.",
     pickIntro:
-      "Elige el proyecto bajo el cual adjuntar «{project}». Solo se muestran los proyectos que administras en este espacio.",
+      "Elige el proyecto bajo el cual colocar «{project}». Solo se muestran los proyectos que administras en este espacio.",
     pickEmpty:
       "No hay ningún proyecto de acogida disponible: debes ser administrador de otro proyecto de este espacio.",
     pickSelect: "Elegir",
@@ -848,27 +846,27 @@ const es: Dictionary = {
     changeTarget: "Cambiar de proyecto de acogida",
     workspaceNoticeTitle: "A tener en cuenta",
     workspaceNoticeBody:
-      "«{source}» estaba abierto a todo el espacio. Tras adjuntarlo, deja de estarlo: ahora sigue el acceso de «{target}».",
-    blockersTitle: "Adjunción bloqueada: algunas personas perderían el acceso",
+      "«{source}» estaba abierto a todo el espacio. Tras moverlo, deja de estarlo: ahora sigue el acceso de «{target}».",
+    blockersTitle: "Movimiento bloqueado: algunas personas perderían el acceso",
     blockersBody:
-      "Las personas siguientes tienen acceso a «{source}» (responsables, miembros o creador) pero no a «{target}». Adjuntarlo les quitaría el acceso. Añádelas primero a «{target}», o quítalas de «{source}», y vuelve a intentarlo.",
+      "Las personas siguientes tienen acceso a «{source}» (responsables, miembros o creador) pero no a «{target}». Moverlo les quitaría el acceso. Añádelas primero a «{target}», o quítalas de «{source}», y vuelve a intentarlo.",
     blockerReason: "sin acceso a «{target}»",
     exposureTitle: "El equipo del proyecto de acogida descubrirá este proyecto",
     exposureBody:
-      "Al adjuntar «{source}» bajo «{target}», las personas siguientes —que tienen acceso a «{target}» pero aún no a «{source}»— verán ahora todo su contenido.",
+      "Al colocar «{source}» bajo «{target}», las personas siguientes —que tienen acceso a «{target}» pero aún no a «{source}»— verán ahora todo su contenido.",
     exposureEmpty:
       "Nadie nuevo obtendrá acceso: el equipo del proyecto de acogida ya tiene acceso a este proyecto.",
-    confirmButton: "Adjuntar este proyecto",
-    confirming: "Adjuntando…",
+    confirmButton: "Bajar este proyecto",
+    confirming: "Moviendo…",
     blockedHint: "Botón desactivado mientras haya personas que perderían el acceso.",
-    errNotAProject: "Solo un proyecto (tarea raíz) puede adjuntarse bajo otro proyecto.",
+    errNotAProject: "Solo un proyecto (tarea raíz) puede bajarse bajo otro proyecto.",
     errTargetNotProject: "El proyecto de acogida no se encuentra o no es un proyecto.",
-    errCycle: "No se puede adjuntar un proyecto bajo sí mismo.",
+    errCycle: "No se puede bajar un proyecto bajo sí mismo.",
     errCrossWorkspace: "Ambos proyectos deben pertenecer al mismo espacio de trabajo.",
     errNotProjectAdmin:
       "Debes ser administrador del proyecto de origen y del proyecto de acogida.",
     errBlocked:
-      "No se puede adjuntar: algunas personas perderían el acceso. Resuelve los bloqueos y vuelve a intentarlo.",
+      "No se puede mover: algunas personas perderían el acceso. Resuelve los bloqueos y vuelve a intentarlo.",
   },
   events: {
     title: "Eventos",
@@ -1469,7 +1467,7 @@ const es: Dictionary = {
       },
       reordonner: {
         title: "Reorganizar",
-        body: "En modo edición, sube/baja una tarea o cambia su vinculación.",
+        body: "En modo edición, arrastra una tarea para reordenarla, o cambia su nivel con Subir / Bajar.",
       },
       inviter: {
         title: "Invitar a un miembro",

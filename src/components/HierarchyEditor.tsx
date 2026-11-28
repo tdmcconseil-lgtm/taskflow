@@ -38,14 +38,14 @@ export function HierarchyEditor({
   scope: HierarchyScope;
   workspaceId: string;
   items: SubtaskItem[];
-  // Sur une fratrie de 1er niveau (mère = projet racine), « Remonter » ne peut
+  // Sur une fratrie de 1er niveau (mère = projet racine), « Monter » ne peut
   // pas être un #2 intra-projet : il TRANSFORME la tâche en projet autonome.
   // Ce drapeau (admin du projet source / OWNER) autorise cette promotion ;
   // sinon le bouton reste indisponible, comme avant.
   canPromoteToProject?: boolean;
   // Sur une liste de PROJETS racine (espace) : identifiants des projets que
   // l'utilisateur administre. Un bouton « Rattacher à un projet… » (symétrique
-  // du « ↰ Remonter » de la promotion) les mène vers l'écran dédié /attach ;
+  // du « ↰ Monter » de la promotion) les mène vers l'écran dédié /attach ;
   // affiché seulement pour ces projets (backstop = action serveur gardée).
   manageableProjectIds?: string[];
 }) {
@@ -58,7 +58,7 @@ export function HierarchyEditor({
   // Projets (racine) que l'utilisateur administre : seuls ceux-là reçoivent
   // l'entrée « Rattacher à un projet… » dans l'éditeur de hiérarchie de l'espace.
   const manageableSet = new Set(manageableProjectIds ?? []);
-  // « Remonter » sur une tâche de 1er niveau (sa mère est un projet racine, donc
+  // « Monter » sur une tâche de 1er niveau (sa mère est un projet racine, donc
   // grandParentId null) = PROMOTION en projet, écran de confirmation dédié
   // /promote (alerte « vous créez un nouveau projet »). Pour une tâche plus
   // profonde, c'est le #2 intra-projet classique (modale reparentTask).
@@ -109,19 +109,6 @@ export function HierarchyEditor({
     setDragId(null);
   }
 
-  // Flèches ↑/↓ : déplace l'élément d'un cran dans la fratrie puis valide.
-  function move(id: string, dir: -1 | 1) {
-    const from = order.findIndex((x) => x.id === id);
-    const to = from + dir;
-    if (from < 0 || to < 0 || to >= order.length) return;
-    const copy = order.slice();
-    const [moved] = copy.splice(from, 1);
-    copy.splice(to, 0, moved);
-    setOrder(copy);
-    orderRef.current = copy.map((i) => i.id);
-    reorderTasks(parentId, orderRef.current, workspaceId);
-  }
-
   function runReparent() {
     if (!confirm) return;
     setError(null);
@@ -136,13 +123,10 @@ export function HierarchyEditor({
     });
   }
 
-  const ctrlBtn =
-    "rounded-md px-1.5 py-1 text-sm text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100";
-
   return (
     <>
       <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-        {order.map((t, idx) => {
+        {order.map((t) => {
           const done = t.status === "DONE";
           const siblings = order.filter((s) => s.id !== t.id);
           return (
@@ -163,29 +147,6 @@ export function HierarchyEditor({
               >
                 ⠿
               </span>
-
-              <div className="flex shrink-0 flex-col">
-                <button
-                  type="button"
-                  onClick={() => move(t.id, -1)}
-                  disabled={idx === 0}
-                  title={h.moveUp}
-                  aria-label={h.moveUp}
-                  className={ctrlBtn}
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(t.id, 1)}
-                  disabled={idx === order.length - 1}
-                  title={h.moveDown}
-                  aria-label={h.moveDown}
-                  className={ctrlBtn}
-                >
-                  ↓
-                </button>
-              </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 items-center gap-1.5">
@@ -219,7 +180,7 @@ export function HierarchyEditor({
                 <PriorityBadge priority={t.priority} />
                 {/* Projet racine administré : entrée vers le rattachement sous un
                     autre projet (écran dédié /attach, sélecteur + confirmation).
-                    Symétrique du « ↰ Remonter » de la promotion. */}
+                    Pendant du « ↰ Monter » de la promotion. */}
                 {isProjectList && manageableSet.has(t.id) && (
                   <button
                     type="button"
