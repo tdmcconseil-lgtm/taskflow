@@ -363,7 +363,7 @@ const en: Dictionary = {
     subscribed: "Subscribed",
     edit: "Edit",
     projectMembers: "Project members",
-    attachToProject: "Attach to a project…",
+    attachToProject: "Move under a project…",
     unassigned: "Unassigned",
     noDescription: "No description.",
     prefixProject: "Project",
@@ -798,8 +798,6 @@ const en: Dictionary = {
     editToggle: "Edit hierarchy",
     editDone: "Done",
     editingBanner: "Hierarchy edit mode",
-    moveUp: "Move up",
-    moveDown: "Move down",
     promote: "Move up one level",
     promoteShort: "Move up",
     promoteToProjectTitle: "Turn into a project (creates a new standalone project)",
@@ -807,7 +805,7 @@ const en: Dictionary = {
       "Only a project admin can turn this task into a project",
     attach: "Attach under another task",
     attachShort: "Attach",
-    attachToProjectShort: "Attach",
+    attachToProjectShort: "Move down",
     attachNoSibling: "No sibling task available",
     attachPickSibling: "Attach under…",
     confirmTitle: "Move in the hierarchy",
@@ -835,12 +833,12 @@ const en: Dictionary = {
     confirming: "Converting…",
   },
   attachToProject: {
-    title: "Attach this project under another project",
+    title: "Move this project under another project",
     backToProject: "Back to the project",
     intro:
       "“{source}” will become a part of “{target}”. Its access will no longer depend on its own members, but on those of the host project.",
     pickIntro:
-      "Choose the project to attach “{project}” under. Only projects you administer in this workspace are listed.",
+      "Choose the project to move “{project}” under. Only projects you administer in this workspace are listed.",
     pickEmpty:
       "No host project available: you must be an administrator of another project in this workspace.",
     pickSelect: "Choose",
@@ -848,27 +846,27 @@ const en: Dictionary = {
     changeTarget: "Change host project",
     workspaceNoticeTitle: "Note",
     workspaceNoticeBody:
-      "“{source}” was open to the whole workspace. After attaching, it no longer is: it now follows the access of “{target}”.",
-    blockersTitle: "Attachment blocked: some people would lose access",
+      "“{source}” was open to the whole workspace. After the move, it no longer is: it now follows the access of “{target}”.",
+    blockersTitle: "Move blocked: some people would lose access",
     blockersBody:
-      "The people below have access to “{source}” (owners, members or creator) but not to “{target}”. Attaching would remove their access. Add them to “{target}” first, or remove them from “{source}”, then try again.",
+      "The people below have access to “{source}” (owners, members or creator) but not to “{target}”. Moving it would remove their access. Add them to “{target}” first, or remove them from “{source}”, then try again.",
     blockerReason: "no access to “{target}”",
     exposureTitle: "The host project’s team will discover this project",
     exposureBody:
-      "By attaching “{source}” under “{target}”, the people below — who have access to “{target}” but not yet to “{source}” — will now see all of its content.",
+      "By moving “{source}” under “{target}”, the people below — who have access to “{target}” but not yet to “{source}” — will now see all of its content.",
     exposureEmpty:
       "No one new will gain access: the host project’s team already has access to this project.",
-    confirmButton: "Attach this project",
-    confirming: "Attaching…",
+    confirmButton: "Move this project",
+    confirming: "Moving…",
     blockedHint: "Button disabled while some people would still lose access.",
-    errNotAProject: "Only a project (root task) can be attached under another project.",
+    errNotAProject: "Only a project (root task) can be moved under another project.",
     errTargetNotProject: "The host project cannot be found or is not a project.",
-    errCycle: "A project cannot be attached under itself.",
+    errCycle: "A project cannot be moved under itself.",
     errCrossWorkspace: "Both projects must belong to the same workspace.",
     errNotProjectAdmin:
       "You must be an administrator of both the source and the host project.",
     errBlocked:
-      "Attachment not possible: some people would lose access. Resolve the blockers and try again.",
+      "Move not possible: some people would lose access. Resolve the blockers and try again.",
   },
   events: {
     title: "Events",
@@ -1469,7 +1467,7 @@ const en: Dictionary = {
       },
       reordonner: {
         title: "Reorganize",
-        body: "In edit mode, move a task up/down or change what it's attached to.",
+        body: "In edit mode, drag a task to reorder it, or change its level with Move up / Move down.",
       },
       inviter: {
         title: "Invite a member",

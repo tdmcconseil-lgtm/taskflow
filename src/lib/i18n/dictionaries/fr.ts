@@ -382,7 +382,7 @@ const fr = {
     subscribed: "Abonné",
     edit: "Modifier",
     projectMembers: "Membres du projet",
-    attachToProject: "Rattacher à un projet…",
+    attachToProject: "Descendre sous un projet…",
     unassigned: "Non assignée",
     noDescription: "Aucune description.",
     prefixProject: "Projet",
@@ -818,16 +818,14 @@ const fr = {
     editToggle: "Éditer la hiérarchie",
     editDone: "Terminer",
     editingBanner: "Mode édition de la hiérarchie",
-    moveUp: "Monter",
-    moveDown: "Descendre",
-    promote: "Remonter d'un niveau",
-    promoteShort: "Remonter",
+    promote: "Monter d'un niveau",
+    promoteShort: "Monter",
     promoteToProjectTitle: "Transformer en projet (crée un nouveau projet autonome)",
     promoteToProjectAdminOnly:
       "Seul un administrateur du projet peut transformer cette tâche en projet",
     attach: "Rattacher sous une autre tâche",
     attachShort: "Rattacher",
-    attachToProjectShort: "Rattacher",
+    attachToProjectShort: "Descendre",
     attachNoSibling: "Aucune tâche sœur disponible",
     attachPickSibling: "Rattacher sous…",
     confirmTitle: "Déplacer dans la hiérarchie",
@@ -855,13 +853,13 @@ const fr = {
     confirming: "Transformation…",
   },
   attachToProject: {
-    title: "Rattacher ce projet sous un autre projet",
+    title: "Descendre ce projet sous un autre projet",
     backToProject: "Retour au projet",
     intro:
       "« {source} » deviendra une sous-partie de « {target} ». Son accès ne dépendra plus de ses propres membres, mais de ceux du projet d'accueil.",
     // Sélecteur du projet d'accueil
     pickIntro:
-      "Choisissez le projet sous lequel rattacher « {project} ». Seuls les projets que vous administrez dans cet espace sont proposés.",
+      "Choisissez le projet sous lequel placer « {project} ». Seuls les projets que vous administrez dans cet espace sont proposés.",
     pickEmpty:
       "Aucun projet d'accueil disponible : vous devez être administrateur d'un autre projet de cet espace.",
     pickSelect: "Choisir",
@@ -870,28 +868,28 @@ const fr = {
     changeTarget: "Changer de projet d'accueil",
     workspaceNoticeTitle: "À noter",
     workspaceNoticeBody:
-      "« {source} » était ouvert à tout l'espace. Après rattachement, il ne l'est plus : il suit désormais l'accès de « {target} ».",
-    blockersTitle: "Rattachement bloqué : des personnes perdraient l'accès",
+      "« {source} » était ouvert à tout l'espace. Une fois placé sous « {target} », il ne l'est plus : il suit désormais l'accès de « {target} ».",
+    blockersTitle: "Déplacement bloqué : des personnes perdraient l'accès",
     blockersBody:
-      "Les personnes ci-dessous ont accès à « {source} » (responsables, membres ou créateur) mais pas à « {target} ». Le rattachement leur retirerait l'accès. Ajoutez-les d'abord à « {target} », ou retirez-les de « {source} », puis réessayez.",
+      "Les personnes ci-dessous ont accès à « {source} » (responsables, membres ou créateur) mais pas à « {target} ». Ce déplacement leur retirerait l'accès. Ajoutez-les d'abord à « {target} », ou retirez-les de « {source} », puis réessayez.",
     blockerReason: "sans accès à « {target} »",
     exposureTitle: "L'équipe du projet d'accueil va découvrir ce projet",
     exposureBody:
-      "En rattachant « {source} » sous « {target} », les personnes ci-dessous — qui ont accès à « {target} » mais pas encore à « {source} » — verront désormais tout son contenu.",
+      "En plaçant « {source} » sous « {target} », les personnes ci-dessous — qui ont accès à « {target} » mais pas encore à « {source} » — verront désormais tout son contenu.",
     exposureEmpty:
       "Personne de nouveau n'y gagnera l'accès : l'équipe du projet d'accueil a déjà accès à ce projet.",
-    confirmButton: "Rattacher ce projet",
-    confirming: "Rattachement…",
+    confirmButton: "Descendre ce projet",
+    confirming: "Déplacement…",
     blockedHint: "Bouton désactivé tant qu'il reste des personnes qui perdraient l'accès.",
     // Erreurs de l'action
-    errNotAProject: "Seul un projet (tâche racine) peut être rattaché sous un autre projet.",
+    errNotAProject: "Seul un projet (tâche racine) peut être descendu sous un autre projet.",
     errTargetNotProject: "Le projet d'accueil est introuvable ou n'est pas un projet.",
-    errCycle: "Impossible de rattacher un projet sous lui-même.",
+    errCycle: "Impossible de descendre un projet sous lui-même.",
     errCrossWorkspace: "Les deux projets doivent appartenir au même espace de travail.",
     errNotProjectAdmin:
       "Vous devez être administrateur du projet d'origine et du projet d'accueil.",
     errBlocked:
-      "Rattachement impossible : des personnes perdraient l'accès. Résolvez les blocages puis réessayez.",
+      "Déplacement impossible : des personnes perdraient l'accès. Résolvez les blocages puis réessayez.",
   },
   events: {
     title: "Événements",
@@ -1497,7 +1495,7 @@ const fr = {
       },
       reordonner: {
         title: "Réorganiser",
-        body: "En mode édition, montez/descendez une tâche ou changez son rattachement.",
+        body: "En mode édition, faites glisser une tâche pour la réordonner, ou changez son niveau avec Monter / Descendre.",
       },
       inviter: {
         title: "Inviter un membre",

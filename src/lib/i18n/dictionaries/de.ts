@@ -363,7 +363,7 @@ const de: Dictionary = {
     subscribed: "Abonniert",
     edit: "Bearbeiten",
     projectMembers: "Projektmitglieder",
-    attachToProject: "Einem Projekt zuordnen…",
+    attachToProject: "Unter ein Projekt verschieben…",
     unassigned: "Nicht zugewiesen",
     noDescription: "Keine Beschreibung.",
     prefixProject: "Projekt",
@@ -798,8 +798,6 @@ const de: Dictionary = {
     editToggle: "Hierarchie bearbeiten",
     editDone: "Fertig",
     editingBanner: "Hierarchie-Bearbeitungsmodus",
-    moveUp: "Nach oben",
-    moveDown: "Nach unten",
     promote: "Eine Ebene höher",
     promoteShort: "Höher",
     promoteToProjectTitle: "In ein Projekt umwandeln (erstellt ein neues eigenständiges Projekt)",
@@ -807,7 +805,7 @@ const de: Dictionary = {
       "Nur ein Projektadministrator kann diese Aufgabe in ein Projekt umwandeln",
     attach: "Unter eine andere Aufgabe hängen",
     attachShort: "Einhängen",
-    attachToProjectShort: "Zuordnen",
+    attachToProjectShort: "Tiefer",
     attachNoSibling: "Keine gleichrangige Aufgabe verfügbar",
     attachPickSibling: "Einhängen unter…",
     confirmTitle: "In der Hierarchie verschieben",
@@ -835,7 +833,7 @@ const de: Dictionary = {
     confirming: "Wird umgewandelt…",
   },
   attachToProject: {
-    title: "Dieses Projekt einem anderen Projekt unterordnen",
+    title: "Dieses Projekt unter ein anderes Projekt verschieben",
     backToProject: "Zurück zum Projekt",
     intro:
       "„{source}“ wird Teil von „{target}“. Der Zugriff hängt dann nicht mehr von den eigenen Mitgliedern ab, sondern von denen des Zielprojekts.",
@@ -848,18 +846,18 @@ const de: Dictionary = {
     changeTarget: "Zielprojekt ändern",
     workspaceNoticeTitle: "Hinweis",
     workspaceNoticeBody:
-      "„{source}“ war für den gesamten Arbeitsbereich offen. Nach der Zuordnung ist es das nicht mehr: Es folgt nun dem Zugriff von „{target}“.",
-    blockersTitle: "Zuordnung blockiert: Einige Personen würden den Zugriff verlieren",
+      "„{source}“ war für den gesamten Arbeitsbereich offen. Nach dem Verschieben ist es das nicht mehr: Es folgt nun dem Zugriff von „{target}“.",
+    blockersTitle: "Verschieben blockiert: Einige Personen würden den Zugriff verlieren",
     blockersBody:
-      "Die folgenden Personen haben Zugriff auf „{source}“ (Verantwortliche, Mitglieder oder Ersteller), aber nicht auf „{target}“. Die Zuordnung würde ihnen den Zugriff entziehen. Fügen Sie sie zuerst zu „{target}“ hinzu oder entfernen Sie sie aus „{source}“ und versuchen Sie es erneut.",
+      "Die folgenden Personen haben Zugriff auf „{source}“ (Verantwortliche, Mitglieder oder Ersteller), aber nicht auf „{target}“. Das Verschieben würde ihnen den Zugriff entziehen. Fügen Sie sie zuerst zu „{target}“ hinzu oder entfernen Sie sie aus „{source}“ und versuchen Sie es erneut.",
     blockerReason: "kein Zugriff auf „{target}“",
     exposureTitle: "Das Team des Zielprojekts wird dieses Projekt entdecken",
     exposureBody:
-      "Durch die Zuordnung von „{source}“ unter „{target}“ sehen die folgenden Personen — die Zugriff auf „{target}“, aber noch nicht auf „{source}“ haben — nun dessen gesamten Inhalt.",
+      "Durch das Verschieben von „{source}“ unter „{target}“ sehen die folgenden Personen — die Zugriff auf „{target}“, aber noch nicht auf „{source}“ haben — nun dessen gesamten Inhalt.",
     exposureEmpty:
       "Niemand erhält neuen Zugriff: Das Team des Zielprojekts hat bereits Zugriff auf dieses Projekt.",
-    confirmButton: "Dieses Projekt zuordnen",
-    confirming: "Wird zugeordnet…",
+    confirmButton: "Dieses Projekt verschieben",
+    confirming: "Wird verschoben…",
     blockedHint: "Schaltfläche deaktiviert, solange Personen den Zugriff verlieren würden.",
     errNotAProject: "Nur ein Projekt (Wurzelaufgabe) kann einem anderen Projekt untergeordnet werden.",
     errTargetNotProject: "Das Zielprojekt wurde nicht gefunden oder ist kein Projekt.",
@@ -868,7 +866,7 @@ const de: Dictionary = {
     errNotProjectAdmin:
       "Sie müssen Administrator des Ausgangs- und des Zielprojekts sein.",
     errBlocked:
-      "Zuordnung nicht möglich: Einige Personen würden den Zugriff verlieren. Beheben Sie die Blockaden und versuchen Sie es erneut.",
+      "Verschieben nicht möglich: Einige Personen würden den Zugriff verlieren. Beheben Sie die Blockaden und versuchen Sie es erneut.",
   },
   events: {
     title: "Ereignisse",
@@ -1469,7 +1467,7 @@ const de: Dictionary = {
       },
       reordonner: {
         title: "Neu ordnen",
-        body: "Im Bearbeitungsmodus eine Aufgabe nach oben/unten verschieben oder ihre Zuordnung ändern.",
+        body: "Im Bearbeitungsmodus eine Aufgabe per Ziehen neu anordnen oder ihre Ebene mit Höher / Tiefer ändern.",
       },
       inviter: {
         title: "Mitglied einladen",
