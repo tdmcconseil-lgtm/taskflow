@@ -9,18 +9,23 @@ import { ReorderableSubtasks, type SubtaskItem } from "@/components/ReorderableS
 import { HierarchyEditor, type HierarchyScope } from "@/components/HierarchyEditor";
 import { TypeIcon } from "@/components/TypeIcon";
 import { HintBubble } from "@/components/HintBubble";
-import { setTaskView } from "@/lib/actions/view";
+import { setTaskView, setStructureDepth } from "@/lib/actions/view";
+import { STRUCTURE_DEPTH_CHOICES, type StructureDepth } from "@/lib/structure-depth";
 import type { HintAnchor } from "@/lib/discovery";
 import type { TaskNode } from "@/lib/task-tree";
 import { STATUS_ORDER, formatDate, isOverdue } from "@/lib/labels";
 import { useT, useLocale } from "@/lib/i18n/context";
 
+// Pas d'indentation (px) par niveau dans la vue Structure.
+const STRUCTURE_INDENT_PX = 20;
+
 // Présentation d'une collection de tâches (les « projets » d'un espace, ou les
-// sous-tâches d'une tâche) avec bascule Tableau / Liste / Arborescence — comme
+// sous-tâches d'une tâche) avec bascule Tableau / Liste / Arborescence / Structure — comme
 // l'ancienne page projet. `roots` sont les tâches de 1er niveau de cette collection.
 export function TaskCollection({
   roots,
   view,
+  structureDepth,
   toggleBase,
   newTaskHref,
   newTaskLabel,
@@ -33,7 +38,9 @@ export function TaskCollection({
   newHint,
 }: {
   roots: TaskNode[];
-  view: "liste" | "tableau" | "arborescence";
+  view: "liste" | "tableau" | "arborescence" | "structure";
+  // Profondeur mémorisée de la vue Structure (cookie tf_niveaux).
+  structureDepth: StructureDepth;
   toggleBase: string;
   newTaskHref?: string | null;
   newTaskLabel?: string;
@@ -90,6 +97,22 @@ export function TaskCollection({
     subtaskCount: n.children.length,
   }));
 
+  // Vue Structure : arbre aplati en profondeur d'abord. L'ordre de `children` est
+  // déjà l'ordre d'affichage personnel (buildTaskIndex) : on le conserve tel quel.
+  // « N niveaux » = profondeurs 0..N-1 ; « tous » = illimité.
+  const structureRows: { node: TaskNode; depth: number }[] = [];
+  if (view === "structure") {
+    const maxDepth = structureDepth === "tous" ? Infinity : structureDepth;
+    const walk = (nodes: TaskNode[], depth: number) => {
+      if (depth >= maxDepth) return;
+      for (const n of nodes) {
+        structureRows.push({ node: n, depth });
+        walk(n.children, depth + 1);
+      }
+    };
+    walk(roots, 0);
+  }
+
   const tabClass = (active: boolean) =>
     `rounded-md px-3 py-1 text-sm font-medium transition ${
       active
@@ -134,8 +157,43 @@ export function TaskCollection({
               <button type="submit" name="view" value="arborescence" className={tabClass(view === "arborescence")}>
                 {t.task.viewTree}
               </button>
+              <button type="submit" name="view" value="structure" className={tabClass(view === "structure")}>
+                {t.task.viewStructure}
+              </button>
             </form>
             <HintBubble anchor="vues" />
+            {view === "structure" && (
+              <form
+                action={setStructureDepth}
+                className="ml-2 inline-flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
+              >
+                <input type="hidden" name="back" value={toggleBase} />
+                <span className="px-2 text-sm text-zinc-500 dark:text-zinc-400">
+                  {t.task.structureDepthLabel}
+                </span>
+                {STRUCTURE_DEPTH_CHOICES.map((n) => (
+                  <button
+                    key={n}
+                    type="submit"
+                    name="depth"
+                    value={n}
+                    aria-pressed={structureDepth === n}
+                    className={tabClass(structureDepth === n)}
+                  >
+                    {n}
+                  </button>
+                ))}
+                <button
+                  type="submit"
+                  name="depth"
+                  value="tous"
+                  aria-pressed={structureDepth === "tous"}
+                  className={tabClass(structureDepth === "tous")}
+                >
+                  {t.task.structureDepthAll}
+                </button>
+              </form>
+            )}
           </span>
         )}
         <div className="flex items-center gap-2">
@@ -224,6 +282,35 @@ export function TaskCollection({
             </tbody>
           </table>
         </div>
+      ) : view === "structure" ? (
+        <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          {structureRows.map(({ node, depth }) => (
+            <li
+              key={node.id}
+              className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+            >
+              <Link
+                href={`/app/tasks/${node.id}`}
+                className="flex min-w-0 flex-1 items-center gap-2 font-medium hover:underline"
+                style={{ paddingLeft: depth * STRUCTURE_INDENT_PX }}
+              >
+                <TypeIcon
+                  isProject={node.parentId === null}
+                  label={node.parentId === null ? t.task.prefixProject : t.task.prefixTask}
+                  className="h-4 w-4 shrink-0"
+                />
+                <span
+                  className={`truncate ${node.status === "DONE" ? "text-zinc-400 line-through dark:text-zinc-500" : ""}`}
+                >
+                  {node.title}
+                </span>
+              </Link>
+              <span className="shrink-0 text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+                {formatDate(node.dueDate, locale) ?? "—"}
+              </span>
+            </li>
+          ))}
+        </ul>
       ) : view === "tableau" ? (
         <KanbanBoard tasks={boardTasks} />
       ) : reorderScope ? (

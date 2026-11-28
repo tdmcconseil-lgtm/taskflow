@@ -1,13 +1,26 @@
 import { cookies } from "next/headers";
+import { parseStructureDepth, type StructureDepth } from "@/lib/structure-depth";
 
-export type TaskView = "liste" | "tableau" | "arborescence";
+export type TaskView = "liste" | "tableau" | "arborescence" | "structure";
 
-// Préférence d'affichage des collections de tâches (Liste / Tableau / Arborescence),
-// persistée en cookie pour être conservée d'une page à l'autre.
+// Préférence d'affichage des collections de tâches (Liste / Tableau / Arborescence /
+// Structure), persistée en cookie pour être conservée d'une page à l'autre.
 // Par défaut : tableau.
 export async function getTaskView(): Promise<TaskView> {
   const v = (await cookies()).get("tf_vue")?.value;
-  return v === "liste" ? "liste" : v === "arborescence" ? "arborescence" : "tableau";
+  return v === "liste"
+    ? "liste"
+    : v === "arborescence"
+      ? "arborescence"
+      : v === "structure"
+        ? "structure"
+        : "tableau";
+}
+
+// Profondeur de la vue Structure, persistée en cookie tf_niveaux (comme tf_vue).
+// Par défaut : tous.
+export async function getStructureDepth(): Promise<StructureDepth> {
+  return parseStructureDepth((await cookies()).get("tf_niveaux")?.value);
 }
 
 export type TaskTab = "sous" | "docs" | "decisions" | "chat" | "followers" | "activite";

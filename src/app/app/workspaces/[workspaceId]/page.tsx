@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser, getMembership } from "@/lib/auth/dal";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
-import { getTaskView } from "@/lib/view";
+import { getTaskView, getStructureDepth } from "@/lib/view";
 import { prisma } from "@/lib/prisma";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { getUserOrder } from "@/lib/task-order";
@@ -29,6 +29,7 @@ export default async function WorkspacePage({
   const t = await getDictionary();
   const locale = await getLocale();
   const view = await getTaskView();
+  const structureDepth = await getStructureDepth();
   const { workspaceId } = await params;
   const sp = await searchParams;
   const includeOwn = sp.mine === "1";
@@ -150,6 +151,7 @@ export default async function WorkspacePage({
     <TaskCollection
       roots={visibleRoots}
       view={view}
+      structureDepth={structureDepth}
       toggleBase={`/app/workspaces/${workspace.id}`}
       newTaskHref={isArchived ? null : `/app/tasks/new?workspace=${workspace.id}`}
       newTaskLabel={t.task.newProject}

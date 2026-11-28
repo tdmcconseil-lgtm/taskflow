@@ -27,7 +27,7 @@ import { updateTask } from "@/lib/actions/tasks";
 import { toggleFollow } from "@/lib/actions/discussion";
 import { buildTaskIndex, toAssigneeInfo, type RawTask, ASSIGNEE_SELECT } from "@/lib/task-tree";
 import { getUserOrder } from "@/lib/task-order";
-import { getTaskView, getTaskTab, parseTaskTab } from "@/lib/view";
+import { getTaskView, getTaskTab, getStructureDepth, parseTaskTab } from "@/lib/view";
 import { formatDate, isOverdue } from "@/lib/labels";
 import { cardClass } from "@/components/ui";
 
@@ -42,6 +42,7 @@ export default async function TaskDetailPage({
   const sp = await searchParams;
   const editing = sp.edit === "1";
   const view = await getTaskView();
+  const structureDepth = await getStructureDepth();
   // Onglet : priorité au paramètre d'URL (depuis le flux d'événements), sinon la
   // préférence conservée en cookie. `target` cible un élément exact à surligner.
   const initialTab =
@@ -457,6 +458,7 @@ export default async function TaskDetailPage({
           <TaskCollection
             roots={children}
             view={view}
+            structureDepth={structureDepth}
             toggleBase={detailHref}
             newTaskHref={`/app/tasks/new?parent=${task.id}`}
             newTaskLabel={t.task.newSubtask}
